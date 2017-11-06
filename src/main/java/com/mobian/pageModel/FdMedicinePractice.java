@@ -21,6 +21,7 @@ public class FdMedicinePractice implements java.io.Serializable {
 	private java.lang.String file;
 
 	private String picUrl;
+	private String key;
 
 	
 
@@ -117,5 +118,13 @@ public class FdMedicinePractice implements java.io.Serializable {
 
 	public void setPicUrl(String picUrl) {
 		this.picUrl = picUrl;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 }

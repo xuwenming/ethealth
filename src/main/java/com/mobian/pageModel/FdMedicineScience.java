@@ -21,6 +21,7 @@ public class FdMedicineScience implements java.io.Serializable {
 	private java.lang.String file;	
 
 	private String picUrl;
+	private String key;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -115,5 +116,13 @@ public class FdMedicineScience implements java.io.Serializable {
 
 	public void setPicUrl(String picUrl) {
 		this.picUrl = picUrl;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 }

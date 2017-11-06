@@ -92,7 +92,11 @@ public class FdMedicinePracticeServiceImpl extends BaseServiceImpl<FdMedicinePra
 			if (!F.empty(fdMedicinePractice.getFile())) {
 				whereHql += " and t.file = :file";
 				params.put("file", fdMedicinePractice.getFile());
-			}		
+			}
+			if(!F.empty(fdMedicinePractice.getKey())) {
+				whereHql += " and (t.title like :key or t.desc like :key or t.content like :key)";
+				params.put("key", "%" + fdMedicinePractice.getKey() + "%");
+			}
 		}	
 		return whereHql;
 	}

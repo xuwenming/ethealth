@@ -92,7 +92,12 @@ public class FdMedicineScienceServiceImpl extends BaseServiceImpl<FdMedicineScie
 			if (!F.empty(fdMedicineScience.getFile())) {
 				whereHql += " and t.file = :file";
 				params.put("file", fdMedicineScience.getFile());
-			}		
+			}
+
+			if(!F.empty(fdMedicineScience.getKey())) {
+				whereHql += " and (t.title like :key or t.desc like :key or t.content like :key)";
+				params.put("key", "%" + fdMedicineScience.getKey() + "%");
+			}
 		}	
 		return whereHql;
 	}
