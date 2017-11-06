@@ -80,36 +80,25 @@ public class TokenInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		if (url.indexOf("/api/apiCommon/validToken") > -1) {
-			return true;
-		}
-
-		String param = "";
-		Map<String, String[]> paramMap = request.getParameterMap();
-		if(!paramMap.isEmpty()) {
-			for(String key : paramMap.keySet()) {
-				if(!F.empty(param)) param += "&";
-				param += key + "=" + paramMap.get(key)[0];
-			}
-		}
-
-//		Enumeration headerNames = request.getHeaderNames();
-//		while (headerNames.hasMoreElements()) {
-//			String key = (String) headerNames.nextElement();
-//			String value = request.getHeader(key);
-//			System.out.println("key:" + key + "   " + "value:" + value);
+//		if (url.indexOf("/api/apiCommon/validToken") > -1) {
+//			return true;
 //		}
-
-		//签名验证
-		String sign = request.getHeader("sign");
-//		System.out.println("requestUri:" + requestUri);
-//		System.out.println("param:" + param);
-//		System.out.println("sign:" + sign);
-//		System.out.println("MD5Util.md5:" + MD5Util.md5(URLEncoder.encode(param + tokenId, "UTF-8").replaceAll("[+]", "%20")));
-		if (F.empty(sign) || !sign.equals(MD5Util.md5(URLEncoder.encode(param + tokenId, "UTF-8").replaceAll("[+]", "%20")))) {
-			request.getRequestDispatcher("/api/apiCommon/error").forward(request, response);
-			return false;
-		}
+//
+//		String param = "";
+//		Map<String, String[]> paramMap = request.getParameterMap();
+//		if(!paramMap.isEmpty()) {
+//			for(String key : paramMap.keySet()) {
+//				if(!F.empty(param)) param += "&";
+//				param += key + "=" + paramMap.get(key)[0];
+//			}
+//		}
+//
+//		//签名验证
+//		String sign = request.getHeader("sign");
+//		if (F.empty(sign) || !sign.equals(MD5Util.md5(URLEncoder.encode(param + tokenId, "UTF-8").replaceAll("[+]", "%20")))) {
+//			request.getRequestDispatcher("/api/apiCommon/error").forward(request, response);
+//			return false;
+//		}
 
 		return true;
 	}

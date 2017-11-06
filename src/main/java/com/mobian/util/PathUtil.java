@@ -22,5 +22,10 @@ public abstract class PathUtil {
 		if(F.empty(dbPath))return null;
 		return getBathPath()+"/"+Constants.UPLOADFILE_SQUARE+"/"+dbPath;
 	}
+
+	public static String getPicPath(String dbPath){
+		if(F.empty(dbPath))return null;
+		return getBathPath()+dbPath;
+	}
 	
 }

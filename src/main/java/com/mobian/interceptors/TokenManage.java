@@ -52,12 +52,18 @@ public class TokenManage {
     }
 
     public boolean validToken(String tid) {
-//        if (TokenManage.DEFAULT_TOKEN.equals(tid)) return true;
-//
-//        boolean flag = redisUserService.getToken(tid) == null ? false : true;
-//        if (flag) redisUserService.refresh(tid);
-//        return flag;
-        return getUid(tid)==null?false:true;
+        if (TokenManage.DEFAULT_TOKEN.equals(tid)) return true;
+        if(enableRedis) {
+            boolean flag = redisUserService.getToken(tid) == null ? false : true;
+            if (flag) redisUserService.refresh(tid);
+            return flag;
+        } else {
+            TokenWrap token = tokenMap.get(tid);
+            if(token != null) {
+                token.retime();
+            }
+            return token==null?false:true;
+        }
     }
 
     public SessionInfo getSessionInfo(String tokenId) {

@@ -6,9 +6,12 @@ import com.mobian.pageModel.*;
 import com.mobian.service.BugServiceI;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
+import com.mobian.service.FdMedicinePracticeServiceI;
+import com.mobian.service.FdMedicineScienceServiceI;
 import com.mobian.thirdpart.wx.SignUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
 import com.mobian.util.HttpUtil;
+import com.mobian.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,26 +34,40 @@ import java.util.*;
 @Controller
 @RequestMapping("/api/apiCommon")
 public class ApiCommonController extends BaseController {
-	
-	
+
+
 	@Autowired
 	private TokenManage tokenManage;
-		
+
 
 	@Autowired
 	private BugServiceI bugService;
+
+	@Autowired
+	private FdMedicinePracticeServiceI fdMedicinePracticeService;
+
+	@Autowired
+	private FdMedicineScienceServiceI fdMedicineScienceService;
 	
 	/**
 	 * 生成html
 	 * @return
 	 */
 	@RequestMapping("/html")
-	public void html(String type,String id,HttpServletResponse response) {
+	public void html(String type,Integer id,HttpServletResponse response) {
 		PrintWriter out = null;
 		String content = "";
 		try{
 			response.setContentType("text/html");  
 			response.setCharacterEncoding("UTF-8");
+
+			if("BT01".equals(type)) {
+				content = fdMedicinePracticeService.get(id).getContent();
+			} else if("BT02".equals(type)) {
+				content = fdMedicineScienceService.get(id).getContent();
+			}
+
+			content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
 
 			out = response.getWriter();
 			out.write("<html><head>");
