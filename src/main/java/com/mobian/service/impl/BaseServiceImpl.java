@@ -13,7 +13,7 @@ public abstract class BaseServiceImpl<T> {
 		String orderString = "";
 		if (ph.getSort() != null && ph.getOrder() != null) {
 			if(ph.getSort().equalsIgnoreCase("id")){
-				ph.setSort("updatetime");
+				ph.setSort("updateTime");
 			}
 			orderString = " order by t." + ph.getSort() + " " + ph.getOrder();
 		}

@@ -1,0 +1,100 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.mobian.model.TfdCustomer" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<script type="text/javascript">
+	$(function() {
+		parent.$.messager.progress('close');		
+	});
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+	<div data-options="region:'center',border:false">
+		<table class="table table-hover table-condensed">
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_REAL_NAME%></th>	
+					<td>
+						${fdCustomer.realName}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_PHONE%></th>	
+					<td>
+						${fdCustomer.phone}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_PROVINCE%></th>	
+					<td>
+						${fdCustomer.province}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_CITY%></th>	
+					<td>
+						${fdCustomer.city}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_COUNTY%></th>	
+					<td>
+						${fdCustomer.county}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_ADDR%></th>	
+					<td>
+						${fdCustomer.addr}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_QQ%></th>	
+					<td>
+						${fdCustomer.qq}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_SEX%></th>	
+					<td>
+						${fdCustomer.sex}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_BIRTHDAY%></th>	
+					<td>
+						${fdCustomer.birthday}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_GROUP_ID%></th>	
+					<td>
+						${fdCustomer.groupId}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_POINT%></th>	
+					<td>
+						${fdCustomer.point}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_MESSAGE_IDS%></th>	
+					<td>
+						${fdCustomer.messageIds}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_PROP%></th>	
+					<td>
+						${fdCustomer.prop}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_BALANCE%></th>	
+					<td>
+						${fdCustomer.balance}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_CUSTOM%></th>	
+					<td>
+						${fdCustomer.custom}							
+					</td>							
+					<th><%=TfdCustomer.ALIAS_CHECKIN_TIME%></th>	
+					<td>
+						${fdCustomer.checkinTime}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCustomer.ALIAS_NICK_NAME%></th>	
+					<td>
+						${fdCustomer.nickName}							
+					</td>							
+				</tr>		
+		</table>
+	</div>
+</div>
