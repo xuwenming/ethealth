@@ -1,23 +1,22 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberDaoI;
 import com.mobian.model.TfdMember;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
-
+import com.mobian.util.MD5Util;
+import com.mobian.util.MyBeanUtils;
 import com.mobian.util.PathUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements FdMemberServiceI {
@@ -152,8 +151,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	public void add(FdMember fdMember) {
 		TfdMember t = new TfdMember();
 		BeanUtils.copyProperties(fdMember, t);
-		//t.setId(jb.absx.UUID.uuid());
+		if(F.empty(fdMember.getStatus())) t.setStatus(1);
 		fdMemberDao.save(t);
+		fdMember.setId(t.getId());
 	}
 
 	@Override
@@ -198,6 +198,52 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			}
 		}
 		return ol;
+	}
+
+	@Override
+	public boolean checkUsername(String username) {
+		if (!F.empty(username)) {
+			List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.status = 1 and t.username='" + username + "'", 1, 1);
+			if (CollectionUtils.isEmpty(l)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public FdMember get(FdMember fdMember) {
+		String whereHql = "";
+		if (fdMember != null) {
+			whereHql += " where t.status = 1 ";
+			Map<String, Object> params = new HashMap<String, Object>();
+			if (!F.empty(fdMember.getId())) {
+				whereHql += " and t.id = :id";
+				params.put("id", fdMember.getId());
+			}
+			if (!F.empty(fdMember.getUsername())) {
+				whereHql += " and t.username = :username ";
+				params.put("username", fdMember.getUsername());
+			}
+
+			if(!F.empty(fdMember.getPassword())) {
+				whereHql += " and t.password = :password ";
+				params.put("password", MD5Util.encryptPassword(fdMember.getPassword()));
+			}
+
+			if (!F.empty(fdMember.getIsAdmin())) {
+				whereHql += " and t.isAdmin = :isAdmin";
+				params.put("isAdmin", fdMember.getIsAdmin());
+			}
+
+			TfdMember t = fdMemberDao.get("from TfdMember t" + whereHql, params);
+			if (t != null && t.getId() != null) {
+				FdMember o = new FdMember();
+				BeanUtils.copyProperties(t, o);
+				return o;
+			}
+		}
+		return null;
 	}
 
 	private void fillSimpleDoctorInfo(FdMember member) {

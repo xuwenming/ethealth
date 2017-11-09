@@ -27,7 +27,7 @@ public class TokenManage {
     /**
      * 开启redis token管理
      */
-    protected boolean enableRedis = false;
+    protected boolean enableRedis = true;
 
     @Resource
     private RedisUserServiceImpl redisUserService;
@@ -71,7 +71,7 @@ public class TokenManage {
         TokenWrap token;
         if (enableRedis) {
             if (TokenManage.DEFAULT_TOKEN.equals(tokenId)) {
-                token = new TokenWrap(tokenId, DEFAULT_TOKEN, "测试超级管理员", this, 15);
+                token = new TokenWrap(tokenId, DEFAULT_TOKEN, "测试超级管理员", this, null);
 
             } else {
                 token = redisUserService.getToken(tokenId);

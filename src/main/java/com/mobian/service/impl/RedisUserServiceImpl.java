@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Service(value = "redisUserService")
 public class RedisUserServiceImpl {
     private long timeout = 60 * 30;
-    //@Resource
+    @Resource
     private RedisUtil redisUtil;
 
     public boolean setToken(TokenWrap tokenWrap) {
@@ -122,8 +122,8 @@ public class RedisUserServiceImpl {
      * @param phone
      * @param code
      */
-    public void setValidateCode(String phone, String code) {
-        redisUtil.set(Key.build(Namespace.USER_LOGIN_VALIDATE_CODE, phone), code, 60, TimeUnit.SECONDS);
+    public void setValidateCode(String phone, String code, Long timeout) {
+        redisUtil.set(Key.build(Namespace.USER_LOGIN_VALIDATE_CODE, phone), code, timeout == null ? 60 : timeout, TimeUnit.SECONDS);
     }
 
     /**

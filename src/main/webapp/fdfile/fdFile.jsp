@@ -226,7 +226,7 @@
 	<div class="easyui-layout" data-options="fit : true,border : false">
 		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
 			<form id="searchForm">
-				<table class="table table-hover table-condensed" style="display: none;">
+				<table class="table table-hover table-condensed" style="display: none;font-weight: bold">
 						<tr>	
 							<th><%=TfdFile.ALIAS_NAME%></th>	
 							<td>

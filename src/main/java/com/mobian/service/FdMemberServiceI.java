@@ -54,4 +54,8 @@ public interface FdMemberServiceI {
 	public void delete(Integer id);
 
 	List<FdMember> queryMembersByGroupId(Integer groupId);
+
+	FdMember get(FdMember fdMember);
+
+	boolean checkUsername(String username);
 }

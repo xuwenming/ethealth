@@ -34,6 +34,7 @@ public class FdMember implements java.io.Serializable {
 	private FdMemberDoctor memberDoctor;
 	private String picUrl;
 	private String groupName;
+	private String tokenId;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -222,5 +223,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public String getTokenId() {
+		return tokenId;
+	}
+
+	public void setTokenId(String tokenId) {
+		this.tokenId = tokenId;
 	}
 }

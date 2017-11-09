@@ -47,4 +47,9 @@ public class MD5Util {
 		}
 	}
 
+
+	public static String encryptPassword(String password) {
+		return md5(md5("www.cmswing.com") + md5(password) + md5("Arterli"));
+	}
+
 }

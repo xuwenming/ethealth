@@ -15,6 +15,6 @@ public abstract class Key {
      * @return
      */
     public static String build(String namespace, String key) {
-        return Application.getString(Constants.SYSTEM_PUBLISH_SETTING) + ":" + namespace + ":" + key;
+        return Application.getString(Constants.SYSTEM_PUBLISH_SETTING) + ":ethealth:" + namespace + ":" + key;
     }
 }
