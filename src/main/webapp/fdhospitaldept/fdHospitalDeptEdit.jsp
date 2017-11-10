@@ -30,50 +30,50 @@
 				}
 			}
 		});
+
+		function ProcessFile() {
+			var file = document.getElementById('iconFile').files[0];
+			if (file) {
+				var reader = new FileReader();
+				reader.onload = function ( event ) {
+					var txt = event.target.result;
+					$('.img-preview').attr('src',txt);
+				};
+			}
+			reader.readAsDataURL(file);
+		}
+		$(document).delegate('#iconFile','change',function () {
+			ProcessFile();
+		});
+		$('.img-preview').each(function(){
+			var $this = $(this);
+			$this.css('height',$this.parent().attr('height'));
+		});
 	});
 </script>
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
-		<form id="form" method="post">
-				<input type="hidden" name="id" value = "${fdHospitalDept.id}"/>
+		<form id="form" method="post" enctype="multipart/form-data">
+			<input type="hidden" name="id" value = "${fdHospitalDept.id}"/>
 			<table class="table table-hover table-condensed">
-				<tr>	
-					<th><%=TfdHospitalDept.ALIAS_HOSPITAL_ID%></th>	
-					<td>
-											<input class="span2" name="hospitalId" type="text" value="${fdHospitalDept.hospitalId}"/>
-					</td>							
-					<th><%=TfdHospitalDept.ALIAS_NAME%></th>	
-					<td>
-											<input class="span2" name="name" type="text" value="${fdHospitalDept.name}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdHospitalDept.ALIAS_CREATE_BY%></th>	
-					<td>
-											<input class="span2" name="createBy" type="text" value="${fdHospitalDept.createBy}"/>
-					</td>							
-					<th><%=TfdHospitalDept.ALIAS_CREATE_TIME%></th>	
-					<td>
-											<input class="span2" name="createTime" type="text" value="${fdHospitalDept.createTime}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdHospitalDept.ALIAS_UPDATE_BY%></th>	
-					<td>
-											<input class="span2" name="updateBy" type="text" value="${fdHospitalDept.updateBy}"/>
-					</td>							
-					<th><%=TfdHospitalDept.ALIAS_UPDATE_TIME%></th>	
-					<td>
-											<input class="span2" name="updateTime" type="text" value="${fdHospitalDept.updateTime}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdHospitalDept.ALIAS_STATUS%></th>	
-					<td>
-											<input class="span2" name="status" type="text" value="${fdHospitalDept.status}"/>
-					</td>							
-			</tr>	
-			</table>				
+				<tr>
+					<th><%=TfdHospitalDept.ALIAS_NAME%></th>
+					<td colspan="3">
+						<input class="span2" name="name" type="text" value="${fdHospitalDept.name}"/>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4" height="155">
+						<img class="img-preview" src="${fdHospitalDept.icon}"/>
+					</td>
+				</tr>
+				<tr>
+					<th>图标</th>
+					<td colspan="3">
+						<input type="file" id="iconFile" name="iconFile">
+					</td>
+				</tr>
+			</table>
 		</form>
 	</div>
 </div>

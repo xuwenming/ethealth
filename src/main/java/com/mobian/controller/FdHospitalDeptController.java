@@ -18,9 +18,11 @@ import com.mobian.service.FdHospitalDeptServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * FdHospitalDept管理控制器
@@ -31,6 +33,8 @@ import com.alibaba.fastjson.JSON;
 @Controller
 @RequestMapping("/fdHospitalDeptController")
 public class FdHospitalDeptController extends BaseController {
+
+	public static final String HOSPITAL_DEPT = "hospitalDept";
 
 	@Autowired
 	private FdHospitalDeptServiceI fdHospitalDeptService;
@@ -96,8 +100,9 @@ public class FdHospitalDeptController extends BaseController {
 	 */
 	@RequestMapping("/add")
 	@ResponseBody
-	public Json add(FdHospitalDept fdHospitalDept) {
-		Json j = new Json();		
+	public Json add(FdHospitalDept fdHospitalDept, @RequestParam(required = false) MultipartFile iconFile) {
+		Json j = new Json();
+		fdHospitalDept.setIcon(uploadFile(HOSPITAL_DEPT, iconFile));
 		fdHospitalDeptService.add(fdHospitalDept);
 		j.setSuccess(true);
 		j.setMsg("添加成功！");		
@@ -136,8 +141,9 @@ public class FdHospitalDeptController extends BaseController {
 	 */
 	@RequestMapping("/edit")
 	@ResponseBody
-	public Json edit(FdHospitalDept fdHospitalDept) {
-		Json j = new Json();		
+	public Json edit(FdHospitalDept fdHospitalDept, @RequestParam MultipartFile iconFile) {
+		Json j = new Json();
+		fdHospitalDept.setIcon(uploadFile(HOSPITAL_DEPT, iconFile));
 		fdHospitalDeptService.edit(fdHospitalDept);
 		j.setSuccess(true);
 		j.setMsg("编辑成功！");		

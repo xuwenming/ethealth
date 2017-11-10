@@ -42,6 +42,10 @@ public class TfdHospitalDept implements java.io.Serializable{
 	private java.lang.Integer hospitalId;
 	//@Length(max=100)
 	private java.lang.String name;
+	//@Length(max=255)
+	private java.lang.String icon;
+	//
+	private java.lang.Integer pid;
 	//
 	private java.lang.Integer createBy;
 	//
@@ -89,6 +93,24 @@ public class TfdHospitalDept implements java.io.Serializable{
 	
 	public void setName(java.lang.String name) {
 		this.name = name;
+	}
+
+	@Column(name = "icon", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
+	public java.lang.String getIcon() {
+		return this.icon;
+	}
+
+	public void setIcon(java.lang.String icon) {
+		this.icon = icon;
+	}
+
+	@Column(name = "pid", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+	public java.lang.Integer getPid() {
+		return this.pid;
+	}
+
+	public void setPid(java.lang.Integer pid) {
+		this.pid = pid;
 	}
 	
 	@Column(name = "create_by", unique = false, nullable = true, insertable = true, updatable = true, length = 10)

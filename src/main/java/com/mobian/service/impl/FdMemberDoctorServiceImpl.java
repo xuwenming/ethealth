@@ -8,13 +8,16 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.dao.FdMemberDoctorDaoI;
 import com.mobian.model.TfdMemberDoctor;
-import com.mobian.pageModel.FdMemberDoctor;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.PageHelper;
-import com.mobian.service.FdMemberDoctorServiceI;
+import com.mobian.pageModel.*;
+import com.mobian.service.*;
 
+import com.mobian.util.PathUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +29,22 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	@Autowired
 	private FdMemberDoctorDaoI fdMemberDoctorDao;
 
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
+
+	@Autowired
+	private FdPictureServiceI fdPictureService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdHospitalDeptServiceI fdHospitalDeptService;
+
 	@Override
 	public DataGrid dataGrid(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
 		List<FdMemberDoctor> ol = new ArrayList<FdMemberDoctor>();
-		String hql = " from TfdMemberDoctor t ";
+		String hql = "select t from TfdMemberDoctor t, TfdMember m ";
 		DataGrid dg = dataGridQuery(hql, ph, fdMemberDoctor, fdMemberDoctorDao);
 		@SuppressWarnings("unchecked")
 		List<TfdMemberDoctor> l = dg.getRows();
@@ -48,7 +63,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	protected String whereHql(FdMemberDoctor fdMemberDoctor, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMemberDoctor != null) {
-			whereHql += " where 1=1 ";
+			whereHql += " where t.id = m.id and m.status = 1 ";
 			if (!F.empty(fdMemberDoctor.getLevel())) {
 				whereHql += " and t.level = :level";
 				params.put("level", fdMemberDoctor.getLevel());
@@ -133,6 +148,62 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		params.put("id", id);
 		fdMemberDoctorDao.executeHql("update TfdMemberDoctor t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMemberDoctorDao.delete(fdMemberDoctorDao.get(TfdMemberDoctor.class, id));
+	}
+
+	@Override
+	public DataGrid dataGridComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
+		DataGrid dg = dataGrid(fdMemberDoctor, ph);
+		List<FdMemberDoctor> ol = dg.getRows();
+		if(CollectionUtils.isNotEmpty(ol)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberDoctor o : ol) {
+				// 设置头像
+				completionService.submit(new Task<FdMemberDoctor, String>(o) {
+					@Override
+					public String call() throws Exception {
+						FdMember member = fdMemberService.get(getD().getId());
+						FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+						if(pic != null) return PathUtil.getPicPath(pic.getPath());
+						return null;
+					}
+
+					protected void set(FdMemberDoctor d, String v) {
+						if(!F.empty(v)) {
+							d.setPicUrl(v);
+						}
+					}
+				});
+
+				// 设置姓名信息
+				completionService.submit(new Task<FdMemberDoctor, FdCustomer>(o) {
+					@Override
+					public FdCustomer call() throws Exception {
+						return fdCustomerService.get(getD().getId().longValue());
+					}
+
+					protected void set(FdMemberDoctor d, FdCustomer v) {
+						d.setCustomer(v);
+					}
+				});
+
+				// 设置科室名称
+				completionService.submit(new Task<FdMemberDoctor, String>(o) {
+					@Override
+					public String call() throws Exception {
+						FdHospitalDept dept = fdHospitalDeptService.get(getD().getDepartment());
+						return dept == null ? null : dept.getName();
+					}
+
+					protected void set(FdMemberDoctor d, String v) {
+						if(!F.empty(v))
+							d.setDepartmentName(v);
+					}
+				});
+			}
+
+			completionService.sync();
+		}
+		return dg;
 	}
 
 }

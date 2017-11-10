@@ -9,7 +9,9 @@ public class FdHospitalDept implements java.io.Serializable {
 
 	private java.lang.Integer id;	
 	private java.lang.Integer hospitalId;	
-	private java.lang.String name;	
+	private java.lang.String name;
+	private java.lang.String icon;
+	private java.lang.Integer pid;
 	private java.lang.Integer createBy;	
 	private java.lang.Long createTime;	
 	private java.lang.Integer updateBy;	
@@ -41,6 +43,23 @@ public class FdHospitalDept implements java.io.Serializable {
 	public java.lang.String getName() {
 		return this.name;
 	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
 	public void setCreateBy(java.lang.Integer createBy) {
 		this.createBy = createBy;
 	}

@@ -27,6 +27,8 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String hospitalName;
 	private String departmentName;
 	private String levelName;
+	private String picUrl;
+	private FdCustomer customer;
 
 	public Integer getId() {
 		return id;
@@ -167,5 +169,21 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setLevelName(String levelName) {
 		this.levelName = levelName;
+	}
+
+	public String getPicUrl() {
+		return picUrl;
+	}
+
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
+	}
+
+	public FdCustomer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(FdCustomer customer) {
+		this.customer = customer;
 	}
 }
