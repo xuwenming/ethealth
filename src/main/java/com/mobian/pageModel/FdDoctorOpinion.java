@@ -1,7 +1,5 @@
 package com.mobian.pageModel;
 
-import java.util.Date;
-
 @SuppressWarnings("serial")
 public class FdDoctorOpinion implements java.io.Serializable {
 
@@ -22,7 +20,10 @@ public class FdDoctorOpinion implements java.io.Serializable {
 	private java.lang.String brief;	
 	private java.lang.Integer file;	
 
-	
+	private String picUrl;
+	private String fileUrl;
+	private String key;
+	private String userName;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -125,4 +126,35 @@ public class FdDoctorOpinion implements java.io.Serializable {
 		return this.file;
 	}
 
+	public String getPicUrl() {
+		return picUrl;
+	}
+
+	public void setPicUrl(String picUrl) {
+		this.picUrl = picUrl;
+	}
+
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 }

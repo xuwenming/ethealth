@@ -51,4 +51,5 @@ public interface FdBannerServiceI {
 	 */
 	public void delete(Integer id);
 
+	DataGrid dataGridComplex(FdBanner banner, PageHelper ph);
 }

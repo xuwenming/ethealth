@@ -1,30 +1,37 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.dao.FdDoctorGroupDaoI;
 import com.mobian.model.TfdDoctorGroup;
-import com.mobian.pageModel.FdDoctorGroup;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdDoctorGroup;
+import com.mobian.pageModel.FdPicture;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdDoctorGroupServiceI;
-
+import com.mobian.service.FdPictureServiceI;
+import com.mobian.util.MyBeanUtils;
+import com.mobian.util.PathUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdDoctorGroupServiceImpl extends BaseServiceImpl<FdDoctorGroup> implements FdDoctorGroupServiceI {
 
 	@Autowired
 	private FdDoctorGroupDaoI fdDoctorGroupDao;
+
+	@Autowired
+	private FdPictureServiceI fdPictureService;
 
 	@Override
 	public DataGrid dataGrid(FdDoctorGroup fdDoctorGroup, PageHelper ph) {
@@ -129,6 +136,42 @@ public class FdDoctorGroupServiceImpl extends BaseServiceImpl<FdDoctorGroup> imp
 		params.put("id", id);
 		fdDoctorGroupDao.executeHql("update TfdDoctorGroup t set t.isdeleted = 1 where t.id = :id",params);
 		//fdDoctorGroupDao.delete(fdDoctorGroupDao.get(TfdDoctorGroup.class, id));
+	}
+
+	@Override
+	public DataGrid dataGridComplex(FdDoctorGroup group, PageHelper ph) {
+
+		if(F.empty(ph.getSort())) {
+			ph.setSort("createTime");
+		}
+		if(F.empty(ph.getOrder())) {
+			ph.setOrder("desc");
+		}
+		DataGrid dg = dataGrid(group, ph);
+		List<FdDoctorGroup> doctorGroups = dg.getRows();
+		if(CollectionUtils.isNotEmpty(doctorGroups)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for (FdDoctorGroup o : doctorGroups) {
+				if(!F.empty(o.getPics()))
+					completionService.submit(new Task<FdDoctorGroup, String>(new CacheKey("fdPic", o.getPics() + ""), o) {
+						@Override
+						public String call() throws Exception {
+							FdPicture pic = fdPictureService.get(Integer.valueOf(getD().getPics()));
+							if(pic != null) return PathUtil.getPicPath(pic.getPath());
+							return null;
+						}
+
+						protected void set(FdDoctorGroup d, String v) {
+							if(!F.empty(v)) {
+								d.setPicUrl(v);
+							}
+						}
+					});
+			}
+			completionService.sync();
+		}
+
+		return dg;
 	}
 
 }

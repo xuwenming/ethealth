@@ -51,4 +51,5 @@ public interface FdMedicineScienceServiceI {
 	 */
 	public void delete(Integer id);
 
+	DataGrid dataGridComplex(FdMedicineScience medicineScience, PageHelper ph);
 }

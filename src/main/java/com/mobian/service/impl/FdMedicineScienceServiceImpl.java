@@ -1,30 +1,37 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.dao.FdMedicineScienceDaoI;
 import com.mobian.model.TfdMedicineScience;
-import com.mobian.pageModel.FdMedicineScience;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdMedicineScience;
+import com.mobian.pageModel.FdPicture;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdMedicineScienceServiceI;
-
+import com.mobian.service.FdPictureServiceI;
+import com.mobian.util.MyBeanUtils;
+import com.mobian.util.PathUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdMedicineScienceServiceImpl extends BaseServiceImpl<FdMedicineScience> implements FdMedicineScienceServiceI {
 
 	@Autowired
 	private FdMedicineScienceDaoI fdMedicineScienceDao;
+
+	@Autowired
+	private FdPictureServiceI fdPictureService;
 
 	@Override
 	public DataGrid dataGrid(FdMedicineScience fdMedicineScience, PageHelper ph) {
@@ -135,6 +142,46 @@ public class FdMedicineScienceServiceImpl extends BaseServiceImpl<FdMedicineScie
 		params.put("id", id);
 		fdMedicineScienceDao.executeHql("update TfdMedicineScience t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMedicineScienceDao.delete(fdMedicineScienceDao.get(TfdMedicineScience.class, id));
+	}
+
+	@Override
+	public DataGrid dataGridComplex(FdMedicineScience medicineScience, PageHelper ph) {
+		if(ph.getRows() == 0 || ph.getRows() > 50) {
+			ph.setRows(10);
+		}
+		if(F.empty(ph.getSort())) {
+			ph.setSort("createTime");
+		}
+		if(F.empty(ph.getOrder())) {
+			ph.setOrder("desc");
+		}
+
+		if(F.empty(medicineScience.getIsUp())) medicineScience.setIsUp(1); // 上架
+		DataGrid dg = dataGrid(medicineScience, ph);
+		List<FdMedicineScience> ol = dg.getRows();
+		if(CollectionUtils.isNotEmpty(ol)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for (FdMedicineScience o : ol) {
+				o.setContent(null); // 内容不返回，返回url
+				if(!F.empty(o.getPic()))
+					completionService.submit(new Task<FdMedicineScience, String>(new CacheKey("fdPic", o.getPic()), o) {
+						@Override
+						public String call() throws Exception {
+							FdPicture pic = fdPictureService.get(Integer.valueOf(getD().getPic()));
+							if(pic != null) return PathUtil.getPicPath(pic.getPath());
+							return null;
+						}
+
+						protected void set(FdMedicineScience d, String v) {
+							if(!F.empty(v)) {
+								d.setPicUrl(v);
+							}
+						}
+					});
+			}
+			completionService.sync();
+		}
+		return dg;
 	}
 
 }

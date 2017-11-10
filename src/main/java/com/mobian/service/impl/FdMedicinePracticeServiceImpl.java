@@ -8,13 +8,20 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.dao.FdMedicinePracticeDaoI;
 import com.mobian.model.TfdMedicinePractice;
 import com.mobian.pageModel.FdMedicinePractice;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdPicture;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdMedicinePracticeServiceI;
 
+import com.mobian.service.FdPictureServiceI;
+import com.mobian.util.PathUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +32,9 @@ public class FdMedicinePracticeServiceImpl extends BaseServiceImpl<FdMedicinePra
 
 	@Autowired
 	private FdMedicinePracticeDaoI fdMedicinePracticeDao;
+
+	@Autowired
+	private FdPictureServiceI fdPictureService;
 
 	@Override
 	public DataGrid dataGrid(FdMedicinePractice fdMedicinePractice, PageHelper ph) {
@@ -134,6 +144,45 @@ public class FdMedicinePracticeServiceImpl extends BaseServiceImpl<FdMedicinePra
 		params.put("id", id);
 		fdMedicinePracticeDao.executeHql("update TfdMedicinePractice t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMedicinePracticeDao.delete(fdMedicinePracticeDao.get(TfdMedicinePractice.class, id));
+	}
+
+	@Override
+	public DataGrid dataGridComplex(FdMedicinePractice medicinePractice, PageHelper ph) {
+		if(ph.getRows() == 0 || ph.getRows() > 50) {
+			ph.setRows(10);
+		}
+		if(F.empty(ph.getSort())) {
+			ph.setSort("createTime");
+		}
+		if(F.empty(ph.getOrder())) {
+			ph.setOrder("desc");
+		}
+		if(F.empty(medicinePractice.getIsUp())) medicinePractice.setIsUp(1); // 上架
+		DataGrid dg = dataGrid(medicinePractice, ph);
+		List<FdMedicinePractice> ol = dg.getRows();
+		if(CollectionUtils.isNotEmpty(ol)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for (FdMedicinePractice o : ol) {
+				o.setContent(null); // 内容不返回，返回url
+				if(!F.empty(o.getPic()))
+					completionService.submit(new Task<FdMedicinePractice, String>(new CacheKey("fdPic", o.getPic()), o) {
+						@Override
+						public String call() throws Exception {
+							FdPicture pic = fdPictureService.get(Integer.valueOf(getD().getPic()));
+							if(pic != null) return PathUtil.getPicPath(pic.getPath());
+							return null;
+						}
+
+						protected void set(FdMedicinePractice d, String v) {
+							if(!F.empty(v)) {
+								d.setPicUrl(v);
+							}
+						}
+					});
+			}
+			completionService.sync();
+		}
+		return dg;
 	}
 
 }

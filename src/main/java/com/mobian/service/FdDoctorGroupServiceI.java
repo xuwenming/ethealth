@@ -51,4 +51,5 @@ public interface FdDoctorGroupServiceI {
 	 */
 	public void delete(Integer id);
 
+	DataGrid dataGridComplex(FdDoctorGroup group, PageHelper ph);
 }
