@@ -3,10 +3,7 @@ package com.ethealth.front.controller;
 import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdDoctorGroupServiceI;
-import com.mobian.service.FdHospitalDeptServiceI;
-import com.mobian.service.FdMemberDoctorServiceI;
-import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +27,7 @@ public class ApiDoctorServiceController extends BaseController {
 	private FdDoctorGroupServiceI fdDoctorGroupService;
 
 	@Autowired
-	private FdMemberServiceI fdMemberService;
+	private FdHospitalServiceI fdHospitalService;
 
 	@Autowired
 	private FdHospitalDeptServiceI fdHospitalDeptService;
@@ -124,6 +121,48 @@ public class ApiDoctorServiceController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取专家详情接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取医院列表接口
+	 */
+	@RequestMapping("/hospitalList")
+	@ResponseBody
+	public Json hospitalList(FdHospital hospital, PageHelper ph) {
+		Json j = new Json();
+		try{
+			ph.setHiddenTotal(true);
+			List<FdHospital> hospitals = fdHospitalService.dataGrid(hospital, ph).getRows();
+			j.setObj(hospitals);
+			j.setSuccess(true);
+			j.setMsg("获取医院列表成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取医院列表接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取科室列表接口
+	 */
+	@RequestMapping("/departmentList")
+	@ResponseBody
+	public Json departmentList(FdHospitalDept hospitalDept, PageHelper ph) {
+		Json j = new Json();
+		try{
+			ph.setHiddenTotal(true);
+			List<FdHospitalDept> hospitals = fdHospitalDeptService.dataGrid(hospitalDept, ph).getRows();
+			j.setObj(hospitals);
+			j.setSuccess(true);
+			j.setMsg("获取医院列表成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取医院列表接口异常", e);
 		}
 
 		return j;
