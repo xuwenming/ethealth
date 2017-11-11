@@ -1,11 +1,12 @@
 package com.ethealth.front.controller;
 
-import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.*;
-import com.mobian.util.PathUtil;
+import com.mobian.service.FdDoctorGroupServiceI;
+import com.mobian.service.FdHospitalDeptServiceI;
+import com.mobian.service.FdMemberDoctorServiceI;
+import com.mobian.service.FdMemberServiceI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,6 +77,53 @@ public class ApiDoctorServiceController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取专家服务数据接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取专家列表接口
+	 */
+	@RequestMapping("/doctorDataGrid")
+	@ResponseBody
+	public Json doctorDataGrid(FdMemberDoctor doctor, PageHelper ph) {
+		Json j = new Json();
+		try{
+			ph = new PageHelper();
+			if(doctor.getIsBest() != null && doctor.getIsBest()) { // 著名专家
+				ph.setSort("sort");
+				ph.setOrder("desc");
+			} else {
+
+			}
+
+			j.setObj(fdMemberDoctorService.dataGridMoreComplex(doctor, ph));
+			j.setSuccess(true);
+			j.setMsg("获取专家列表成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取专家列表接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取专家详情接口
+	 */
+	@RequestMapping("/getDoctorDetail")
+	@ResponseBody
+	public Json getDoctorDetail(Integer id) {
+		Json j = new Json();
+		try{
+			FdMemberDoctor doctor = fdMemberDoctorService.getDetail(id);
+			j.setObj(doctor);
+			j.setSuccess(true);
+			j.setMsg("获取专家详情成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取专家详情接口异常", e);
 		}
 
 		return j;

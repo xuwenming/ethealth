@@ -52,4 +52,8 @@ public interface FdMemberDoctorServiceI {
 	public void delete(Integer id);
 
 	DataGrid dataGridComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph);
+
+	Object dataGridMoreComplex(FdMemberDoctor doctor, PageHelper ph);
+
+	FdMemberDoctor getDetail(Integer id);
 }

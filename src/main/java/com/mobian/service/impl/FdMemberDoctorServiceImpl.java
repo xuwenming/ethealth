@@ -1,27 +1,25 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
 import com.mobian.concurrent.CacheKey;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
+import com.mobian.dao.BaseDaoI;
 import com.mobian.dao.FdMemberDoctorDaoI;
 import com.mobian.model.TfdMemberDoctor;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
-
+import com.mobian.util.MyBeanUtils;
 import com.mobian.util.PathUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> implements FdMemberDoctorServiceI {
@@ -41,10 +39,16 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	@Autowired
 	private FdHospitalDeptServiceI fdHospitalDeptService;
 
+	@Autowired
+	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
+
+	@Autowired
+	private FdHospitalServiceI fdHospitalService;
+
 	@Override
 	public DataGrid dataGrid(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
 		List<FdMemberDoctor> ol = new ArrayList<FdMemberDoctor>();
-		String hql = "select t from TfdMemberDoctor t, TfdMember m ";
+		String hql = "select t from TfdMemberDoctor t, TfdMember m, TfdCustomer c, TfdHospital h, TfdHospitalDept d ";
 		DataGrid dg = dataGridQuery(hql, ph, fdMemberDoctor, fdMemberDoctorDao);
 		@SuppressWarnings("unchecked")
 		List<TfdMemberDoctor> l = dg.getRows();
@@ -58,12 +62,23 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		dg.setRows(ol);
 		return dg;
 	}
+
+	protected DataGrid dataGridQuery(String hql,PageHelper ph,FdMemberDoctor t,BaseDaoI dao){
+		DataGrid dg = new DataGrid();
+		Map<String, Object> params = new HashMap<String, Object>();
+		String where = whereHql(t, params);
+		List<TfdMemberDoctor> l = dao.find(hql  + where + orderHql(ph), params, ph.getPage(), ph.getRows());
+		if(!ph.isHiddenTotal())
+			dg.setTotal(dao.count("select count(*) " + hql.substring(hql.indexOf("from")) + where, params));
+		dg.setRows(l);
+		return dg;
+	}
 	
 
 	protected String whereHql(FdMemberDoctor fdMemberDoctor, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMemberDoctor != null) {
-			whereHql += " where t.id = m.id and m.status = 1 ";
+			whereHql += " where t.id = m.id and t.id = c.userId and t.hospital = h.id and t.department = d.id and m.status = 1 ";
 			if (!F.empty(fdMemberDoctor.getLevel())) {
 				whereHql += " and t.level = :level";
 				params.put("level", fdMemberDoctor.getLevel());
@@ -111,7 +126,11 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			if (!F.empty(fdMemberDoctor.getGroupId())) {
 				whereHql += " and t.groupId = :groupId";
 				params.put("groupId", fdMemberDoctor.getGroupId());
-			}		
+			}
+			if(!F.empty(fdMemberDoctor.getKey())) {
+				whereHql += " and (t.speciality like :key or c.realName like :key or h.hospitalName like :key or d.name like :key) ";
+				params.put("key", "%" + fdMemberDoctor.getKey() + "%");
+			}
 		}	
 		return whereHql;
 	}
@@ -152,7 +171,17 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 
 	@Override
 	public DataGrid dataGridComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
-		DataGrid dg = dataGrid(fdMemberDoctor, ph);
+
+		return dataGridComplex(fdMemberDoctor, ph, false);
+	}
+
+	@Override
+	public Object dataGridMoreComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
+		return dataGridComplex(fdMemberDoctor, ph, true);
+	}
+
+	private DataGrid dataGridComplex(FdMemberDoctor doctor, PageHelper ph, boolean isMoreComplex) {
+		DataGrid dg = dataGrid(doctor, ph);
 		List<FdMemberDoctor> ol = dg.getRows();
 		if(CollectionUtils.isNotEmpty(ol)) {
 			CompletionService completionService = CompletionFactory.initCompletion();
@@ -199,11 +228,68 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 							d.setDepartmentName(v);
 					}
 				});
+
+
+				if(isMoreComplex) {
+					// 设置医生职称
+					completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdLevel", o.getLevel() + ""), o) {
+						@Override
+						public String call() throws Exception {
+							FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(getD().getLevel());
+							return level == null ? null : level.getName();
+						}
+
+						protected void set(FdMemberDoctor d, String v) {
+							if(!F.empty(v))
+								d.setLevelName(v);
+						}
+					});
+
+					// 设置医院名称
+					completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdHospital", o.getHospital() + ""), o) {
+						@Override
+						public String call() throws Exception {
+							FdHospital hospital = fdHospitalService.get(getD().getHospital());
+							return hospital == null ? null : hospital.getHospitalName();
+						}
+
+						protected void set(FdMemberDoctor d, String v) {
+							if(!F.empty(v))
+								d.setHospitalName(v);
+						}
+					});
+
+					// TODO 设置评分 设置门诊是否可预约
+				}
 			}
 
 			completionService.sync();
 		}
 		return dg;
+
+	}
+
+
+	@Override
+	public FdMemberDoctor getDetail(Integer id) {
+		FdMemberDoctor doctor = get(id);
+
+		FdMember member = fdMemberService.get(doctor.getId());
+		FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+		if(pic != null) doctor.setPicUrl(PathUtil.getPicPath(pic.getPath()));
+
+		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
+
+		FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+		if(dept != null) doctor.setDepartmentName(dept.getName());
+
+		FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
+		if(level != null) doctor.setLevelName(level.getName());
+
+		FdHospital hospital = fdHospitalService.get(doctor.getHospital());
+		if(hospital != null) doctor.setHospitalName(hospital.getHospitalName());
+
+		return doctor;
 	}
 
 }

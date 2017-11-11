@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.listener.Application;
+
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -29,6 +31,12 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String levelName;
 	private String picUrl;
 	private FdCustomer customer;
+	private Boolean isBest; // 是否著名
+	private String key; // 关键字查询
+
+	public String getEducationName() {
+		return Application.getString(this.education);
+	}
 
 	public Integer getId() {
 		return id;
@@ -185,5 +193,21 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setCustomer(FdCustomer customer) {
 		this.customer = customer;
+	}
+
+	public Boolean getIsBest() {
+		return isBest;
+	}
+
+	public void setIsBest(Boolean isBest) {
+		this.isBest = isBest;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 }
