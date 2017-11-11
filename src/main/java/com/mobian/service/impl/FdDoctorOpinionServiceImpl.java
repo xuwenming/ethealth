@@ -208,4 +208,24 @@ public class FdDoctorOpinionServiceImpl extends BaseServiceImpl<FdDoctorOpinion>
 		return dg;
 	}
 
+	@Override
+	public FdDoctorOpinion getDetail(Integer id) {
+		FdDoctorOpinion o = get(id);
+		if(!F.empty(o.getPic())) {
+			FdPicture pic = fdPictureService.get(Integer.valueOf(o.getPic()));
+			if(pic != null) {
+				o.setPicUrl(PathUtil.getPicPath(pic.getPath()));
+			}
+		}
+
+		if(!F.empty(o.getUserId())) {
+			FdCustomer customer = fdCustomerService.get(o.getUserId().longValue());
+			if(customer != null) {
+				o.setUserName(customer.getRealName());
+			}
+		}
+
+		return o;
+	}
+
 }

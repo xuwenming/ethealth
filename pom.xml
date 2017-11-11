@@ -220,6 +220,33 @@
 			<version>1.2.5</version>
 		</dependency>
 
+		<!-- icepdf -->
+		<dependency>
+			<groupId>org.icepdf</groupId>
+			<artifactId>icepdf-core</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.icepdf</groupId>
+			<artifactId>icepdf-extra</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.icepdf</groupId>
+			<artifactId>icepdf-pro</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.icepdf</groupId>
+			<artifactId>icepdf-pro-intl</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.icepdf</groupId>
+			<artifactId>icepdf-viewer</artifactId>
+			<version>6.2.3</version>
+		</dependency>
+
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>

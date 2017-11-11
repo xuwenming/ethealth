@@ -18,7 +18,9 @@ public class FdDoctorOpinion implements java.io.Serializable {
 	private java.lang.String pic;	
 	private java.lang.String content;	
 	private java.lang.String brief;	
-	private java.lang.Integer file;	
+	private java.lang.Integer file;
+	private java.lang.Long fileCreateTime;
+	private String fileToImgs;
 
 	private String picUrl;
 	private String fileUrl;
@@ -124,6 +126,22 @@ public class FdDoctorOpinion implements java.io.Serializable {
 	
 	public java.lang.Integer getFile() {
 		return this.file;
+	}
+
+	public Long getFileCreateTime() {
+		return fileCreateTime;
+	}
+
+	public void setFileCreateTime(Long fileCreateTime) {
+		this.fileCreateTime = fileCreateTime;
+	}
+
+	public String getFileToImgs() {
+		return fileToImgs;
+	}
+
+	public void setFileToImgs(String fileToImgs) {
+		this.fileToImgs = fileToImgs;
 	}
 
 	public String getPicUrl() {

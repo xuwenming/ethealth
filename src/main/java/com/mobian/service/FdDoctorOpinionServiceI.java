@@ -52,4 +52,6 @@ public interface FdDoctorOpinionServiceI {
 	public void delete(Integer id);
 
 	DataGrid dataGridComplex(FdDoctorOpinion doctorOpinion, PageHelper ph);
+
+	FdDoctorOpinion getDetail(Integer id);
 }

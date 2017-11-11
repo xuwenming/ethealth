@@ -1,16 +1,21 @@
 package com.ethealth.front.controller;
 
+import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.FdDoctorOpinionServiceI;
+import com.mobian.service.FdFileServiceI;
 import com.mobian.service.FdMedicinePracticeServiceI;
 import com.mobian.service.FdMedicineScienceServiceI;
+import com.mobian.util.ICEPdfUtil;
+import com.mobian.util.PathUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +38,9 @@ public class ApiMedicineInformaticsController extends BaseController {
 
 	@Autowired
 	private FdDoctorOpinionServiceI fdDoctorOpinionService;
+
+	@Autowired
+	private FdFileServiceI fdFileService;
 
 	/**
 	 * 获取医学资讯接口
@@ -140,6 +148,39 @@ public class ApiMedicineInformaticsController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取专家笔谈列表接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取专家笔谈详情接口
+	 */
+	@RequestMapping("/getDoctorOpinionDetail")
+	@ResponseBody
+	public Json getDoctorOpinionDetail(Integer id) {
+		Json j = new Json();
+		try{
+			FdDoctorOpinion doctorOpinion = fdDoctorOpinionService.getDetail(id);
+
+			if(!F.empty(doctorOpinion.getFile())) {
+				FdFile file = fdFileService.get(doctorOpinion.getFile());
+				if(F.empty(doctorOpinion.getFileCreateTime())
+						|| (file != null && file.getCreateTime().longValue() != doctorOpinion.getFileCreateTime().longValue())) {
+					String fileToImgs = ICEPdfUtil.pdfToImg(PathUtil.getFilePath(file.getSavepath() + file.getSavename()), "doctorOpinion");
+
+					doctorOpinion.setFileToImgs(fileToImgs);
+					doctorOpinion.setFileCreateTime(file.getCreateTime());
+					fdDoctorOpinionService.edit(doctorOpinion);
+				}
+			}
+			j.setObj(doctorOpinion);
+			j.setSuccess(true);
+			j.setMsg("获取专家笔谈详情成功！");
+
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取专家笔谈详情接口异常", e);
 		}
 
 		return j;

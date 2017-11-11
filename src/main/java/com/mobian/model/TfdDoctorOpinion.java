@@ -70,6 +70,8 @@ public class TfdDoctorOpinion implements java.io.Serializable{
 	private java.lang.String brief;
 	//
 	private java.lang.Integer file;
+	private java.lang.Long fileCreateTime;
+	private String fileToImgs;
 	//columns END
 
 
@@ -207,8 +209,25 @@ public class TfdDoctorOpinion implements java.io.Serializable{
 	public void setFile(java.lang.Integer file) {
 		this.file = file;
 	}
-	
-	
+
+	@Column(name = "file_create_time", unique = false, nullable = true, insertable = true, updatable = true, length = 20)
+	public Long getFileCreateTime() {
+		return fileCreateTime;
+	}
+
+	public void setFileCreateTime(Long fileCreateTime) {
+		this.fileCreateTime = fileCreateTime;
+	}
+
+	@Column(name = "file_to_imgs", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+	public String getFileToImgs() {
+		return fileToImgs;
+	}
+
+	public void setFileToImgs(String fileToImgs) {
+		this.fileToImgs = fileToImgs;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

@@ -27,5 +27,10 @@ public abstract class PathUtil {
 		if(F.empty(dbPath))return null;
 		return getBathPath()+dbPath;
 	}
+
+	public static String getFilePath(String dbPath){
+		if(F.empty(dbPath))return null;
+		return getBathPath()+dbPath;
+	}
 	
 }
