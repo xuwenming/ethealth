@@ -88,12 +88,16 @@ public class TfdMember implements java.io.Serializable{
 	private java.lang.Boolean message;
 	//@Length(max=256)
 	private java.lang.String pic;
+	private java.lang.String headImage;
 	//
 	private java.lang.Integer doctorId;
 	//
 	private java.lang.Integer groupId;
 	//
 	private java.lang.Long vipEndTime;
+
+	private java.lang.String hxPassword;
+	private java.lang.Boolean hxStatus;
 	//columns END
 
 
@@ -276,7 +280,16 @@ public class TfdMember implements java.io.Serializable{
 	public void setPic(java.lang.String pic) {
 		this.pic = pic;
 	}
-	
+
+	@Column(name = "head_image", unique = false, nullable = true, insertable = true, updatable = true, length = 256)
+	public String getHeadImage() {
+		return headImage;
+	}
+
+	public void setHeadImage(String headImage) {
+		this.headImage = headImage;
+	}
+
 	@Column(name = "doctor_id", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public java.lang.Integer getDoctorId() {
 		return this.doctorId;
@@ -302,6 +315,23 @@ public class TfdMember implements java.io.Serializable{
 	
 	public void setVipEndTime(java.lang.Long vipEndTime) {
 		this.vipEndTime = vipEndTime;
+	}
+
+	@Column(name = "hx_password", unique = false, nullable = true, insertable = true, updatable = true, length = 36)
+	public String getHxPassword() {
+		return hxPassword;
+	}
+
+	public void setHxPassword(String hxPassword) {
+		this.hxPassword = hxPassword;
+	}
+	@Column(name = "hx_status", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
+	public Boolean getHxStatus() {
+		return hxStatus;
+	}
+
+	public void setHxStatus(Boolean hxStatus) {
+		this.hxStatus = hxStatus;
 	}
 	
 	

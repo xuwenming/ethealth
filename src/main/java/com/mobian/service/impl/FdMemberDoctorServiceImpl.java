@@ -140,6 +140,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		TfdMemberDoctor t = new TfdMemberDoctor();
 		BeanUtils.copyProperties(fdMemberDoctor, t);
 		//t.setId(jb.absx.UUID.uuid());
+		if(F.empty(fdMemberDoctor.getSort())) fdMemberDoctor.setSort(0);
 		fdMemberDoctorDao.save(t);
 	}
 
@@ -148,9 +149,13 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		TfdMemberDoctor t = fdMemberDoctorDao.get("from TfdMemberDoctor t  where t.id = :id", params);
-		FdMemberDoctor o = new FdMemberDoctor();
-		BeanUtils.copyProperties(t, o);
-		return o;
+		if(t != null) {
+			FdMemberDoctor o = new FdMemberDoctor();
+			BeanUtils.copyProperties(t, o);
+			return o;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -191,9 +196,13 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 					@Override
 					public String call() throws Exception {
 						FdMember member = fdMemberService.get(getD().getId());
-						FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
-						if(pic != null) return PathUtil.getPicPath(pic.getPath());
-						return null;
+						String picUrl = member.getHeadImage();
+						if(F.empty(picUrl)) {
+							FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+							if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
+						}
+
+						return picUrl;
 					}
 
 					protected void set(FdMemberDoctor d, String v) {
@@ -275,8 +284,12 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		FdMemberDoctor doctor = get(id);
 
 		FdMember member = fdMemberService.get(doctor.getId());
-		FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
-		if(pic != null) doctor.setPicUrl(PathUtil.getPicPath(pic.getPath()));
+		String picUrl = member.getHeadImage();
+		if(F.empty(picUrl)) {
+			FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+			if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
+		}
+		doctor.setPicUrl(picUrl);
 
 		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
 

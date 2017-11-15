@@ -1,7 +1,5 @@
 package com.mobian.pageModel;
 
-import java.util.Date;
-
 @SuppressWarnings("serial")
 public class FdCustomer implements java.io.Serializable {
 
@@ -15,7 +13,7 @@ public class FdCustomer implements java.io.Serializable {
 	private java.lang.Long county;	
 	private java.lang.String addr;	
 	private java.lang.String qq;	
-	private java.lang.Boolean sex;	
+	private java.lang.Integer sex;
 	private java.lang.Long birthday;	
 	private java.lang.Integer groupId;	
 	private java.lang.Integer point;	
@@ -86,13 +84,15 @@ public class FdCustomer implements java.io.Serializable {
 	public java.lang.String getQq() {
 		return this.qq;
 	}
-	public void setSex(java.lang.Boolean sex) {
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
-	
-	public java.lang.Boolean getSex() {
-		return this.sex;
-	}
+
 	public void setBirthday(java.lang.Long birthday) {
 		this.birthday = birthday;
 	}

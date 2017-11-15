@@ -3,6 +3,7 @@ package com.mobian.listener;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.pageModel.BaseData;
 import com.mobian.service.BasedataServiceI;
+import com.mobian.thirdpart.easemob.HxAccessTokenInstance;
 import com.mobian.thirdpart.wx.AccessTokenInstance;
 import com.mobian.util.FileUtil;
 import org.springframework.context.ApplicationContext;
@@ -31,6 +32,9 @@ public class Application implements ServletContextListener {
 
 		// 启动刷新微信access_token
 //		AccessTokenInstance.getInstance();
+
+		// 启动刷新环信access_token
+		HxAccessTokenInstance.getInstance();
 	}
 
 	private static void initAppVariable(){

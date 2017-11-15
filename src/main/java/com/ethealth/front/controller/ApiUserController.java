@@ -1,7 +1,9 @@
 package com.ethealth.front.controller;
 
 import com.mobian.absx.F;
+import com.mobian.absx.UUID;
 import com.mobian.controller.BaseController;
+import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.BaseData;
@@ -10,6 +12,7 @@ import com.mobian.pageModel.Json;
 import com.mobian.pageModel.SessionInfo;
 import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.impl.RedisUserServiceImpl;
+import com.mobian.thirdpart.easemob.HuanxinUtil;
 import com.mobian.thirdpart.yunpian.YunpianUtil;
 import com.mobian.util.MD5Util;
 import com.mobian.util.Util;
@@ -18,7 +21,9 @@ import com.yunpian.sdk.model.SmsSingleSend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +35,8 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 @RequestMapping("/api/member")
 public class ApiUserController extends BaseController {
+
+    public static final String HEAD_IMAGE = "mmopen";
 
     @Autowired
     private FdMemberServiceI fdMemberService;
@@ -55,6 +62,21 @@ public class ApiUserController extends BaseController {
                 if(o == null) {
                     j.setMsg("账号名或密码错误！");
                     return j;
+                }
+
+                if(!o.getHxStatus()) {
+                    String hxPass = o.getHxPassword();
+                    if(F.empty(hxPass)) {
+                        hxPass = UUID.uuid();
+                        o.setHxPassword(hxPass);
+                    }
+                    if(!F.empty(HuanxinUtil.createUser(username, hxPass))) {
+                        o.setHxStatus(true);
+                    } else {
+                        o.setHxStatus(false);
+                    }
+
+                    fdMemberService.edit(o);
                 }
 
                 String tokenId = tokenManage.buildToken(o.getId().toString(), o.getUsername(), null);
@@ -167,7 +189,14 @@ public class ApiUserController extends BaseController {
 
             if(F.empty(member.getMobile())) member.setMobile(username);
             if(F.empty(member.getIsAdmin())) member.setIsAdmin(0); // 患者
-            fdMemberService.add(member);
+            String uuid = UUID.uuid();
+            member.setHxPassword(uuid);
+            if(!F.empty(HuanxinUtil.createUser(username, uuid))) {
+                member.setHxStatus(true);
+            } else {
+                member.setHxStatus(false);
+            }
+            fdMemberService.addMember(member);
 
             String tokenId = tokenManage.buildToken(member.getId().toString(), member.getUsername(), null);
             member.setTokenId(tokenId);
@@ -245,35 +274,55 @@ public class ApiUserController extends BaseController {
     }
 
     /**
-     * 修改密码
+     * 修改、补充用户信息接口
      */
-    @RequestMapping("/updatePwd")
+    @RequestMapping("/edit")
     @ResponseBody
-    public Json updatePwd(FdMember member, String oldPass, HttpServletRequest request) {
+    public Json edit(FdMember member, HttpServletRequest request, @RequestParam(required = false) MultipartFile headImageFile) {
         Json j = new Json();
         try{
             SessionInfo s = getSessionInfo(request);
+            member.setId(Integer.valueOf(s.getId()));
 
-            FdMember m = fdMemberService.get(Integer.valueOf(s.getId()));
-            if(!MD5Util.encryptPassword(oldPass).equals(m.getPassword())) {
-                j.setMsg("旧密码不正确！");
-                return j;
-            }
+            // 如果修改了用户密码，对用户密码MD5处理
             String password = member.getPassword();
-            if(F.empty(password)) {
-                j.setMsg("密码不能为空！");
-                return j;
+            if(!F.empty(password)) {
+                member.setPassword(MD5Util.encryptPassword(password));
             }
 
-            // 对用户密码MD5处理
-            member.setPassword(MD5Util.encryptPassword(password));
-            fdMemberService.edit(member);
+            member.setHeadImage(uploadFile(HEAD_IMAGE, headImageFile));
+            fdMemberService.editMember(member);
             j.setSuccess(true);
-            j.setMsg("密码修改成功！");
-            return j;
-        }catch(Exception e){
+            j.setMsg("修改成功！");
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("修改、补充用户信息接口异常", e);
+        } catch(Exception e) {
             j.setMsg(Application.getString(EX_0001));
-            logger.error("修改密码接口异常", e);
+            logger.error("修改、补充用户信息接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 获取用户信息接口
+     */
+    @RequestMapping("/get")
+    @ResponseBody
+    public Json get(HttpServletRequest request) {
+        Json j = new Json();
+        try{
+            SessionInfo s = getSessionInfo(request);
+            j.setObj(fdMemberService.getDetail(Integer.valueOf(s.getId())));
+            j.setSuccess(true);
+            j.setMsg("获取成功！");
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("获取用户信息接口异常", e);
+        } catch(Exception e) {
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("获取用户信息接口异常", e);
         }
 
         return j;

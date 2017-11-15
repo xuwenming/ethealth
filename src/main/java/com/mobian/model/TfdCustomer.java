@@ -63,7 +63,7 @@ public class TfdCustomer implements java.io.Serializable{
 	//@Length(max=15)
 	private java.lang.String qq;
 	//
-	private java.lang.Boolean sex;
+	private java.lang.Integer sex;
 	//
 	private java.lang.Long birthday;
 	//
@@ -97,7 +97,6 @@ public class TfdCustomer implements java.io.Serializable{
 	}
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "user_id", unique = true, nullable = false, length = 19)
 	public java.lang.Long getUserId() {
 		return this.userId;
@@ -165,16 +164,16 @@ public class TfdCustomer implements java.io.Serializable{
 	public void setQq(java.lang.String qq) {
 		this.qq = qq;
 	}
-	
-	@Column(name = "sex", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
-	public java.lang.Boolean getSex() {
-		return this.sex;
+
+	@Column(name = "sex", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Integer getSex() {
+		return sex;
 	}
-	
-	public void setSex(java.lang.Boolean sex) {
+
+	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
-	
+
 	@Column(name = "birthday", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
 	public java.lang.Long getBirthday() {
 		return this.birthday;

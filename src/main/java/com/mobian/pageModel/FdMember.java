@@ -25,16 +25,24 @@ public class FdMember implements java.io.Serializable {
 	private Long amount;	
 	private Integer modelid;	
 	private java.lang.Boolean message;	
-	private java.lang.String pic;	
+	private java.lang.String pic;
+	private java.lang.String headImage;
 	private java.lang.Integer doctorId;	
 	private java.lang.Integer groupId;	
-	private java.lang.Long vipEndTime;	
+	private java.lang.Long vipEndTime;
+	private java.lang.String hxPassword;
+	private java.lang.Boolean hxStatus;
 
 	private FdCustomer customer;
 	private FdMemberDoctor memberDoctor;
 	private String picUrl;
 	private String groupName;
 	private String tokenId;
+
+	private String realName;
+	private java.lang.Integer sex;
+	private java.lang.String birthday;
+
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -193,6 +201,22 @@ public class FdMember implements java.io.Serializable {
 		return this.vipEndTime;
 	}
 
+	public String getHxPassword() {
+		return hxPassword;
+	}
+
+	public void setHxPassword(String hxPassword) {
+		this.hxPassword = hxPassword;
+	}
+
+	public Boolean getHxStatus() {
+		return hxStatus;
+	}
+
+	public void setHxStatus(Boolean hxStatus) {
+		this.hxStatus = hxStatus;
+	}
+
 	public FdCustomer getCustomer() {
 		return customer;
 	}
@@ -231,5 +255,37 @@ public class FdMember implements java.io.Serializable {
 
 	public void setTokenId(String tokenId) {
 		this.tokenId = tokenId;
+	}
+
+	public String getHeadImage() {
+		return headImage;
+	}
+
+	public void setHeadImage(String headImage) {
+		this.headImage = headImage;
+	}
+
+	public String getRealName() {
+		return realName;
+	}
+
+	public void setRealName(String realName) {
+		this.realName = realName;
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+
+	public String getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
 	}
 }

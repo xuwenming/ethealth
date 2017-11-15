@@ -58,4 +58,10 @@ public interface FdMemberServiceI {
 	FdMember get(FdMember fdMember);
 
 	boolean checkUsername(String username);
+
+	void editMember(FdMember member);
+
+	void addMember(FdMember member);
+
+	FdMember getDetail(Integer id);
 }

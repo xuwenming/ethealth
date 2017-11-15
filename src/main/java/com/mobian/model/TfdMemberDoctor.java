@@ -73,7 +73,6 @@ public class TfdMemberDoctor implements java.io.Serializable{
 	}
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, length = 10)
 	public java.lang.Integer getId() {
 		return this.id;

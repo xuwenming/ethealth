@@ -5,9 +5,7 @@ import com.mobian.dao.FdMemberDaoI;
 import com.mobian.model.TfdMember;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
-import com.mobian.util.MD5Util;
-import com.mobian.util.MyBeanUtils;
-import com.mobian.util.PathUtil;
+import com.mobian.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,6 +155,29 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	}
 
 	@Override
+	public void addMember(FdMember member) {
+		add(member);
+
+		FdCustomer customer = new FdCustomer();
+		customer.setUserId(member.getId().longValue());
+		customer.setPhone(member.getMobile());
+		fdCustomerService.add(customer);
+
+		if(member.getIsAdmin() == 2) {
+			FdMemberDoctor doctor = new FdMemberDoctor();
+			doctor.setId(member.getId());
+			fdMemberDoctorService.add(doctor);
+		}
+	}
+
+	@Override
+	public FdMember getDetail(Integer id) {
+		FdMember member = get(id);
+		fillSimpleDoctorInfo(member);
+		return member;
+	}
+
+	@Override
 	public FdMember get(Integer id) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
@@ -171,6 +192,22 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		TfdMember t = fdMemberDao.get(TfdMember.class, fdMember.getId());
 		if (t != null) {
 			MyBeanUtils.copyProperties(fdMember, t, new String[] { "id" , "addtime", "isdeleted","updatetime" },true);
+		}
+	}
+
+
+	@Override
+	public void editMember(FdMember member) {
+		this.edit(member);
+		if(!F.empty(member.getRealName()) || !F.empty(member.getSex()) || !F.empty(member.getBirthday())) {
+			FdCustomer customer = new FdCustomer();
+			customer.setUserId(member.getId().longValue());
+			if(!F.empty(member.getBirthday())) {
+				customer.setBirthday(DateUtil.parse(member.getBirthday(), Constants.DATE_FORMAT_YMD).getTime());
+			}
+			customer.setRealName(member.getRealName());
+			customer.setSex(member.getSex());
+			fdCustomerService.edit(customer);
 		}
 	}
 
@@ -247,17 +284,24 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	}
 
 	private void fillSimpleDoctorInfo(FdMember member) {
-		if(!F.empty(member.getPic())) {
-			FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
-			if(pic != null) member.setPicUrl(PathUtil.getPicPath(pic.getPath()));
+		String picUrl = member.getHeadImage();
+		if(F.empty(picUrl)) {
+			if(!F.empty(member.getPic())) {
+				FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+				if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
+			}
 		}
+		member.setPicUrl(picUrl);
+
 		member.setCustomer(fdCustomerService.get(member.getId().longValue()));
 		FdMemberDoctor doctor = fdMemberDoctorService.get(member.getId());
-		if(!F.empty(doctor.getLevel())) {
-			FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
-			doctor.setLevelName(level.getName());
+		if(doctor != null) {
+			if(!F.empty(doctor.getLevel())) {
+				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
+				doctor.setLevelName(level.getName());
+			}
+			member.setMemberDoctor(doctor);
 		}
-		member.setMemberDoctor(doctor);
 	}
 
 }

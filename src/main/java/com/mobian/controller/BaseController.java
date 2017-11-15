@@ -3,6 +3,7 @@ package com.mobian.controller;
 import com.alibaba.fastjson.JSON;
 import com.mobian.absx.F;
 import com.mobian.absx.Objectx;
+import com.mobian.exception.ServiceException;
 import com.mobian.thirdpart.oss.OSSUtil;
 import com.mobian.pageModel.*;
 import com.mobian.util.Constants;
@@ -233,6 +234,9 @@ public class BaseController extends Objectx {
 
 	protected SessionInfo getSessionInfo(HttpServletRequest request){
 		SessionInfo s = tokenManage.getSessionInfo(request);
+		if(TokenManage.DEFAULT_TOKEN.equals(s.getId()))
+			throw new ServiceException("token_expire");
+
 		return s;
 	}
 }
