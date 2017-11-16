@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.enums.EnumConstants;
+
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -20,7 +22,13 @@ public class FdDoctorTime implements java.io.Serializable {
 	private java.lang.Long updateTime;	
 	private java.lang.String status;	
 
-	
+	public String getWeekZh() {
+		return EnumConstants.WEEK.getCnName(week);
+	}
+
+	public String getTimeZh() {
+		return EnumConstants.TIME.getCnName(time);
+	}
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;

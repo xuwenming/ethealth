@@ -33,6 +33,8 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private FdCustomer customer;
 	private Boolean isBest; // 是否著名
 	private String key; // 关键字查询
+	private String groupName; // 团队名称
+	private boolean isLeader; // 是否领导
 
 	public String getEducationName() {
 		return Application.getString(this.education);
@@ -209,5 +211,21 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setKey(String key) {
 		this.key = key;
+	}
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public boolean isLeader() {
+		return isLeader;
+	}
+
+	public void setLeader(boolean isLeader) {
+		this.isLeader = isLeader;
 	}
 }

@@ -17,7 +17,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "fd_member_appointment")
 @DynamicInsert(true)
 @DynamicUpdate(true)
-public class TfdMemberAppointment implements java.io.Serializable{
+public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 	private static final long serialVersionUID = 5454155825314635342L;
 	
 	//alias
@@ -97,6 +97,8 @@ public class TfdMemberAppointment implements java.io.Serializable{
 	private java.lang.String firstConfirm;
 	//
 	private java.lang.Integer file;
+
+	private java.lang.String sourse;
 	//columns END
 
 
@@ -315,8 +317,16 @@ public class TfdMemberAppointment implements java.io.Serializable{
 	public void setFile(java.lang.Integer file) {
 		this.file = file;
 	}
-	
-	
+
+	@Column(name = "sourse", unique = false, nullable = true, insertable = true, updatable = true, length = 6)
+	public String getSourse() {
+		return sourse;
+	}
+
+	public void setSourse(String sourse) {
+		this.sourse = sourse;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

@@ -51,4 +51,5 @@ public interface FdMemberAppointmentServiceI {
 	 */
 	public void delete(Integer id);
 
+	FdMemberAppointment get(FdMemberAppointment fdMemberAppointment);
 }

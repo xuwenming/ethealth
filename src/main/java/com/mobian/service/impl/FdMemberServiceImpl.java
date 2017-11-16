@@ -11,10 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements FdMemberServiceI {
@@ -150,6 +147,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		TfdMember t = new TfdMember();
 		BeanUtils.copyProperties(fdMember, t);
 		if(F.empty(fdMember.getStatus())) t.setStatus(1);
+		t.setRegTime(new Date().getTime());
 		fdMemberDao.save(t);
 		fdMember.setId(t.getId());
 	}

@@ -38,9 +38,9 @@ public class BaseDaoImpl<T> implements BaseDaoI<T> {
 		if (o != null) {
 			if(o instanceof IEntity){
 				IEntity entity = (IEntity) o;
-				if(entity.getAddtime() == null)
-					entity.setAddtime(new Date());
-					entity.setUpdatetime(entity.getAddtime());
+				if(entity.getCreateTime() == null)
+					entity.setCreateTime(new Date().getTime());
+					entity.setUpdateTime(entity.getCreateTime());
 			}
 			return this.getCurrentSession().save(o);
 		}

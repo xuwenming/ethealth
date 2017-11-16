@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.enums.EnumConstants;
+
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -29,9 +31,14 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private java.lang.String refuseReason;	
 	private java.lang.String confirmTime;	
 	private java.lang.String firstConfirm;	
-	private java.lang.Integer file;	
+	private java.lang.Integer file;
+	private java.lang.String sourse;
 
-	
+	private FdMemberDoctor doctor;
+
+	public String getTimeZh() {
+		return EnumConstants.TIME.getCnName(time);
+	}
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -197,4 +204,19 @@ public class FdMemberAppointment implements java.io.Serializable {
 		return this.file;
 	}
 
+	public String getSourse() {
+		return sourse;
+	}
+
+	public void setSourse(String sourse) {
+		this.sourse = sourse;
+	}
+
+	public FdMemberDoctor getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(FdMemberDoctor doctor) {
+		this.doctor = doctor;
+	}
 }

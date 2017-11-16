@@ -16,10 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> implements FdMemberDoctorServiceI {
@@ -44,6 +41,9 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 
 	@Autowired
 	private FdHospitalServiceI fdHospitalService;
+
+	@Autowired
+	private FdDoctorGroupServiceI fdDoctorGroupService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
@@ -140,7 +140,9 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		TfdMemberDoctor t = new TfdMemberDoctor();
 		BeanUtils.copyProperties(fdMemberDoctor, t);
 		//t.setId(jb.absx.UUID.uuid());
-		if(F.empty(fdMemberDoctor.getSort())) fdMemberDoctor.setSort(0);
+		if(F.empty(fdMemberDoctor.getSort())) t.setSort(0);
+		t.setCreateTime(new Date());
+		t.setUpdateTime(t.getCreateTime());
 		fdMemberDoctorDao.save(t);
 	}
 
@@ -301,6 +303,14 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 
 		FdHospital hospital = fdHospitalService.get(doctor.getHospital());
 		if(hospital != null) doctor.setHospitalName(hospital.getHospitalName());
+
+		FdDoctorGroup group = fdDoctorGroupService.get(doctor.getGroupId());
+		if(group != null) {
+			doctor.setGroupName(group.getGroupName());
+			if(!F.empty(group.getLeader()) && group.getLeader().intValue() == id.intValue()) {
+				doctor.setLeader(true);
+			}
+		}
 
 		return doctor;
 	}

@@ -1,24 +1,22 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberAppointmentDaoI;
 import com.mobian.model.TfdMemberAppointment;
-import com.mobian.pageModel.FdMemberAppointment;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdMemberAppointment;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdMemberAppointmentServiceI;
-
+import com.mobian.util.MyBeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppointment> implements FdMemberAppointmentServiceI {
@@ -48,7 +46,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 	protected String whereHql(FdMemberAppointment fdMemberAppointment, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMemberAppointment != null) {
-			whereHql += " where t.status = 1 ";
+			whereHql += " where 1 = 1 ";
 			if (!F.empty(fdMemberAppointment.getTime())) {
 				whereHql += " and t.time = :time";
 				params.put("time", fdMemberAppointment.getTime());
@@ -104,7 +102,9 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			if (!F.empty(fdMemberAppointment.getStatus())) {
 				whereHql += " and t.status = :status";
 				params.put("status", fdMemberAppointment.getStatus());
-			}		
+			} else {
+				whereHql += " and (t.sourse = 'AS02' or t.sourse = 'AS01' and t.status = '1') ";
+			}
 			if (!F.empty(fdMemberAppointment.getCouponId())) {
 				whereHql += " and t.couponId = :couponId";
 				params.put("couponId", fdMemberAppointment.getCouponId());
@@ -114,8 +114,8 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 				params.put("pics", fdMemberAppointment.getPics());
 			}		
 			if (!F.empty(fdMemberAppointment.getAppointStatus())) {
-				whereHql += " and t.appointStatus = :appointStatus";
-				params.put("appointStatus", fdMemberAppointment.getAppointStatus());
+				whereHql += " and t.appointStatus in (:appointStatus)";
+				params.put("appointStatus", fdMemberAppointment.getAppointStatus().split(","));
 			}		
 			if (!F.empty(fdMemberAppointment.getAdjustment())) {
 				whereHql += " and t.adjustment = :adjustment";
@@ -147,6 +147,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 		BeanUtils.copyProperties(fdMemberAppointment, t);
 		//t.setId(jb.absx.UUID.uuid());
 		fdMemberAppointmentDao.save(t);
+		fdMemberAppointment.setId(t.getId());
 	}
 
 	@Override
@@ -156,6 +157,19 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 		TfdMemberAppointment t = fdMemberAppointmentDao.get("from TfdMemberAppointment t  where t.id = :id", params);
 		FdMemberAppointment o = new FdMemberAppointment();
 		BeanUtils.copyProperties(t, o);
+		return o;
+	}
+
+	@Override
+	public FdMemberAppointment get(FdMemberAppointment fdMemberAppointment) {
+		String hql = " from TfdMemberAppointment t ";
+		@SuppressWarnings("unchecked")
+		List<TfdMemberAppointment> l = query(hql, fdMemberAppointment, fdMemberAppointmentDao);
+		FdMemberAppointment o = null;
+		if (CollectionUtils.isNotEmpty(l)) {
+			o = new FdMemberAppointment();
+			BeanUtils.copyProperties(l.get(0), o);
+		}
 		return o;
 	}
 
