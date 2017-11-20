@@ -98,6 +98,29 @@ public class ApiUserController extends BaseController {
     }
 
     /**
+     * 退出登录接口
+     */
+    @RequestMapping("/logout")
+    @ResponseBody
+    public Json logout(HttpServletRequest request) {
+        Json j = new Json();
+        try{
+            SessionInfo s = getSessionInfo(request);
+            tokenManage.destroyTokenByMbUserId(s.getId());
+            j.setSuccess(true);
+            j.setMsg("退出成功！");
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("用户退出登录接口异常", e);
+        }catch(Exception e){
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("用户退出登录接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
      * 获取短信验证码
      */
     @RequestMapping("/getVCode")
