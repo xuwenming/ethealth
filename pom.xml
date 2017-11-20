@@ -95,6 +95,12 @@
 			<classifier>jar-with-dependencies</classifier>
 		</dependency>
 
+		<dependency>
+			<groupId>com.alipay</groupId>
+			<artifactId>alipay-sdk</artifactId>
+			<version>1.0</version>
+		</dependency>
+
 		<!-- spring-redis -->
 		<dependency>
 			<groupId>redis.clients</groupId>

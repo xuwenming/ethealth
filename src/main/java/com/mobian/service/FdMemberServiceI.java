@@ -64,4 +64,6 @@ public interface FdMemberServiceI {
 	void addMember(FdMember member);
 
 	FdMember getDetail(Integer id);
+
+	List<FdMember> getByMobiles(String mobiles);
 }

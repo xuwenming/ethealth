@@ -99,6 +99,7 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 	private java.lang.Integer file;
 
 	private java.lang.String sourse;
+	private java.lang.String appointmentNo;
 	//columns END
 
 
@@ -325,6 +326,15 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 
 	public void setSourse(String sourse) {
 		this.sourse = sourse;
+	}
+
+	@Column(name = "appointment_no", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+	public String getAppointmentNo() {
+		return appointmentNo;
+	}
+
+	public void setAppointmentNo(String appointmentNo) {
+		this.appointmentNo = appointmentNo;
 	}
 
 	/*

@@ -176,6 +176,23 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	}
 
 	@Override
+	public List<FdMember> getByMobiles(String mobiles) {
+		List<FdMember> ol = new ArrayList<FdMember>();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("mobiles", mobiles.split(","));
+		List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.mobile in (:mobiles) ", params);
+		if(CollectionUtils.isNotEmpty(l)) {
+			for(TfdMember t : l) {
+				FdMember o = new FdMember();
+				BeanUtils.copyProperties(t, o);
+				fillSimpleDoctorInfo(o);
+				ol.add(o);
+			}
+		}
+		return ol;
+	}
+
+	@Override
 	public FdMember get(Integer id) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
@@ -238,7 +255,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Override
 	public boolean checkUsername(String username) {
 		if (!F.empty(username)) {
-			List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.status = 1 and t.username='" + username + "'", 1, 1);
+			List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.status = 1 and (t.username='" + username + "' or t.mobile='" + username + "') ", 1, 1);
 			if (CollectionUtils.isEmpty(l)) {
 				return false;
 			}
@@ -257,7 +274,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 				params.put("id", fdMember.getId());
 			}
 			if (!F.empty(fdMember.getUsername())) {
-				whereHql += " and t.username = :username ";
+				whereHql += " and (t.username = :username or t.mobile = :username) ";
 				params.put("username", fdMember.getUsername());
 			}
 

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
 * Created by guxin on 2017/4/22.
@@ -320,6 +321,25 @@ public class ApiUserController extends BaseController {
         } catch (ServiceException e) {
             j.setObj(e.getMessage());
             logger.error("获取用户信息接口异常", e);
+        } catch(Exception e) {
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("获取用户信息接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 根据环信账号获取用户信息
+     */
+    @RequestMapping("/getByHx")
+    @ResponseBody
+    public Json getByHx(String hxAccounts) {
+        Json j = new Json();
+        try{
+            j.setObj(fdMemberService.getByMobiles(hxAccounts));
+            j.setSuccess(true);
+            j.setMsg("获取成功！");
         } catch(Exception e) {
             j.setMsg(Application.getString(EX_0001));
             logger.error("获取用户信息接口异常", e);

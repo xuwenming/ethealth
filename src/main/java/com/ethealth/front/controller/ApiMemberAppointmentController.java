@@ -16,6 +16,7 @@ import com.mobian.service.FdMemberDoctorServiceI;
 import com.mobian.service.impl.CompletionFactory;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
+import com.mobian.util.Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -134,13 +136,14 @@ public class ApiMemberAppointmentController extends BaseController {
 	}
 
 	/**
-	 * 新增预约接口
+	 * 预约下单接口
 	 */
 	@RequestMapping("/add")
 	@ResponseBody
 	public Json add(FdMemberAppointment appointment, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			Map<String, Object> obj = new HashMap<String, Object>();
 			if(F.empty(appointment.getDoctorId())) {
 				j.setMsg("专家Id不能为空！");
 				return j;
@@ -155,8 +158,9 @@ public class ApiMemberAppointmentController extends BaseController {
 			exist.setDoctorId(appointment.getDoctorId());
 			exist.setStatus("0");
 			if(fdMemberAppointmentService.get(exist) != null) {
+				obj.put("appointmentNo", -1);
 				j.setMsg("您尚有未支付的预约订单，请前往我的预约支付或取消！");
-				j.setObj(-1);
+				j.setObj(obj);
 				return j;
 			}
 
@@ -172,18 +176,24 @@ public class ApiMemberAppointmentController extends BaseController {
 			appointment.setAppointTime(appointment.getAppointTime() + EnumConstants.TIME.getCnName(appointment.getTime()));
 			appointment.setSecondTime(appointment.getAppointTime());
 
+			appointment.setAppointmentNo(Util.CreateNo("Y"));
+
 			fdMemberAppointmentService.add(appointment);
 
-			j.setObj(appointment.getId());
+			obj.put("appointmentNo", appointment.getAppointmentNo());
+			double fee = Double.valueOf(Application.getString("UC001", "99"));
+			obj.put("totalFee", BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue());
+
+			j.setObj(obj);
 			j.setSuccess(true);
-			j.setMsg("新增成功！");
+			j.setMsg("下单成功！");
 
 		} catch (ServiceException e) {
 			j.setObj(e.getMessage());
-			logger.error("获取用户信息接口异常", e);
+			logger.error("预约下单接口异常", e);
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
-			logger.error("新增预约接口异常", e);
+			logger.error("预约下单接口异常", e);
 		}
 
 		return j;
@@ -234,10 +244,38 @@ public class ApiMemberAppointmentController extends BaseController {
 
 		} catch (ServiceException e) {
 			j.setObj(e.getMessage());
-			logger.error("获取我的预约成功接口异常", e);
+			logger.error("获取我的预约接口异常", e);
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
-			logger.error("获取我的预约成功接口异常", e);
+			logger.error("获取我的预约接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取预约详情
+	 */
+	@RequestMapping("/getAppointmentDetail")
+	@ResponseBody
+	public Json getAppointmentDetail(Integer id, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			if(!F.empty(s.getId())) {
+				FdMemberAppointment appointment = fdMemberAppointmentService.get(id);
+				appointment.setDoctor(fdMemberDoctorService.getDetail(appointment.getDoctorId()));
+				j.setObj(appointment);
+				j.setSuccess(true);
+				j.setMsg("获取预约详情成功！");
+			}
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取预约详情接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取预约详情接口异常", e);
 		}
 
 		return j;

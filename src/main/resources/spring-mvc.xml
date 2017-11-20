@@ -92,7 +92,8 @@
 						<value>/api/member/register</value><!-- 注册 -->
 						<value>/api/apiCommon/error</value><!-- token过期错误返回 -->
 
-						<value>/api/pay/paySuccess</value><!-- 微信支付成功回调 -->
+						<value>/api/pay/wxpay/notify</value><!-- 微信支付成功回调 -->
+						<value>/api/pay/alipay/notify</value><!-- 微信支付成功回调 -->
 					</list>
 				</property>
 				<property name="tokenManage" ref="tokenManage" />

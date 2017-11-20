@@ -33,6 +33,8 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private java.lang.String firstConfirm;	
 	private java.lang.Integer file;
 	private java.lang.String sourse;
+	private java.lang.String appointmentNo;
+
 
 	private FdMemberDoctor doctor;
 
@@ -218,5 +220,13 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setDoctor(FdMemberDoctor doctor) {
 		this.doctor = doctor;
+	}
+
+	public String getAppointmentNo() {
+		return appointmentNo;
+	}
+
+	public void setAppointmentNo(String appointmentNo) {
+		this.appointmentNo = appointmentNo;
 	}
 }

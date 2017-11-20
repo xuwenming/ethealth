@@ -2,6 +2,7 @@ package com.mobian.util;
 
 import com.mobian.absx.F;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,6 +76,11 @@ public class Util {
 			result = true;
 		}
 		return result;
+	}
+
+	public static String CreateNo(String tag) {
+		tag = tag == null ? "" : tag;
+		return tag + DateUtil.format(new Date(), "yyMMddHHmmss") + Util.CreateNonceNumstr(4);
 	}
 
 }
