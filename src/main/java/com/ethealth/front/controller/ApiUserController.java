@@ -110,8 +110,8 @@ public class ApiUserController extends BaseController {
             j.setSuccess(true);
             j.setMsg("退出成功！");
         } catch (ServiceException e) {
-            j.setObj(e.getMessage());
-            logger.error("用户退出登录接口异常", e);
+            j.setSuccess(true);
+            j.setMsg("退出成功！");
         }catch(Exception e){
             j.setMsg(Application.getString(EX_0001));
             logger.error("用户退出登录接口异常", e);
