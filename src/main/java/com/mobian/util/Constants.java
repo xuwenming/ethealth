@@ -37,6 +37,7 @@ public interface Constants {
 	/**
 	 * 日期格式yyyy-MM-dd
 	 */
+	public static final String DATE_FORMAT_YM = "yyyy-MM";
 	public static final String DATE_FORMAT_YMD = "yyyy-MM-dd";
 	public static final String DATE_FORMAT_YMDHM = "yyyy-MM-dd HH:mm";
 	public static final String DATE_FORMAT_HM = "HH:mm";

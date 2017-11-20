@@ -92,7 +92,7 @@ public class ApiMemberAppointmentController extends BaseController {
 			List<Map<String, Object>> times = new ArrayList<Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.DAY_OF_MONTH, 2); // 两天后
-			for(int i=1; i<=14; i++) {
+			for(int i=1; i<=30; i++) {
 				Map<String, Object> timeM = new HashMap<String, Object>();
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				int week = c.get(Calendar.DAY_OF_WEEK);

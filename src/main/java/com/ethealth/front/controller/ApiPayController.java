@@ -4,17 +4,23 @@ import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
+import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.listener.Application;
+import com.mobian.pageModel.FdBalanceLog;
+import com.mobian.pageModel.FdPaymentBase;
 import com.mobian.pageModel.Json;
 import com.mobian.pageModel.SessionInfo;
+import com.mobian.service.FdBalanceLogServiceI;
 import com.mobian.thirdpart.alipay.AlipayUtil;
 import com.mobian.thirdpart.wx.HttpUtil;
 import com.mobian.thirdpart.wx.PayCommonUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
 import com.mobian.thirdpart.wx.XMLUtil;
 import com.mobian.util.IpUtil;
+import com.mobian.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -23,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -35,15 +42,37 @@ import java.util.*;
 @RequestMapping("/api/pay")
 public class ApiPayController extends BaseController {
 
+	@Autowired
+	private FdBalanceLogServiceI fdBalanceLogService;
+
 	/**
 	 * 微信支付
 	 */
 	@RequestMapping("/wxpay")
 	@ResponseBody
-	public Json wxpay(HttpServletRequest request) {
+	public Json wxpay(FdPaymentBase payment, HttpServletRequest request) {
 		Json j = new Json();
 		try{
-			String requestXml = wxRequestXML("", "", 0, request);
+			SessionInfo s = getSessionInfo(request);
+
+			String orderNo, body;
+			Integer amount;
+			if(!F.empty(payment.getOrderNo())) {
+				orderNo = "";
+				body = Application.getString(WeixinUtil.BODY) + " - 订单支付";
+			} else {
+				FdBalanceLog balanceLog = new FdBalanceLog();
+				balanceLog.setUserId(Long.valueOf(s.getId()));
+				balanceLog.setBalanceNo(Util.CreateNo("Q"));
+				balanceLog.setRefType("BBT001"); // 充值
+				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100), 2).floatValue());
+				balanceLog.setStatus(true);
+				fdBalanceLogService.add(balanceLog);
+
+				orderNo = balanceLog.getBalanceNo();
+				body = Application.getString(WeixinUtil.BODY) + " - 钱包充值";
+			}
+			String requestXml = wxRequestXML(orderNo, body, payment.getPrice(), request);
 			System.out.println("~~~~~~~~~~~~微信支付接口请求参数requestXml:" + requestXml);
 			String result = HttpUtil.httpsRequest(WeixinUtil.UNIFIED_ORDER_URL, "POST", requestXml);
 			System.out.println("~~~~~~~~~~~~微信支付接口返回结果result:" + result);
@@ -144,6 +173,20 @@ public class ApiPayController extends BaseController {
 		// 对数据库的操作
 		String orderNo = map.get("out_trade_no").toString();
 		String transaction_id = map.get("transaction_id").toString(); // 微信支付订单号
+		if(orderNo.startsWith("Y")) {
+
+		} else if(orderNo.startsWith("Q")) {
+			FdBalanceLog balanceLog = new FdBalanceLog();
+			balanceLog.setBalanceNo(orderNo);
+			balanceLog.setRefId(transaction_id);
+			if (map.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
+				balanceLog.setStatus(false);
+			} else {
+				balanceLog.setNote(map.get("return_msg").toString());
+				balanceLog.setStatus(true);
+			}
+			fdBalanceLogService.updateLogAndBalance(balanceLog);
+		}
 
 
 		response.getWriter().write(PayCommonUtil.setXML("SUCCESS", ""));   //告诉微信服务器，我收到信息了，不要在调用回调action了

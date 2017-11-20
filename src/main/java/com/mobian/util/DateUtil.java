@@ -119,7 +119,41 @@ public final class DateUtil {
 	 */
 	public static Date addWeekToDate(Date date, int w) {  
 		return DateUtils.addWeeks(date, w);  
-	}	
+	}
+
+	/**
+	 * 返回 该日期的开始处
+	 * @param date
+	 * @return
+	 */
+	public static Date getDayStart(Date date){
+		if(date==null)
+			return null;
+		Calendar c=Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
+	}
+
+	/**
+	 * 返回 该日期的结束处
+	 * @param date
+	 * @return
+	 */
+	public static Date getDayEnd(Date date){
+		if(date==null)
+			return null;
+		Calendar c=Calendar.getInstance();
+		c.setTime(date);
+		c.set(Calendar.HOUR_OF_DAY, 23);
+		c.set(Calendar.MINUTE, 59);
+		c.set(Calendar.SECOND, 59);
+		c.set(Calendar.MILLISECOND, 999);
+		return c.getTime();
+	}
 	
 	/**
 	 * 根据用户生日计算年龄

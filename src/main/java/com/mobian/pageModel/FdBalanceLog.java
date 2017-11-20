@@ -1,9 +1,10 @@
 package com.mobian.pageModel;
 
-import java.util.Date;
+import com.mobian.listener.Application;
+import com.mobian.model.IEntity;
 
 @SuppressWarnings("serial")
-public class FdBalanceLog implements java.io.Serializable {
+public class FdBalanceLog implements java.io.Serializable, IEntity {
 
 	private static final long serialVersionUID = 5454155825314635342L;
 
@@ -18,9 +19,14 @@ public class FdBalanceLog implements java.io.Serializable {
 	private java.lang.Float amount;	
 	private java.lang.Float amountLog;	
 	private java.lang.String note;	
-	private java.lang.Boolean status;	
+	private java.lang.Boolean status;
 
-	
+	private java.lang.Long createTimeStart;
+	private java.lang.Long createTimeEnd;
+
+	public String getRefTypeZh() {
+		return Application.getString(refType);
+	}
 
 	public void setId(java.lang.Long value) {
 		this.id = value;
@@ -109,4 +115,19 @@ public class FdBalanceLog implements java.io.Serializable {
 		return this.status;
 	}
 
+	public Long getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(Long createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public Long getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(Long createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
 }

@@ -9,12 +9,16 @@ import java.util.UUID;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdBalanceLogDaoI;
+import com.mobian.dao.FdCustomerDaoI;
+import com.mobian.exception.ServiceException;
 import com.mobian.model.TfdBalanceLog;
 import com.mobian.pageModel.FdBalanceLog;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdCustomer;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdBalanceLogServiceI;
 
+import com.mobian.service.FdCustomerServiceI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,12 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 
 	@Autowired
 	private FdBalanceLogDaoI fdBalanceLogDao;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
+
+	@Autowired
+	private FdCustomerDaoI fdCustomerDao;
 
 	@Override
 	public DataGrid dataGrid(FdBalanceLog fdBalanceLog, PageHelper ph) {
@@ -121,6 +131,26 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 		params.put("id", id);
 		fdBalanceLogDao.executeHql("update TfdBalanceLog t set t.isdeleted = 1 where t.id = :id",params);
 		//fdBalanceLogDao.delete(fdBalanceLogDao.get(TfdBalanceLog.class, id));
+	}
+
+	@Override
+	public void updateLogAndBalance(FdBalanceLog balanceLog) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("balanceNo", balanceLog.getBalanceNo());
+		TfdBalanceLog t = fdBalanceLogDao.get("from TfdBalanceLog t  where t.balanceNo = :balanceNo", params);
+		FdCustomer customer = fdCustomerService.get(t.getUserId());
+		balanceLog.setAmountLog(t.getAmount() + customer.getBalance());
+		edit(balanceLog);
+
+		if(!balanceLog.getStatus()) {
+			if(balanceLog.getAmount() == null) {
+				throw new ServiceException("余额不允许为null");
+			}
+			int i = fdCustomerDao.executeHql("update TfdCustomer t set t.balance=t.balance+" + t.getAmount() + " where t.userId=" + t.getUserId());
+			if (i != 1) {
+				throw new ServiceException("余额更新失败");
+			}
+		}
 	}
 
 }
