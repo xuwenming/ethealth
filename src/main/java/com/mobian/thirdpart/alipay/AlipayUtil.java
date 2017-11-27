@@ -22,10 +22,10 @@ public class AlipayUtil {
     public static AlipayClient alipayClient;
 
     static {
-        APP_ID = Application.getString("AL101");
-        APP_PRIVATE_KEY = Application.getString("AL102");
-        ALIPAY_PUBLIC_KEY = Application.getString("AL103");
-        NOTIFY_URL = Application.getString("AL104");
+        APP_ID = Application.getDescString("AL101");
+        APP_PRIVATE_KEY = Application.getDescString("AL102");
+        ALIPAY_PUBLIC_KEY = Application.getDescString("AL103");
+        NOTIFY_URL = Application.getDescString("AL104");
         alipayClient = new DefaultAlipayClient(URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
     }
 }

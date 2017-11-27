@@ -102,15 +102,24 @@ public class ApiPayController extends BaseController {
 	 */
 	@RequestMapping("/alipay")
 	@ResponseBody
-	public Json alipay(HttpServletRequest request) {
+	public Json alipay(FdPaymentBase payment, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			String subject = "";
+			if(payment.getOrderNo().startsWith("Y")) {
+				subject = "医家盟 - 专家预约";
+			} else if(payment.getOrderNo().startsWith("Q")) {
+				subject = "医家盟 - 钱包充值";
+			} else if(payment.getOrderNo().startsWith("Z")){
+				subject = "医家盟 - 在线咨询";
+			}
+
 			AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
 			AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-			model.setSubject("");
-			model.setOutTradeNo("");
+			model.setSubject(subject);
+			model.setOutTradeNo(payment.getOrderNo());
 			model.setTimeoutExpress("30m");
-			model.setTotalAmount(""); // 单位元
+			model.setTotalAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100), 2).toString()); // 单位元
 			model.setProductCode("QUICK_MSECURITY_PAY");
 			alipayRequest.setBizModel(model);
 			alipayRequest.setNotifyUrl(AlipayUtil.NOTIFY_URL);

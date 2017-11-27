@@ -77,6 +77,20 @@ public class Application implements ServletContextListener {
 		val = val == null?defaultVal:val;
 		return val;
 	}
+
+	/**
+	 * 获取全局变量值
+	 * @param key
+	 * @return
+	 */
+	public static String getDescString(String key){
+		BaseData bd = (BaseData)context.getAttribute(PREFIX+key);
+		String val = null;
+		if(bd != null){
+			val = bd.getDescription();
+		}
+		return val;
+	}
 	
 	/**
 	 * 获取全局变量值

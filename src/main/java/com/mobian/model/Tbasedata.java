@@ -61,7 +61,7 @@ public class Tbasedata  implements java.io.Serializable{
 	public void setBaseType(Tbasetype baseType) {
 		this.baseType = baseType;
 	}
-	@Column(name = "description", length = 256)
+	@Column(name = "description", length = 3000)
 	public String getDescription() {
 		return description;
 	}
