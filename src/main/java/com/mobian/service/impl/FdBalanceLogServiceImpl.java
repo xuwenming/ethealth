@@ -135,21 +135,40 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 
 	@Override
 	public void updateLogAndBalance(FdBalanceLog balanceLog) {
+
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("balanceNo", balanceLog.getBalanceNo());
 		TfdBalanceLog t = fdBalanceLogDao.get("from TfdBalanceLog t  where t.balanceNo = :balanceNo", params);
 		FdCustomer customer = fdCustomerService.get(t.getUserId());
 		balanceLog.setAmountLog(t.getAmount() + customer.getBalance());
+
 		edit(balanceLog);
 
 		if(!balanceLog.getStatus()) {
-			if(balanceLog.getAmount() == null) {
+			if(t.getAmount() == null) {
 				throw new ServiceException("余额不允许为null");
 			}
 			int i = fdCustomerDao.executeHql("update TfdCustomer t set t.balance=t.balance+" + t.getAmount() + " where t.userId=" + t.getUserId());
 			if (i != 1) {
 				throw new ServiceException("余额更新失败");
 			}
+		}
+	}
+
+	@Override
+	public void addLogAndUpdateBalance(FdBalanceLog balanceLog) {
+		if(balanceLog.getAmount() == null) {
+			throw new ServiceException("余额不允许为null");
+		}
+
+		FdCustomer customer = fdCustomerService.get(balanceLog.getUserId());
+		balanceLog.setAmountLog(balanceLog.getAmount() + customer.getBalance());
+
+		add(balanceLog);
+
+		int i = fdCustomerDao.executeHql("update TfdCustomer t set t.balance=t.balance+" + balanceLog.getAmount() + " where t.userId=" + balanceLog.getUserId());
+		if (i != 1) {
+			throw new ServiceException("余额更新失败");
 		}
 	}
 

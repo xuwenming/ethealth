@@ -201,7 +201,8 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setRefType(refType);
 				balanceLog.setRefId(refId.toString());
 				balanceLog.setAmount(BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).floatValue());
-				fdBalanceLogService.updateLogAndBalance(balanceLog);
+				balanceLog.setStatus(false);
+				fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 			}
 
 			// 余额支付,扣除患者余额
@@ -211,7 +212,8 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setRefType(refType);
 				balanceLog.setRefId(refId.toString());
 				balanceLog.setAmount(-BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).floatValue());
-				fdBalanceLogService.updateLogAndBalance(balanceLog);
+				balanceLog.setStatus(false);
+				fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 			}
 
 		}

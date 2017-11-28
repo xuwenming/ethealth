@@ -52,4 +52,6 @@ public interface FdBalanceLogServiceI {
 	public void delete(Integer id);
 
 	void updateLogAndBalance(FdBalanceLog balanceLog);
+
+	void addLogAndUpdateBalance(FdBalanceLog balanceLog);
 }
