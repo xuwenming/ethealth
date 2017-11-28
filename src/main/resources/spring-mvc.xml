@@ -88,6 +88,7 @@
 				<property name="excludeUrls">
 					<list>
 						<value>/api/baseData/basedata</value><!-- 基础数据 -->
+						<value>/api/baseData/basedatas</value><!-- 基础数据 -->
 						<value>/api/member/login</value><!-- 用户登录 -->
 						<value>/api/member/register</value><!-- 注册 -->
 						<value>/api/apiCommon/error</value><!-- token过期错误返回 -->

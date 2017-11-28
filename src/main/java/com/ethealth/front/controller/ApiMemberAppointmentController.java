@@ -9,10 +9,7 @@ import com.mobian.enums.EnumConstants;
 import com.mobian.exception.ServiceException;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdCustomerServiceI;
-import com.mobian.service.FdDoctorTimeServiceI;
-import com.mobian.service.FdMemberAppointmentServiceI;
-import com.mobian.service.FdMemberDoctorServiceI;
+import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
@@ -48,6 +45,9 @@ public class ApiMemberAppointmentController extends BaseController {
 
 	@Autowired
 	private FdCustomerServiceI fdCustomerService;
+
+	@Autowired
+	private FdMemberAppointmentCommentServiceI fdMemberAppointmentCommentService;
 
 	/**
 	 * 获取专家预约信息接口
@@ -279,6 +279,34 @@ public class ApiMemberAppointmentController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取预约详情接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 预约评价接口
+	 */
+	@RequestMapping("/addComment")
+	@ResponseBody
+	public Json addComment(FdMemberAppointmentComment comment, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			FdMemberAppointment appointment = fdMemberAppointmentService.get(comment.getAppointmentId());
+			comment.setDoctorId(appointment.getDoctorId());
+			comment.setUserId(Integer.valueOf(s.getId()));
+
+			fdMemberAppointmentCommentService.add(comment);
+			j.setSuccess(true);
+			j.setMsg("评价成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("预约评价接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("预约评价接口异常", e);
 		}
 
 		return j;

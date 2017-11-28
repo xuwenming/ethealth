@@ -106,6 +106,7 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 		TfdMemberAppointmentComment t = new TfdMemberAppointmentComment();
 		BeanUtils.copyProperties(fdMemberAppointmentComment, t);
 		//t.setId(jb.absx.UUID.uuid());
+		if(F.empty(fdMemberAppointmentComment.getStatus())) t.setStatus("0");
 		fdMemberAppointmentCommentDao.save(t);
 	}
 
