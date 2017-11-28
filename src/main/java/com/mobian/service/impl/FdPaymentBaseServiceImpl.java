@@ -200,7 +200,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setUserId(doctorId.longValue());
 				balanceLog.setRefType(refType);
 				balanceLog.setRefId(refId.toString());
-				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
+				balanceLog.setAmount(BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).floatValue());
 				fdBalanceLogService.updateLogAndBalance(balanceLog);
 			}
 
@@ -210,7 +210,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setUserId(userId.longValue());
 				balanceLog.setRefType(refType);
 				balanceLog.setRefId(refId.toString());
-				balanceLog.setAmount(-BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
+				balanceLog.setAmount(-BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).floatValue());
 				fdBalanceLogService.updateLogAndBalance(balanceLog);
 			}
 
