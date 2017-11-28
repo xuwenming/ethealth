@@ -13,6 +13,7 @@ public class AlipayUtil {
     public static String URL = "https://openapi.alipay.com/gateway.do";
     public static String APP_ID;
     public static String APP_PRIVATE_KEY;
+    public static String APP_PUBLIC_KEY;
     public static String ALIPAY_PUBLIC_KEY;
     public static String NOTIFY_URL;
     public static String FORMAT = "json";
@@ -24,7 +25,8 @@ public class AlipayUtil {
     static {
         APP_ID = Application.getDescString("AL101");
         APP_PRIVATE_KEY = Application.getDescString("AL102");
-        ALIPAY_PUBLIC_KEY = Application.getDescString("AL103");
+        APP_PUBLIC_KEY = Application.getDescString("AL103");
+        ALIPAY_PUBLIC_KEY = Application.getDescString("AL105");
         NOTIFY_URL = Application.getDescString("AL104");
         alipayClient = new DefaultAlipayClient(URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
     }

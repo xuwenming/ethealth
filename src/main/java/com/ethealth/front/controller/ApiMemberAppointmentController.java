@@ -157,8 +157,9 @@ public class ApiMemberAppointmentController extends BaseController {
 			exist.setUserId(Integer.valueOf(s.getId()));
 			exist.setDoctorId(appointment.getDoctorId());
 			exist.setStatus("0");
+			exist.setAppointStatus("0");
 			exist = fdMemberAppointmentService.get(exist);
-			if(exist != null && "0".equals(exist.getAppointStatus())) {
+			if(exist != null) {
 				obj.put("appointmentNo", -1);
 				j.setMsg("您尚有未支付的预约订单，请前往我的预约支付或取消！");
 				j.setObj(obj);
