@@ -297,11 +297,15 @@ public class ApiPayController extends BaseController {
 				valueStr = (i == values.length - 1) ? valueStr + values[i]
 						: valueStr + values[i] + ",";
 			}
+			//乱码解决，这段代码在出现乱码时使用。
+			//valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
 			params.put(name, valueStr);
+			System.out.println(name+"="+valueStr);
 		}
 
 		boolean verify_result = AlipaySignature.rsaCheckV1(params, AlipayUtil.ALIPAY_PUBLIC_KEY,
 				AlipayUtil.CHARSET, AlipayUtil.SIGN_TYPE);
+		System.out.println("-------------"+verify_result);
 		if(verify_result) {
 			if ("TRADE_SUCCESS".equals(params.get("trade_status"))) {
 				String orderNo = params.get("out_trade_no");
