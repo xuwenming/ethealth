@@ -2,16 +2,25 @@ package com.ethealth.front.controller;
 
 import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
-import com.mobian.pageModel.*;
-import com.mobian.service.BugServiceI;
+import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
+import com.mobian.pageModel.BaseData;
+import com.mobian.pageModel.Bug;
+import com.mobian.pageModel.Json;
+import com.mobian.pageModel.SessionInfo;
+import com.mobian.service.BugServiceI;
 import com.mobian.service.FdMedicinePracticeServiceI;
 import com.mobian.service.FdMedicineScienceServiceI;
+import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.wx.SignUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
+import com.mobian.thirdpart.yunpian.YunpianUtil;
 import com.mobian.util.HttpUtil;
 import com.mobian.util.ImageUtils;
+import com.mobian.util.Util;
+import com.yunpian.sdk.model.Result;
+import com.yunpian.sdk.model.SmsSingleSend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +57,9 @@ public class ApiCommonController extends BaseController {
 
 	@Autowired
 	private FdMedicineScienceServiceI fdMedicineScienceService;
+
+	@Autowired
+	private RedisUserServiceImpl redisUserService;
 	
 	/**
 	 * 生成html
@@ -90,7 +102,42 @@ public class ApiCommonController extends BaseController {
 				out.close();
 			}
 		}	
-	}	
+	}
+
+	/**
+	 * 获取短信验证码(钱包支付、提现)
+	 * @param request
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/getVCode")
+	public Json getVCode(HttpServletRequest request) {
+		Json j = new Json();
+		try {
+			SessionInfo s = getSessionInfo(request);
+			String code = Util.CreateNonceNumstr(6); // 生成短信验证码
+			Result<SmsSingleSend> result = YunpianUtil.single_send(s.getName(), Application.getDescString(YunpianUtil.VCODE_100).replace("#code#", code));
+			if(result.getCode() == 8 || result.getCode() == 22 || result.getCode() == 33) {
+				j.setMsg("访问过于频繁，请秒后重试！");
+				return j;
+			}
+
+			if(result.getCode() == 0) {
+				redisUserService.setValidateCode(s.getName(), code, 600L); // 10分钟
+				j.setSuccess(true);
+				j.setMsg("获取短信验证码成功！");
+				return j;
+			}
+			j.setMsg("获取短信验证码失败！");
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取短信验证码接口异常", e);
+		} catch (Exception e) {
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取短信验证码接口异常", e);
+		}
+		return j;
+	}
 	
 	/**
 	 * 

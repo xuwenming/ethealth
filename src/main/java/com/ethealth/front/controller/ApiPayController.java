@@ -8,12 +8,11 @@ import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.listener.Application;
-import com.mobian.pageModel.FdBalanceLog;
-import com.mobian.pageModel.FdPaymentBase;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.SessionInfo;
+import com.mobian.pageModel.*;
 import com.mobian.service.FdBalanceLogServiceI;
+import com.mobian.service.FdCustomerServiceI;
 import com.mobian.service.FdPaymentBaseServiceI;
+import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.alipay.AlipayUtil;
 import com.mobian.thirdpart.wx.HttpUtil;
 import com.mobian.thirdpart.wx.PayCommonUtil;
@@ -48,6 +47,12 @@ public class ApiPayController extends BaseController {
 
 	@Autowired
 	private FdPaymentBaseServiceI fdPaymentBaseService;
+
+	@Autowired
+	private RedisUserServiceImpl redisUserService;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
 
 	/**
 	 * 微信支付
@@ -201,6 +206,26 @@ public class ApiPayController extends BaseController {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
+			if(F.empty(vcode)) {
+                j.setMsg("验证码不能为空！");
+                return j;
+            }
+            String oldCode = redisUserService.getValidateCode(s.getName());
+            if(F.empty(oldCode)) {
+                j.setMsg("验证码已过期！");
+                return j;
+            }
+            if(!oldCode.equals(vcode)) {
+                j.setMsg("验证码错误！");
+                return j;
+            }
+
+			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
+			if(customer == null || BigDecimal.valueOf(customer.getBalance()).multiply(new BigDecimal(100)).intValue() < payment.getPrice()) {
+				j.setMsg("支付失败，余额不足！");
+                return j;
+			}
+
 			String remark = "";
 			if(payment.getOrderNo().startsWith("Y")) {
 				remark = "医家盟 - 专家预约";
@@ -224,7 +249,10 @@ public class ApiPayController extends BaseController {
 
 			j.success();
 			j.setMsg("余额支付成功！");
-		}catch(Exception e){
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("余额支付接口异常", e);
+		} catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("余额支付接口异常", e);
 		}

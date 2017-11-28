@@ -36,9 +36,6 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 	private FdMemberConsultationOrderServiceI fdMemberConsultationOrderService;
 
 	@Autowired
-	private FdCustomerServiceI fdCustomerService;
-
-	@Autowired
 	private FdBalanceLogServiceI fdBalanceLogService;
 
 	@Override
