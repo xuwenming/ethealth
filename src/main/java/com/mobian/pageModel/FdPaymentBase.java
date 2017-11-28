@@ -15,9 +15,9 @@ public class FdPaymentBase implements java.io.Serializable {
 	private java.lang.String remark;	
 	private Date expiryDate;			
 	private Date createDate;			
-	private Date updateDate;			
+	private Date updateDate;
 
-	
+	private java.lang.String refId;
 
 	public void setId(java.lang.String value) {
 		this.id = value;
@@ -85,4 +85,11 @@ public class FdPaymentBase implements java.io.Serializable {
 		return this.updateDate;
 	}
 
+	public String getRefId() {
+		return refId;
+	}
+
+	public void setRefId(String refId) {
+		this.refId = refId;
+	}
 }

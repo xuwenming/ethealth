@@ -174,6 +174,19 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 	}
 
 	@Override
+	public FdMemberAppointment getByAppointmentNo(String appointmentNo) {
+		FdMemberAppointment o = null;
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("appointmentNo", appointmentNo);
+		TfdMemberAppointment t = fdMemberAppointmentDao.get("from TfdMemberAppointment t  where t.appointmentNo = :appointmentNo", params);
+		if(t != null) {
+			o = new FdMemberAppointment();
+			BeanUtils.copyProperties(t, o);
+		}
+		return o;
+	}
+
+	@Override
 	public void edit(FdMemberAppointment fdMemberAppointment) {
 		TfdMemberAppointment t = fdMemberAppointmentDao.get(TfdMemberAppointment.class, fdMemberAppointment.getId());
 		if (t != null) {

@@ -2,10 +2,13 @@ package com.mobian.service.impl;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberConsultationOrderDaoI;
+import com.mobian.listener.Application;
 import com.mobian.model.TfdMemberConsultationOrder;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdMemberConsultationExpire;
 import com.mobian.pageModel.FdMemberConsultationOrder;
 import com.mobian.pageModel.PageHelper;
+import com.mobian.service.FdMemberConsultationExpireServiceI;
 import com.mobian.service.FdMemberConsultationOrderServiceI;
 import com.mobian.util.MyBeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -13,16 +16,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemberConsultationOrder> implements FdMemberConsultationOrderServiceI {
 
 	@Autowired
 	private FdMemberConsultationOrderDaoI fdMemberConsultationOrderDao;
+
+	@Autowired
+	private FdMemberConsultationExpireServiceI fdMemberConsultationExpireService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
@@ -127,6 +130,47 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			o = new FdMemberConsultationOrder();
 			BeanUtils.copyProperties(l.get(0), o);
 		}
+		return o;
+	}
+
+	@Override
+	public void updatePaySuccess(FdMemberConsultationOrder consultationOrder) {
+
+		consultationOrder.setStatus("0");
+		edit(consultationOrder);
+
+		Calendar c = Calendar.getInstance();
+		FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(consultationOrder.getUserId(), consultationOrder.getDoctorId());
+		if(expire == null) {
+			expire = new FdMemberConsultationExpire();
+			expire.setUserId(consultationOrder.getUserId());
+			expire.setDoctorId(consultationOrder.getDoctorId());
+
+			c.add(Calendar.DAY_OF_MONTH, Integer.valueOf(Application.getString("SV300", "7")));
+			expire.setExpireDate(c.getTime());
+			fdMemberConsultationExpireService.add(expire);
+		} else {
+			if(expire.getExpireDate().getTime() > new Date().getTime()) {
+				c.setTime(expire.getExpireDate());
+			}
+			c.add(Calendar.DAY_OF_MONTH, Integer.valueOf(Application.getString("SV300", "7")));
+			expire.setExpireDate(c.getTime());
+			fdMemberConsultationExpireService.edit(expire);
+		}
+
+	}
+
+	@Override
+	public FdMemberConsultationOrder getByOrderNo(String orderNo) {
+		FdMemberConsultationOrder o = null;
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("orderNo", orderNo);
+		TfdMemberConsultationOrder t = fdMemberConsultationOrderDao.get("from TfdMemberConsultationOrder t  where t.orderNo = :orderNo", params);
+		if(t != null) {
+			o = new FdMemberConsultationOrder();
+			BeanUtils.copyProperties(t, o);
+		}
+
 		return o;
 	}
 

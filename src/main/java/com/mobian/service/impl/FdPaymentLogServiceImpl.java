@@ -1,24 +1,18 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
 import com.mobian.dao.FdPaymentLogDaoI;
 import com.mobian.model.TfdPaymentLog;
-import com.mobian.pageModel.FdPaymentLog;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdPaymentLog;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdPaymentLogServiceI;
-
+import com.mobian.util.MyBeanUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.*;
 
 @Service
 public class FdPaymentLogServiceImpl extends BaseServiceImpl<FdPaymentLog> implements FdPaymentLogServiceI {
@@ -94,6 +88,7 @@ public class FdPaymentLogServiceImpl extends BaseServiceImpl<FdPaymentLog> imple
 		TfdPaymentLog t = new TfdPaymentLog();
 		BeanUtils.copyProperties(fdPaymentLog, t);
 		//t.setId(jb.absx.UUID.uuid());
+		t.setCreateDate(new Date());
 		fdPaymentLogDao.save(t);
 	}
 
@@ -121,6 +116,19 @@ public class FdPaymentLogServiceImpl extends BaseServiceImpl<FdPaymentLog> imple
 		params.put("id", id);
 		fdPaymentLogDao.executeHql("update TfdPaymentLog t set t.isdeleted = 1 where t.id = :id",params);
 		//fdPaymentLogDao.delete(fdPaymentLogDao.get(TfdPaymentLog.class, id));
+	}
+
+	@Override
+	public FdPaymentLog getByPaymentId(String paymentId) {
+		FdPaymentLog o = null;
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("paymentId", paymentId);
+		TfdPaymentLog t = fdPaymentLogDao.get("from TfdPaymentLog t  where t.paymentId = :paymentId", params);
+		if(t != null) {
+			o = new FdPaymentLog();
+			BeanUtils.copyProperties(t, o);
+		}
+		return o;
 	}
 
 }

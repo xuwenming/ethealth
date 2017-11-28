@@ -124,6 +124,10 @@ public class ApiMemberConsultationController extends BaseController {
 				return j;
 			}
 			SessionInfo s = getSessionInfo(request);
+
+			double fee = Double.valueOf(Application.getString("UC002", "99"));
+			long totalFee = BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue();
+
 			FdMemberConsultationOrder existOrder = new FdMemberConsultationOrder();
 			existOrder.setUserId(Integer.valueOf(s.getId()));
 			existOrder.setDoctorId(consultationOrder.getDoctorId());
@@ -134,16 +138,20 @@ public class ApiMemberConsultationController extends BaseController {
 				consultationOrder.setUserId(Integer.valueOf(s.getId()));
 				consultationOrder.setStatus("1");
 				consultationOrder.setOrderNo(Util.CreateNo("Z"));
+				consultationOrder.setAmount(totalFee);
 
 				fdMemberConsultationOrderService.add(consultationOrder);
 
 				obj.put("orderNo", consultationOrder.getOrderNo());
 			} else {
+				if(totalFee != existOrder.getAmount()) {
+					existOrder.setAmount(totalFee);
+					fdMemberConsultationOrderService.edit(existOrder);
+				}
 				obj.put("orderNo", existOrder.getOrderNo());
 			}
 
-			double fee = Double.valueOf(Application.getString("UC002", "99"));
-			obj.put("totalFee", BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue());
+			obj.put("totalFee", totalFee);
 
 			j.setObj(obj);
 			j.setSuccess(true);

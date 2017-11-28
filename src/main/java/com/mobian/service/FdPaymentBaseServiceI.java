@@ -51,4 +51,7 @@ public interface FdPaymentBaseServiceI {
 	 */
 	public void delete(Integer id);
 
+	FdPaymentBase getByOrderNo(String orderNo);
+
+	void addOrUpdate(FdPaymentBase payment);
 }

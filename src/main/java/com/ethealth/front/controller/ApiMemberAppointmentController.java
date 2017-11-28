@@ -157,13 +157,15 @@ public class ApiMemberAppointmentController extends BaseController {
 			exist.setUserId(Integer.valueOf(s.getId()));
 			exist.setDoctorId(appointment.getDoctorId());
 			exist.setStatus("0");
-			if(fdMemberAppointmentService.get(exist) != null) {
+			exist = fdMemberAppointmentService.get(exist);
+			if(exist != null && "0".equals(exist.getAppointStatus())) {
 				obj.put("appointmentNo", -1);
 				j.setMsg("您尚有未支付的预约订单，请前往我的预约支付或取消！");
 				j.setObj(obj);
 				return j;
 			}
-
+			double fee = Double.valueOf(Application.getString("UC001", "99"));
+			long totalFee = BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue();
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
 			appointment.setUserId(Integer.valueOf(s.getId()));
@@ -177,12 +179,12 @@ public class ApiMemberAppointmentController extends BaseController {
 			appointment.setSecondTime(appointment.getAppointTime());
 
 			appointment.setAppointmentNo(Util.CreateNo("Y"));
+			appointment.setAmount(totalFee);
 
 			fdMemberAppointmentService.add(appointment);
 
 			obj.put("appointmentNo", appointment.getAppointmentNo());
-			double fee = Double.valueOf(Application.getString("UC001", "99"));
-			obj.put("totalFee", BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue());
+			obj.put("totalFee", totalFee);
 
 			j.setObj(obj);
 			j.setSuccess(true);

@@ -52,4 +52,8 @@ public interface FdMemberConsultationOrderServiceI {
 	public void delete(Integer id);
 
 	FdMemberConsultationOrder get(FdMemberConsultationOrder consultationOrder);
+
+	void updatePaySuccess(FdMemberConsultationOrder consultationOrder);
+
+	FdMemberConsultationOrder getByOrderNo(String orderNo);
 }

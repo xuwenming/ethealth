@@ -45,6 +45,7 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	private java.lang.Integer doctorId;
 	//@Length(max=50)
 	private java.lang.String orderNo;
+	private java.lang.Long amount;
 	//
 	private java.lang.Integer createBy;
 	//
@@ -102,7 +103,16 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	public void setOrderNo(java.lang.String orderNo) {
 		this.orderNo = orderNo;
 	}
-	
+
+	@Column(name = "amount", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
+	public Long getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
+
 	@Column(name = "create_by", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public java.lang.Integer getCreateBy() {
 		return this.createBy;

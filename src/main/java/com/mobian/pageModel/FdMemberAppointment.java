@@ -34,6 +34,7 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private java.lang.Integer file;
 	private java.lang.String sourse;
 	private java.lang.String appointmentNo;
+	private java.lang.Long amount;
 
 
 	private FdMemberDoctor doctor;
@@ -228,5 +229,13 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setAppointmentNo(String appointmentNo) {
 		this.appointmentNo = appointmentNo;
+	}
+
+	public Long getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Long amount) {
+		this.amount = amount;
 	}
 }

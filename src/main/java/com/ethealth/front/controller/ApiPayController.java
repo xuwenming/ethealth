@@ -13,6 +13,7 @@ import com.mobian.pageModel.FdPaymentBase;
 import com.mobian.pageModel.Json;
 import com.mobian.pageModel.SessionInfo;
 import com.mobian.service.FdBalanceLogServiceI;
+import com.mobian.service.FdPaymentBaseServiceI;
 import com.mobian.thirdpart.alipay.AlipayUtil;
 import com.mobian.thirdpart.wx.HttpUtil;
 import com.mobian.thirdpart.wx.PayCommonUtil;
@@ -45,6 +46,9 @@ public class ApiPayController extends BaseController {
 	@Autowired
 	private FdBalanceLogServiceI fdBalanceLogService;
 
+	@Autowired
+	private FdPaymentBaseServiceI fdPaymentBaseService;
+
 	/**
 	 * 微信支付
 	 */
@@ -55,17 +59,34 @@ public class ApiPayController extends BaseController {
 		try{
 			SessionInfo s = getSessionInfo(request);
 
-			String orderNo, body;
-			Integer amount;
+			String orderNo, body = null;
 			if(!F.empty(payment.getOrderNo())) {
-				orderNo = "";
-				body = Application.getString(WeixinUtil.BODY) + " - 订单支付";
+				if(payment.getOrderNo().startsWith("Y")) {
+					body = Application.getString(WeixinUtil.BODY) + " - 专家预约";
+				} else if(payment.getOrderNo().startsWith("Z")){
+					body = Application.getString(WeixinUtil.BODY) + " - 在线咨询";
+				}
+
+				FdPaymentBase exist = fdPaymentBaseService.getByOrderNo(payment.getOrderNo());
+				if(exist != null) {
+					if("2".equals(exist.getStatus())) {
+						j.setMsg("已支付或审核中请耐心等待！");
+						j.fail();
+						return j;
+					}
+				} else {
+					payment.setType("wechat");
+					payment.setStatus("0");
+					payment.setRemark(body);
+					fdPaymentBaseService.add(payment);
+				}
+				orderNo = payment.getOrderNo();
 			} else {
 				FdBalanceLog balanceLog = new FdBalanceLog();
 				balanceLog.setUserId(Long.valueOf(s.getId()));
 				balanceLog.setBalanceNo(Util.CreateNo("Q"));
 				balanceLog.setRefType("BBT001"); // 充值
-				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100), 2).floatValue());
+				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
 				balanceLog.setStatus(true);
 				fdBalanceLogService.add(balanceLog);
 
@@ -105,21 +126,50 @@ public class ApiPayController extends BaseController {
 	public Json alipay(FdPaymentBase payment, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			SessionInfo s = getSessionInfo(request);
+
 			String subject = "";
-			if(payment.getOrderNo().startsWith("Y")) {
-				subject = "医家盟 - 专家预约";
-			} else if(payment.getOrderNo().startsWith("Q")) {
+			if(!F.empty(payment.getOrderNo())) {
+				if(payment.getOrderNo().startsWith("Y")) {
+					subject = "医家盟 - 专家预约";
+				} else if(payment.getOrderNo().startsWith("Z")){
+					subject = "医家盟 - 在线咨询";
+				}
+
+				FdPaymentBase exist = fdPaymentBaseService.getByOrderNo(payment.getOrderNo());
+				if(exist != null) {
+					if("2".equals(exist.getStatus())) {
+						j.setMsg("已支付或审核中请耐心等待！");
+						j.fail();
+						return j;
+					}
+				} else {
+					payment.setType("alipay");
+					payment.setStatus("0");
+					payment.setRemark(subject);
+					fdPaymentBaseService.add(payment);
+				}
+
+			} else {
+				FdBalanceLog balanceLog = new FdBalanceLog();
+				balanceLog.setUserId(Long.valueOf(s.getId()));
+				balanceLog.setBalanceNo(Util.CreateNo("Q"));
+				balanceLog.setRefType("BBT001"); // 充值
+				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
+				balanceLog.setStatus(true);
+				fdBalanceLogService.add(balanceLog);
+
+				payment.setOrderNo(balanceLog.getBalanceNo());
 				subject = "医家盟 - 钱包充值";
-			} else if(payment.getOrderNo().startsWith("Z")){
-				subject = "医家盟 - 在线咨询";
 			}
+
 
 			AlipayTradeAppPayRequest alipayRequest = new AlipayTradeAppPayRequest();
 			AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
 			model.setSubject(subject);
 			model.setOutTradeNo(payment.getOrderNo());
 			model.setTimeoutExpress("30m");
-			model.setTotalAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100), 2).toString()); // 单位元
+			model.setTotalAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).toString()); // 单位元
 			model.setProductCode("QUICK_MSECURITY_PAY");
 			alipayRequest.setBizModel(model);
 			alipayRequest.setNotifyUrl(AlipayUtil.NOTIFY_URL);
@@ -147,10 +197,30 @@ public class ApiPayController extends BaseController {
 	 */
 	@RequestMapping("/balancePay")
 	@ResponseBody
-	public Json balancePay(String vcode, HttpServletRequest request) {
+	public Json balancePay(FdPaymentBase payment, String vcode, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
+			String remark = "";
+			if(payment.getOrderNo().startsWith("Y")) {
+				remark = "医家盟 - 专家预约";
+			} else if(payment.getOrderNo().startsWith("Z")){
+				remark = "医家盟 - 在线咨询";
+			}
+
+			FdPaymentBase exist = fdPaymentBaseService.getByOrderNo(payment.getOrderNo());
+			if(exist != null) {
+				if("2".equals(exist.getStatus())) {
+					j.setMsg("已支付或审核中请耐心等待！");
+					j.fail();
+					return j;
+				}
+			}
+
+			payment.setType("balance");
+			payment.setStatus("0");
+			payment.setRemark(remark);
+			fdPaymentBaseService.addOrUpdate(payment);
 
 			j.success();
 			j.setMsg("余额支付成功！");
@@ -183,7 +253,17 @@ public class ApiPayController extends BaseController {
 		String orderNo = map.get("out_trade_no").toString();
 		String transaction_id = map.get("transaction_id").toString(); // 微信支付订单号
 		if(orderNo.startsWith("Y")) {
+			FdPaymentBase payment = new FdPaymentBase();
+			payment.setOrderNo(orderNo);
+			payment.setRefId(transaction_id);
+			if (map.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
+				payment.setStatus("2");
+			} else {
+				payment.setStatus("0");
+				payment.setRemark(map.get("return_msg").toString());
+			}
 
+			fdPaymentBaseService.addOrUpdate(payment);
 		} else if(orderNo.startsWith("Q")) {
 			FdBalanceLog balanceLog = new FdBalanceLog();
 			balanceLog.setBalanceNo(orderNo);
@@ -224,7 +304,21 @@ public class ApiPayController extends BaseController {
 				AlipayUtil.CHARSET, AlipayUtil.SIGN_TYPE);
 		if(verify_result) {
 			if ("TRADE_SUCCESS".equals(params.get("trade_status"))) {
-
+				String orderNo = params.get("out_trade_no");
+				String trade_no = params.get("trade_no"); // 支付宝交易凭证号
+				if(orderNo.startsWith("Q")) {
+					FdBalanceLog balanceLog = new FdBalanceLog();
+					balanceLog.setBalanceNo(orderNo);
+					balanceLog.setRefId(trade_no);
+					balanceLog.setStatus(false);
+					fdBalanceLogService.updateLogAndBalance(balanceLog);
+				} else {
+					FdPaymentBase payment = new FdPaymentBase();
+					payment.setOrderNo(orderNo);
+					payment.setRefId(trade_no);
+					payment.setStatus("2");
+					fdPaymentBaseService.addOrUpdate(payment);
+				}
 			}
 		}
 		response.getWriter().println("success");

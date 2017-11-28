@@ -15,7 +15,8 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 	private java.lang.Long createTime;	
 	private java.lang.Integer updateBy;	
 	private java.lang.Long updateTime;	
-	private java.lang.String status;	
+	private java.lang.String status;
+	private java.lang.Long amount;
 
 	
 
@@ -85,4 +86,11 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 		return this.status;
 	}
 
+	public Long getAmount() {
+		return amount;
+	}
+
+	public void setAmount(Long amount) {
+		this.amount = amount;
+	}
 }

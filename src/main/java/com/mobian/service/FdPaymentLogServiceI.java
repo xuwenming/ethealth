@@ -51,4 +51,5 @@ public interface FdPaymentLogServiceI {
 	 */
 	public void delete(Integer id);
 
+	FdPaymentLog getByPaymentId(String paymentId);
 }

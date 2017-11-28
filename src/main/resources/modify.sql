@@ -19,6 +19,8 @@ ALTER TABLE `fd_member_appointment`
   ADD COLUMN `sourse`  varchar(6) NULL DEFAULT 'AS01' COMMENT '来源{AS}' AFTER `file`;
 ALTER TABLE `fd_member_appointment`
   ADD COLUMN `appointment_no`  varchar(64) NULL COMMENT '预约订单号' AFTER `sourse`;
+ALTER TABLE `fd_member_appointment`
+  ADD COLUMN `amount`  bigint NULL COMMENT '订单金额' AFTER `appointment_no`;
 
 CREATE TABLE `fd_feedback` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -37,6 +39,7 @@ CREATE TABLE `fd_member_consultation_order` (
   `user_id` int(10) DEFAULT NULL COMMENT '病人id',
   `doctor_id` int(10) DEFAULT NULL COMMENT '医生id',
 	`order_no` varchar(50) DEFAULT NULL COMMENT '订单号',
+	`amount` bigint(20) DEFAULT NULL COMMENT '订单金额',
   `create_by` int(10) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
   `update_by` int(11) DEFAULT NULL COMMENT '修改人',
@@ -73,5 +76,24 @@ CREATE TABLE `fd_balance_log` (
   `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='余额流水表';
+
+CREATE TABLE `fd_member_appointment_comment` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `doctor_id` int(10) DEFAULT NULL COMMENT '医生id',
+  `appointment_id` int(10) DEFAULT NULL COMMENT '预约订单id',
+  `user_id` int(10) DEFAULT NULL COMMENT '评论人',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '评论时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '修改时间',
+  `status` varchar(2) DEFAULT '0' COMMENT '是否删除 1 是 0 否',
+  `effect` float DEFAULT NULL COMMENT '治疗效果',
+  `attitude` float DEFAULT NULL COMMENT '服务态度',
+  `disease` varchar(100) DEFAULT NULL COMMENT '看什么病',
+  `objective` varchar(6) DEFAULT NULL COMMENT '看病目的{OT}',
+  `objective_other` varchar(100) DEFAULT NULL COMMENT '看病目的_其他',
+  `therapy` varchar(6) DEFAULT NULL COMMENT '治疗方式{TW}',
+  `therapy_other` varchar(100) DEFAULT NULL COMMENT '治疗方式_其他',
+  `comment` varchar(300) DEFAULT NULL COMMENT '评价内容',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='预约评价表';
 
 
