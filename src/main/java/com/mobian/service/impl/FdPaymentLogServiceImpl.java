@@ -87,7 +87,7 @@ public class FdPaymentLogServiceImpl extends BaseServiceImpl<FdPaymentLog> imple
 	public void add(FdPaymentLog fdPaymentLog) {
 		TfdPaymentLog t = new TfdPaymentLog();
 		BeanUtils.copyProperties(fdPaymentLog, t);
-		//t.setId(jb.absx.UUID.uuid());
+		t.setId(com.mobian.absx.UUID.uuid());
 		t.setCreateDate(new Date());
 		fdPaymentLogDao.save(t);
 	}

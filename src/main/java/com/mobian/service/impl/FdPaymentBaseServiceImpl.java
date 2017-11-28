@@ -92,6 +92,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 	public void add(FdPaymentBase fdPaymentBase) {
 		TfdPaymentBase t = new TfdPaymentBase();
 		BeanUtils.copyProperties(fdPaymentBase, t);
+		t.setId(com.mobian.absx.UUID.uuid());
 		t.setCreateDate(new Date());
 		t.setUpdateDate(new Date());
 		fdPaymentBaseDao.save(t);
