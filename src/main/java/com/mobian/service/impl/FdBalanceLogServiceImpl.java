@@ -141,6 +141,7 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 		TfdBalanceLog t = fdBalanceLogDao.get("from TfdBalanceLog t  where t.balanceNo = :balanceNo", params);
 		FdCustomer customer = fdCustomerService.get(t.getUserId());
 		balanceLog.setAmountLog(t.getAmount() + customer.getBalance());
+		balanceLog.setId(t.getId());
 
 		edit(balanceLog);
 
