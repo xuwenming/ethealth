@@ -38,6 +38,8 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 
 	private FdMemberDoctor doctor;
+	private Boolean isCommented;
+	private FdMemberAppointmentComment comment;
 
 	public String getTimeZh() {
 		return EnumConstants.TIME.getCnName(time);
@@ -237,5 +239,21 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setAmount(Long amount) {
 		this.amount = amount;
+	}
+
+	public Boolean getIsCommented() {
+		return isCommented;
+	}
+
+	public void setIsCommented(Boolean isCommented) {
+		this.isCommented = isCommented;
+	}
+
+	public FdMemberAppointmentComment getComment() {
+		return comment;
+	}
+
+	public void setComment(FdMemberAppointmentComment comment) {
+		this.comment = comment;
 	}
 }

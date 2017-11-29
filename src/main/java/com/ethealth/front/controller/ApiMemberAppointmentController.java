@@ -165,6 +165,20 @@ public class ApiMemberAppointmentController extends BaseController {
 				j.setObj(obj);
 				return j;
 			}
+
+			exist = new FdMemberAppointment();
+			exist.setUserId(Integer.valueOf(s.getId()));
+			exist.setDoctorId(appointment.getDoctorId());
+			exist.setStatus("1");
+			exist.setAppointTime(appointment.getAppointTime() + EnumConstants.TIME.getCnName(appointment.getTime()));
+			exist = fdMemberAppointmentService.get(exist);
+			if(exist != null && !"3".equals(exist.getAppointStatus())) {
+				obj.put("appointmentNo", -2);
+				j.setMsg("您在" + exist.getAppointTime()+"已预约，请勿重复预约！");
+				j.setObj(obj);
+				return j;
+			}
+
 			double fee = Double.valueOf(Application.getString("UC001", "99"));
 			long totalFee = BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue();
 
@@ -238,6 +252,22 @@ public class ApiMemberAppointmentController extends BaseController {
 							d.setDoctor(v);
 						}
 					});
+					if("2".equals(o.getAppointStatus())) {
+						completionService.submit(new Task<FdMemberAppointment, Boolean>(o) {
+							@Override
+							public Boolean call() throws Exception {
+								FdMemberAppointmentComment comment = new FdMemberAppointmentComment();
+								comment.setAppointmentId(getD().getId());
+								comment.setUserId(getD().getUserId());
+								List<FdMemberAppointmentComment> comments = fdMemberAppointmentCommentService.query(comment);
+								return CollectionUtils.isNotEmpty(comments) ? true : false;
+							}
+
+							protected void set(FdMemberAppointment d, Boolean v) {
+								d.setIsCommented(v);
+							}
+						});
+					}
 				}
 				completionService.sync();
 			}
@@ -268,6 +298,17 @@ public class ApiMemberAppointmentController extends BaseController {
 			if(!F.empty(s.getId())) {
 				FdMemberAppointment appointment = fdMemberAppointmentService.get(id);
 				appointment.setDoctor(fdMemberDoctorService.getDetail(appointment.getDoctorId()));
+				appointment.setIsCommented(false);
+				if("2".equals(appointment.getAppointStatus())) {
+					FdMemberAppointmentComment comment = new FdMemberAppointmentComment();
+					comment.setAppointmentId(appointment.getId());
+					comment.setUserId(appointment.getUserId());
+					List<FdMemberAppointmentComment> comments = fdMemberAppointmentCommentService.query(comment);
+					if(CollectionUtils.isNotEmpty(comments)) {
+						appointment.setIsCommented(true);
+						appointment.setComment(comments.get(0));
+					}
+				}
 				j.setObj(appointment);
 				j.setSuccess(true);
 				j.setMsg("获取预约详情成功！");
@@ -285,6 +326,37 @@ public class ApiMemberAppointmentController extends BaseController {
 	}
 
 	/**
+	 * 更新预约状态
+	 */
+	@RequestMapping("/updateAppointmentStatus")
+	@ResponseBody
+	public Json updateAppointmentStatus(FdMemberAppointment appointment, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			if(!F.empty(s.getId())) {
+				FdMemberAppointment o = fdMemberAppointmentService.get(appointment.getId());
+				if("1".equals(appointment.getAppointStatus())) {
+					appointment.setConfirmTime(o.getAppointTime());
+				}
+				fdMemberAppointmentService.edit(appointment);
+
+				j.setSuccess(true);
+				j.setMsg("更新成功！");
+			}
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("更新预约状态接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("更新预约状态接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
 	 * 预约评价接口
 	 */
 	@RequestMapping("/addComment")
@@ -294,6 +366,15 @@ public class ApiMemberAppointmentController extends BaseController {
 		try{
 			SessionInfo s = getSessionInfo(request);
 			FdMemberAppointment appointment = fdMemberAppointmentService.get(comment.getAppointmentId());
+
+			FdMemberAppointmentComment exist = new FdMemberAppointmentComment();
+			exist.setAppointmentId(comment.getAppointmentId());
+			exist.setUserId(Integer.valueOf(s.getId()));
+			if(CollectionUtils.isNotEmpty(fdMemberAppointmentCommentService.query(exist))) {
+				j.setMsg("评价失败，重复评价！");
+				return j;
+			}
+
 			comment.setDoctorId(appointment.getDoctorId());
 			comment.setUserId(Integer.valueOf(s.getId()));
 

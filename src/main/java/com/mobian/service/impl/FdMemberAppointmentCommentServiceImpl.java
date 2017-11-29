@@ -1,24 +1,21 @@
 package com.mobian.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberAppointmentCommentDaoI;
 import com.mobian.model.TfdMemberAppointmentComment;
-import com.mobian.pageModel.FdMemberAppointmentComment;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdMemberAppointmentComment;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdMemberAppointmentCommentServiceI;
-
+import com.mobian.util.MyBeanUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMemberAppointmentComment> implements FdMemberAppointmentCommentServiceI {
@@ -134,6 +131,23 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 		params.put("id", id);
 		fdMemberAppointmentCommentDao.executeHql("update TfdMemberAppointmentComment t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMemberAppointmentCommentDao.delete(fdMemberAppointmentCommentDao.get(TfdMemberAppointmentComment.class, id));
+	}
+
+	@Override
+	public List<FdMemberAppointmentComment> query(FdMemberAppointmentComment comment) {
+		List<FdMemberAppointmentComment> ol = new ArrayList<FdMemberAppointmentComment>();
+		String hql = " from TfdMemberAppointmentComment t ";
+		Map<String, Object> params = new HashMap<String, Object>();
+		String where = whereHql(comment, params);
+		List<TfdMemberAppointmentComment> l = fdMemberAppointmentCommentDao.find(hql + where, params);
+		if (l != null && l.size() > 0) {
+			for (TfdMemberAppointmentComment t : l) {
+				FdMemberAppointmentComment o = new FdMemberAppointmentComment();
+				BeanUtils.copyProperties(t, o);
+				ol.add(o);
+			}
+		}
+		return ol;
 	}
 
 }

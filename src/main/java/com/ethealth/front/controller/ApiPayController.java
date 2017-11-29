@@ -159,7 +159,7 @@ public class ApiPayController extends BaseController {
 				FdBalanceLog balanceLog = new FdBalanceLog();
 				balanceLog.setUserId(Long.valueOf(s.getId()));
 				balanceLog.setBalanceNo(Util.CreateNo("Q"));
-				balanceLog.setRefType("BBT001"); // 充值
+				balanceLog.setRefType("BBT002"); // 充值
 				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
 				balanceLog.setAmountLog(0f);
 				balanceLog.setStatus(true);
