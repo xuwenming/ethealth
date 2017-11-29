@@ -161,6 +161,7 @@ public class ApiPayController extends BaseController {
 				balanceLog.setBalanceNo(Util.CreateNo("Q"));
 				balanceLog.setRefType("BBT001"); // 充值
 				balanceLog.setAmount(BigDecimal.valueOf(payment.getPrice()).divide(new BigDecimal(100)).floatValue());
+				balanceLog.setAmountLog(0f);
 				balanceLog.setStatus(true);
 				fdBalanceLogService.add(balanceLog);
 
