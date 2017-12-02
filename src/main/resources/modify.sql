@@ -22,6 +22,14 @@ ALTER TABLE `fd_member_appointment`
 ALTER TABLE `fd_member_appointment`
   ADD COLUMN `amount`  bigint NULL COMMENT '订单金额' AFTER `appointment_no`;
 
+ALTER TABLE `fd_member_doctor_sh`
+  ADD COLUMN `hospital_name`  varchar(100) NULL COMMENT '医院名称',
+  ADD COLUMN `department_name`  varchar(100) NULL COMMENT '科室名称';
+
+ALTER TABLE `fd_member`
+  DROP INDEX `username` ,
+  ADD UNIQUE INDEX `username` (`username`, `is_admin`) USING BTREE ;
+
 CREATE TABLE `fd_feedback` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `contact_way` varchar(50) DEFAULT NULL COMMENT '联系方式',

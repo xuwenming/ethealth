@@ -10,11 +10,12 @@ import java.util.UUID;
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberDoctorShDaoI;
 import com.mobian.model.TfdMemberDoctorSh;
-import com.mobian.pageModel.FdMemberDoctorSh;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdCustomerServiceI;
+import com.mobian.service.FdMemberDoctorServiceI;
 import com.mobian.service.FdMemberDoctorShServiceI;
 
+import com.mobian.service.FdMemberServiceI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,15 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Autowired
 	private FdMemberDoctorShDaoI fdMemberDoctorShDao;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
+
+	@Autowired
+	private FdMemberDoctorServiceI fdMemberDoctorService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberDoctorSh fdMemberDoctorSh, PageHelper ph) {
@@ -102,8 +112,8 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				params.put("reason", fdMemberDoctorSh.getReason());
 			}		
 			if (!F.empty(fdMemberDoctorSh.getRealName())) {
-				whereHql += " and t.realName = :realName";
-				params.put("realName", fdMemberDoctorSh.getRealName());
+				whereHql += " and t.realName like :realName";
+				params.put("realName", "%" + fdMemberDoctorSh.getRealName() + "%");
 			}		
 			if (!F.empty(fdMemberDoctorSh.getSex())) {
 				whereHql += " and t.sex = :sex";
@@ -116,7 +126,15 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			if (!F.empty(fdMemberDoctorSh.getGroupId())) {
 				whereHql += " and t.groupId = :groupId";
 				params.put("groupId", fdMemberDoctorSh.getGroupId());
-			}		
+			}
+
+			if(!F.empty(fdMemberDoctorSh.getMobile())) {
+				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status in (2,3) and m.username like :mobile)";
+				params.put("mobile", "%" + fdMemberDoctorSh.getMobile() + "%");
+			} else {
+				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status in (2,3))";
+			}
+
 		}	
 		return whereHql;
 	}
@@ -134,9 +152,13 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		TfdMemberDoctorSh t = fdMemberDoctorShDao.get("from TfdMemberDoctorSh t  where t.id = :id", params);
-		FdMemberDoctorSh o = new FdMemberDoctorSh();
-		BeanUtils.copyProperties(t, o);
-		return o;
+		if(t != null) {
+			FdMemberDoctorSh o = new FdMemberDoctorSh();
+			BeanUtils.copyProperties(t, o);
+			return o;
+		}
+
+		return null;
 	}
 
 	@Override
@@ -153,6 +175,45 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		params.put("id", id);
 		fdMemberDoctorShDao.executeHql("update TfdMemberDoctorSh t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMemberDoctorShDao.delete(fdMemberDoctorShDao.get(TfdMemberDoctorSh.class, id));
+	}
+
+	@Override
+	public void addOrUpdateMemberDoctorSh(FdMemberDoctorSh sh) {
+		FdMemberDoctorSh o = get(sh.getId());
+		if(o == null) {
+			add(sh);
+		} else {
+			edit(sh);
+		}
+
+		FdMember member = new FdMember();
+		member.setId(sh.getId());
+		member.setStatus(2);
+		fdMemberService.edit(member);
+	}
+
+	@Override
+	public void editAudit(FdMemberDoctorSh fdMemberDoctorSh) {
+		edit(fdMemberDoctorSh);
+
+		FdMember member = fdMemberService.get(fdMemberDoctorSh.getId());
+		if("2".equals(fdMemberDoctorSh.getStatus())) {
+			member.setStatus(1);
+			fdMemberService.edit(member);
+
+			FdCustomer customer = new FdCustomer();
+			customer.setUserId(member.getId().longValue());
+			customer.setPhone(member.getMobile());
+			fdCustomerService.add(customer);
+
+			FdMemberDoctor doctor = new FdMemberDoctor();
+			doctor.setId(member.getId());
+			fdMemberDoctorService.add(doctor);
+		} else {
+			member.setStatus(3);
+			fdMemberService.edit(member);
+		}
+
 	}
 
 }

@@ -53,7 +53,13 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	protected String whereHql(FdMember fdMember, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMember != null) {
-			whereHql += " where t.status = 1 ";
+			whereHql += " where 1 = 1 ";
+			if (!F.empty(fdMember.getStatus())) {
+				whereHql += " and t.status = :status";
+				params.put("status", fdMember.getStatus());
+			} else {
+				whereHql += " and t.status = 1";
+			}
 			if (!F.empty(fdMember.getUsername())) {
 				whereHql += " and t.username = :username";
 				params.put("username", fdMember.getUsername());
@@ -154,18 +160,30 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 
 	@Override
 	public void addMember(FdMember member) {
-		add(member);
-
-		FdCustomer customer = new FdCustomer();
-		customer.setUserId(member.getId().longValue());
-		customer.setPhone(member.getMobile());
-		fdCustomerService.add(customer);
-
 		if(member.getIsAdmin() == 2) {
-			FdMemberDoctor doctor = new FdMemberDoctor();
-			doctor.setId(member.getId());
-			fdMemberDoctorService.add(doctor);
+			FdMember m = new FdMember();
+			m.setUsername(member.getUsername());
+			m.setIsAdmin(member.getIsAdmin());
+			m.setStatusArr("-1");
+			m = get(m);
+			if(m == null) {
+				add(member);
+			} else {
+				member.setId(m.getId());
+			}
+		} else {
+			add(member);
+			FdCustomer customer = new FdCustomer();
+			customer.setUserId(member.getId().longValue());
+			customer.setPhone(member.getMobile());
+			fdCustomerService.add(customer);
 		}
+
+//		if(member.getIsAdmin() == 2) {
+//			FdMemberDoctor doctor = new FdMemberDoctor();
+//			doctor.setId(member.getId());
+//			fdMemberDoctorService.add(doctor);
+//		}
 	}
 
 	@Override
@@ -179,8 +197,27 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	public List<FdMember> getByMobiles(String mobiles) {
 		List<FdMember> ol = new ArrayList<FdMember>();
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("mobiles", mobiles.split(","));
-		List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.mobile in (:mobiles) ", params);
+		String patientMobiles = "", doctorMobiles = "";
+		for(String mobile : mobiles.split(",")) {
+			String[] arr = mobile.split("-");
+			if(Integer.valueOf(arr[0]) == 0) {
+				patientMobiles += F.empty(patientMobiles) ? arr[1] : "," + arr[1];
+			} else {
+				doctorMobiles += F.empty(patientMobiles) ? arr[1] : "," + arr[1];
+			}
+ 		}
+		List<TfdMember> l = new ArrayList<TfdMember>();
+		if(!F.empty(patientMobiles)) {
+			params.put("mobiles", patientMobiles.split(","));
+			params.put("isAdmin", 0);
+			l.addAll(fdMemberDao.find("from TfdMember t where t.status = 1 and t.mobile in (:mobiles) and t.isAdmin = :isAdmin ", params));
+		}
+		if(!F.empty(doctorMobiles)) {
+			params.put("mobiles", doctorMobiles.split(","));
+			params.put("isAdmin", 2);
+			l.addAll(fdMemberDao.find("from TfdMember t where t.status = 1 and t.mobile in (:mobiles) and t.isAdmin = :isAdmin ", params));
+		}
+
 		if(CollectionUtils.isNotEmpty(l)) {
 			for(TfdMember t : l) {
 				FdMember o = new FdMember();
@@ -253,9 +290,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	}
 
 	@Override
-	public boolean checkUsername(String username) {
+	public boolean checkUsername(String username, Integer isAdmin) {
 		if (!F.empty(username)) {
-			List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.status = 1 and (t.username='" + username + "' or t.mobile='" + username + "') ", 1, 1);
+			List<TfdMember> l = fdMemberDao.find("from TfdMember t where t.status <> -1 and t.isAdmin = " + isAdmin + " and (t.username='" + username + "' or t.mobile='" + username + "') ", 1, 1);
 			if (CollectionUtils.isEmpty(l)) {
 				return false;
 			}
@@ -267,8 +304,18 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	public FdMember get(FdMember fdMember) {
 		String whereHql = "";
 		if (fdMember != null) {
-			whereHql += " where t.status = 1 ";
+			whereHql += " where 1 = 1 ";
 			Map<String, Object> params = new HashMap<String, Object>();
+			if (!F.empty(fdMember.getStatusArr())) {
+				whereHql += " and t.status in (:status)";
+				Integer[] status = new Integer[fdMember.getStatusArr().split(",").length];
+				for(int i=0; i<fdMember.getStatusArr().split(",").length; i++) {
+					status[i] = Integer.valueOf(fdMember.getStatusArr().split(",")[i]);
+				}
+				params.put("status", status);
+			} else {
+				whereHql += " and t.status = 1";
+			}
 			if (!F.empty(fdMember.getId())) {
 				whereHql += " and t.id = :id";
 				params.put("id", fdMember.getId());

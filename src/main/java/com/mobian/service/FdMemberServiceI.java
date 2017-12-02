@@ -57,7 +57,7 @@ public interface FdMemberServiceI {
 
 	FdMember get(FdMember fdMember);
 
-	boolean checkUsername(String username);
+	boolean checkUsername(String username, Integer isAdmin);
 
 	void editMember(FdMember member);
 

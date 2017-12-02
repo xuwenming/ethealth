@@ -1,26 +1,26 @@
 package com.mobian.controller;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.mobian.pageModel.Colum;
-import com.mobian.pageModel.FdMemberDoctorSh;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.PageHelper;
+import com.alibaba.fastjson.JSON;
+import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdMemberDoctorLevelServiceI;
 import com.mobian.service.FdMemberDoctorShServiceI;
-
+import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.impl.CompletionFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * FdMemberDoctorSh管理控制器
@@ -34,6 +34,12 @@ public class FdMemberDoctorShController extends BaseController {
 
 	@Autowired
 	private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
 
 
 	/**
@@ -55,7 +61,42 @@ public class FdMemberDoctorShController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberDoctorSh fdMemberDoctorSh, PageHelper ph) {
-		return fdMemberDoctorShService.dataGrid(fdMemberDoctorSh, ph);
+		DataGrid dg =  fdMemberDoctorShService.dataGrid(fdMemberDoctorSh, ph);
+		List<FdMemberDoctorSh> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberDoctorSh sh : list) {
+				completionService.submit(new Task<FdMemberDoctorSh, String>(sh) {
+					@Override
+					public String call() throws Exception {
+						FdMember member = fdMemberService.get(getD().getId());
+						return member.getUsername();
+					}
+
+					protected void set(FdMemberDoctorSh d, String v) {
+						if(!F.empty(v)) {
+							d.setMobile(v);
+						}
+					}
+				});
+				completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdMemberDoctorLevel", sh.getLevel() + ""), sh) {
+					@Override
+					public String call() throws Exception {
+						FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(getD().getLevel());
+						return level.getName();
+					}
+
+					protected void set(FdMemberDoctorSh d, String v) {
+						if(!F.empty(v)) {
+							d.setLevelName(v);
+						}
+					}
+				});
+			}
+			completionService.sync();
+		}
+
+		return dg;
 	}
 	/**
 	 * 获取FdMemberDoctorSh数据表格excel
@@ -124,6 +165,10 @@ public class FdMemberDoctorShController extends BaseController {
 	@RequestMapping("/editPage")
 	public String editPage(HttpServletRequest request, Integer id) {
 		FdMemberDoctorSh fdMemberDoctorSh = fdMemberDoctorShService.get(id);
+		FdMember member = fdMemberService.get(id);
+		fdMemberDoctorSh.setMobile(member.getUsername());
+		FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(fdMemberDoctorSh.getLevel());
+		fdMemberDoctorSh.setLevelName(level.getName());
 		request.setAttribute("fdMemberDoctorSh", fdMemberDoctorSh);
 		return "/fdmemberdoctorsh/fdMemberDoctorShEdit";
 	}
@@ -138,7 +183,7 @@ public class FdMemberDoctorShController extends BaseController {
 	@ResponseBody
 	public Json edit(FdMemberDoctorSh fdMemberDoctorSh) {
 		Json j = new Json();		
-		fdMemberDoctorShService.edit(fdMemberDoctorSh);
+		fdMemberDoctorShService.editAudit(fdMemberDoctorSh);
 		j.setSuccess(true);
 		j.setMsg("编辑成功！");		
 		return j;

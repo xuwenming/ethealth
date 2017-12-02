@@ -5,13 +5,11 @@ import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
-import com.mobian.pageModel.BaseData;
-import com.mobian.pageModel.Bug;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.SessionInfo;
+import com.mobian.pageModel.*;
 import com.mobian.service.BugServiceI;
 import com.mobian.service.FdMedicinePracticeServiceI;
 import com.mobian.service.FdMedicineScienceServiceI;
+import com.mobian.service.FdMemberDoctorLevelServiceI;
 import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.wx.SignUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
@@ -60,6 +58,9 @@ public class ApiCommonController extends BaseController {
 
 	@Autowired
 	private RedisUserServiceImpl redisUserService;
+
+	@Autowired
+	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
 	
 	/**
 	 * 生成html
@@ -135,6 +136,29 @@ public class ApiCommonController extends BaseController {
 		} catch (Exception e) {
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取短信验证码接口异常", e);
+		}
+		return j;
+	}
+
+	/**
+	 * 获取职称列表
+	 * @param
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/getLevels")
+	public Json getLevels() {
+		Json j = new Json();
+		try {
+			PageHelper ph = new PageHelper();
+			ph.setHiddenTotal(true);
+			j.setObj(fdMemberDoctorLevelService.dataGrid(new FdMemberDoctorLevel(), ph).getRows());
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (Exception e) {
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取职称列表接口异常", e);
 		}
 		return j;
 	}

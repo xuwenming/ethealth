@@ -70,7 +70,12 @@ public class BaseDaoImpl<T> implements BaseDaoI<T> {
 		Query q = this.getCurrentSession().createQuery(hql);
 		if (params != null && !params.isEmpty()) {
 			for (String key : params.keySet()) {
-				q.setParameter(key, params.get(key));
+				Object value = params.get(key);
+				if(value instanceof Object[]){
+					q.setParameterList(key,(Object[])value);
+				}else {
+					q.setParameter(key,value);
+				}
 			}
 		}
 		List<T> l = q.list();

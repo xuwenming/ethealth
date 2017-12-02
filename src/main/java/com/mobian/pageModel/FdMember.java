@@ -42,6 +42,7 @@ public class FdMember implements java.io.Serializable {
 	private String realName;
 	private java.lang.Integer sex;
 	private java.lang.String birthday;
+	private String statusArr;
 
 
 	public void setId(java.lang.Integer value) {
@@ -287,5 +288,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setBirthday(String birthday) {
 		this.birthday = birthday;
+	}
+
+	public String getStatusArr() {
+		return statusArr;
+	}
+
+	public void setStatusArr(String statusArr) {
+		this.statusArr = statusArr;
 	}
 }

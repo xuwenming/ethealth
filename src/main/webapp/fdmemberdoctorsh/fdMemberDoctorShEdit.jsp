@@ -35,104 +35,48 @@
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
 		<form id="form" method="post">
-				<input type="hidden" name="id" value = "${fdMemberDoctorSh.id}"/>
+			<input type="hidden" name="id" value = "${fdMemberDoctorSh.id}"/>
 			<table class="table table-hover table-condensed">
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_LEVEL%></th>	
+				<tr>
+					<th width="10%">手机号</th>
+					<td width="40%">${fdMemberDoctorSh.mobile}</td>
+					<th width="10%">职称</th>
+					<td width="40%">
+						${fdMemberDoctorSh.levelName}
+					</td>
+				</tr>
+				<tr>
+					<th>真实姓名</th>
 					<td>
-											<input class="span2" name="level" type="text" value="${fdMemberDoctorSh.level}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_HOSPITAL%></th>	
-					<td>
-											<input class="span2" name="hospital" type="text" value="${fdMemberDoctorSh.hospital}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_DEPARTMENT%></th>	
-					<td>
-											<input class="span2" name="department" type="text" value="${fdMemberDoctorSh.department}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_EDUCATION%></th>	
-					<td>
-											<input class="span2" name="education" type="text" value="${fdMemberDoctorSh.education}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_CONSULTING_HOUR%></th>	
-					<td>
-											<input class="span2" name="consultingHour" type="text" value="${fdMemberDoctorSh.consultingHour}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_SPECIAL_HOUR%></th>	
-					<td>
-											<input class="span2" name="specialHour" type="text" value="${fdMemberDoctorSh.specialHour}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_SPECIALITY%></th>	
-					<td>
-											<input class="span2" name="speciality" type="text" value="${fdMemberDoctorSh.speciality}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_INTRODUCE%></th>	
-					<td>
-											<input class="span2" name="introduce" type="text" value="${fdMemberDoctorSh.introduce}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_PICS%></th>	
-					<td>
-											<input class="span2" name="pics" type="text" value="${fdMemberDoctorSh.pics}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_CREATE_BY%></th>	
-					<td>
-											<input class="span2" name="createBy" type="text" value="${fdMemberDoctorSh.createBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_CREATE_TIME%></th>	
-					<td>
-					<input class="span2" name="createTime" type="text" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_CREATE_TIME%>'})"   maxlength="0" value="${fdMemberDoctorSh.createTime}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_UPDATE_BY%></th>	
-					<td>
-											<input class="span2" name="updateBy" type="text" value="${fdMemberDoctorSh.updateBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_UPDATE_TIME%></th>	
-					<td>
-					<input class="span2" name="updateTime" type="text" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_UPDATE_TIME%>'})"   maxlength="0" value="${fdMemberDoctorSh.updateTime}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_STATUS%></th>	
-					<td>
-											<input class="span2" name="status" type="text" value="${fdMemberDoctorSh.status}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_REASON%></th>	
-					<td>
-											<input class="span2" name="reason" type="text" value="${fdMemberDoctorSh.reason}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_REAL_NAME%></th>	
-					<td>
-											<input class="span2" name="realName" type="text" value="${fdMemberDoctorSh.realName}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_SEX%></th>	
-					<td>
-											<input class="span2" name="sex" type="text" value="${fdMemberDoctorSh.sex}"/>
-					</td>							
-					<th><%=TfdMemberDoctorSh.ALIAS_BIRTHDAY%></th>	
-					<td>
-											<input class="span2" name="birthday" type="text" value="${fdMemberDoctorSh.birthday}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorSh.ALIAS_GROUP_ID%></th>	
-					<td>
-											<input class="span2" name="groupId" type="text" value="${fdMemberDoctorSh.groupId}"/>
-					</td>							
-			</tr>	
+						${fdMemberDoctorSh.realName}
+					</td>
+					<th>科室</th>
+					<td>${fdMemberDoctorSh.departmentName}</td>
+				</tr>
+				<tr>
+					<th>医院全称</th>
+					<td colspan="3">
+						${fdMemberDoctorSh.hospitalName}
+					</td>
+				</tr>
+				<tr>
+					<th>审核状态</th>
+					<td colspan="3">
+						<input type="hidden" name="status" value = "${fdMemberDoctorSh.status}"/>
+						<c:choose>
+							<c:when test="${fdMemberDoctorSh.status == 1}">审核中</c:when>
+							<c:when test="${fdMemberDoctorSh.status == 2}">审核通过</c:when>
+							<c:otherwise>审核拒绝</c:otherwise>
+						</c:choose>
+					</td>
+				</tr>
+
+				<tr>
+					<th>处理结果</th>
+					<td colspan="3">
+						<textarea style="width: 510px;height: 60px;" name="reason">${fdMemberDoctorSh.reason}</textarea>
+					</td>
+				</tr>
 			</table>				
 		</form>
 	</div>

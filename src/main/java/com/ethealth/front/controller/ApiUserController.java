@@ -6,10 +6,8 @@ import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
-import com.mobian.pageModel.BaseData;
-import com.mobian.pageModel.FdMember;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.SessionInfo;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdMemberDoctorShServiceI;
 import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.easemob.HuanxinUtil;
@@ -48,6 +46,9 @@ public class ApiUserController extends BaseController {
     @Autowired
     private RedisUserServiceImpl redisUserService;
 
+    @Autowired
+    private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
     /**
      * 登录接口
      */
@@ -59,6 +60,7 @@ public class ApiUserController extends BaseController {
             String username = member.getUsername();
             String password = member.getPassword();
             if(!F.empty(username) && !F.empty(password)) {
+                member.setStatusArr("1,2,3");
                 FdMember o = fdMemberService.get(member);
                 if(o == null) {
                     j.setMsg("账号名或密码错误！");
@@ -71,7 +73,7 @@ public class ApiUserController extends BaseController {
                         hxPass = UUID.uuid();
                         o.setHxPassword(hxPass);
                     }
-                    if(!F.empty(HuanxinUtil.createUser(username, hxPass))) {
+                    if(!F.empty(HuanxinUtil.createUser(member.getIsAdmin() + "-" + username, hxPass))) {
                         o.setHxStatus(true);
                     } else {
                         o.setHxStatus(false);
@@ -174,6 +176,9 @@ public class ApiUserController extends BaseController {
         try{
             String password = member.getPassword();
             String username = member.getUsername();
+
+            if(F.empty(member.getMobile())) member.setMobile(username);
+            if(F.empty(member.getIsAdmin())) member.setIsAdmin(0); // 患者
             if(F.empty(password)) {
                 j.setMsg("密码不能为空！");
                 return j;
@@ -201,7 +206,7 @@ public class ApiUserController extends BaseController {
 //                    return j;
 //                }
                 //验证手机号码是否已绑定
-                boolean hasPhone = fdMemberService.checkUsername(username);
+                boolean hasPhone = fdMemberService.checkUsername(username, member.getIsAdmin());
                 if(hasPhone) {
                     j.setMsg("手机号码已绑定！");
                     return j;
@@ -211,19 +216,25 @@ public class ApiUserController extends BaseController {
             // 对用户密码MD5处理
             member.setPassword(MD5Util.encryptPassword(password));
 
-            if(F.empty(member.getMobile())) member.setMobile(username);
-            if(F.empty(member.getIsAdmin())) member.setIsAdmin(0); // 患者
-            String uuid = UUID.uuid();
-            member.setHxPassword(uuid);
-            if(!F.empty(HuanxinUtil.createUser(username, uuid))) {
-                member.setHxStatus(true);
-            } else {
-                member.setHxStatus(false);
+            if(member.getIsAdmin() == 0) {
+                String uuid = UUID.uuid();
+                member.setHxPassword(uuid);
+                if(!F.empty(HuanxinUtil.createUser(member.getIsAdmin() + "-" + username, uuid))) {
+                    member.setHxStatus(true);
+                } else {
+                    member.setHxStatus(false);
+                }
+            } else if(member.getIsAdmin() == 2) {
+                member.setStatus(-1);
             }
+
             fdMemberService.addMember(member);
 
-            String tokenId = tokenManage.buildToken(member.getId().toString(), member.getUsername(), null);
-            member.setTokenId(tokenId);
+            if(member.getIsAdmin() == 0) {
+                String tokenId = tokenManage.buildToken(member.getId().toString(), member.getUsername(), null);
+                member.setTokenId(tokenId);
+            }
+
             j.setSuccess(true);
             j.setMsg("注册成功！");
             j.setObj(member);
@@ -231,6 +242,46 @@ public class ApiUserController extends BaseController {
         }catch(Exception e){
             j.setMsg(Application.getString(EX_0001));
             logger.error("用户注册接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 提交审核接口
+     */
+    @RequestMapping("/addDoctorInfo")
+    @ResponseBody
+    public Json addDoctorInfo(FdMemberDoctorSh sh) {
+        Json j = new Json();
+        try {
+            fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
+
+            FdMember member = fdMemberService.get(sh.getId());
+            if(!member.getHxStatus()) {
+                String hxPass = member.getHxPassword();
+                if(F.empty(hxPass)) {
+                    hxPass = UUID.uuid();
+                    member.setHxPassword(hxPass);
+                }
+                if(!F.empty(HuanxinUtil.createUser(member.getIsAdmin() + "-" + member.getUsername(), hxPass))) {
+                    member.setHxStatus(true);
+                } else {
+                    member.setHxStatus(false);
+                }
+
+                fdMemberService.edit(member);
+            }
+
+            String tokenId = tokenManage.buildToken(member.getId().toString(), member.getUsername(), null);
+            member.setTokenId(tokenId);
+            j.setObj(member);
+            j.setSuccess(true);
+            j.setMsg("提交成功！");
+            return j;
+        }catch(Exception e){
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("提交审核接口异常", e);
         }
 
         return j;
@@ -259,24 +310,25 @@ public class ApiUserController extends BaseController {
                 j.setMsg("手机号码格式不正确！");
                 return j;
             }
-//            if(F.empty(vcode)) {
-//                j.setMsg("验证码不能为空！");
-//                return j;
-//            }
-//            String oldCode = redisUserService.getValidateCode(username);
-//            if(F.empty(oldCode)) {
-//                j.setMsg("验证码已过期！");
-//                return j;
-//            }
-//            if(!oldCode.equals(vcode)) {
-//                j.setMsg("验证码错误！");
-//                return j;
-//            }
+            if(F.empty(vcode)) {
+                j.setMsg("验证码不能为空！");
+                return j;
+            }
+            String oldCode = redisUserService.getValidateCode(username);
+            if(F.empty(oldCode)) {
+                j.setMsg("验证码已过期！");
+                return j;
+            }
+            if(!oldCode.equals(vcode)) {
+                j.setMsg("验证码错误！");
+                return j;
+            }
 
             FdMember q = new FdMember();
             q.setUsername(username);
             Integer isAdmin = member.getIsAdmin();
             q.setIsAdmin(isAdmin == null ? 0 : isAdmin);
+            q.setStatusArr("1,2,3");
             member = fdMemberService.get(q);
             if(member == null) {
                 j.setMsg("手机号码未注册！");

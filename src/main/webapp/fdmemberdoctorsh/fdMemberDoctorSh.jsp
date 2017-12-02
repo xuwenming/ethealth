@@ -45,101 +45,60 @@
 			singleSelect : true,
 			columns : [ [ {
 				field : 'id',
-				title : '编号',
-				width : 150,
-				hidden : true
+				title : '医生id',
+				width : 40
 				}, {
-				field : 'level',
+				field : 'mobile',
+				title : '手机号',
+				width : 50
+				}, {
+				field : 'levelName',
 				title : '<%=TfdMemberDoctorSh.ALIAS_LEVEL%>',
-				width : 50		
-				}, {
-				field : 'hospital',
-				title : '<%=TfdMemberDoctorSh.ALIAS_HOSPITAL%>',
-				width : 50		
-				}, {
-				field : 'department',
-				title : '<%=TfdMemberDoctorSh.ALIAS_DEPARTMENT%>',
-				width : 50		
-				}, {
-				field : 'education',
-				title : '<%=TfdMemberDoctorSh.ALIAS_EDUCATION%>',
-				width : 50		
-				}, {
-				field : 'consultingHour',
-				title : '<%=TfdMemberDoctorSh.ALIAS_CONSULTING_HOUR%>',
-				width : 50		
-				}, {
-				field : 'specialHour',
-				title : '<%=TfdMemberDoctorSh.ALIAS_SPECIAL_HOUR%>',
-				width : 50		
-				}, {
-				field : 'speciality',
-				title : '<%=TfdMemberDoctorSh.ALIAS_SPECIALITY%>',
-				width : 50		
-				}, {
-				field : 'introduce',
-				title : '<%=TfdMemberDoctorSh.ALIAS_INTRODUCE%>',
-				width : 50		
-				}, {
-				field : 'pics',
-				title : '<%=TfdMemberDoctorSh.ALIAS_PICS%>',
-				width : 50		
-				}, {
-				field : 'createBy',
-				title : '<%=TfdMemberDoctorSh.ALIAS_CREATE_BY%>',
-				width : 50		
-				}, {
-				field : 'createTime',
-				title : '<%=TfdMemberDoctorSh.ALIAS_CREATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'updateBy',
-				title : '<%=TfdMemberDoctorSh.ALIAS_UPDATE_BY%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdMemberDoctorSh.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdMemberDoctorSh.ALIAS_STATUS%>',
-				width : 50		
-				}, {
-				field : 'reason',
-				title : '<%=TfdMemberDoctorSh.ALIAS_REASON%>',
 				width : 50		
 				}, {
 				field : 'realName',
 				title : '<%=TfdMemberDoctorSh.ALIAS_REAL_NAME%>',
-				width : 50		
+				width : 50
 				}, {
-				field : 'sex',
-				title : '<%=TfdMemberDoctorSh.ALIAS_SEX%>',
-				width : 50		
+				field : 'hospitalName',
+				title : '医院全称',
+				width : 100
 				}, {
-				field : 'birthday',
-				title : '<%=TfdMemberDoctorSh.ALIAS_BIRTHDAY%>',
-				width : 50		
+				field : 'departmentName',
+				title : '科室',
+				width : 50
 				}, {
-				field : 'groupId',
-				title : '<%=TfdMemberDoctorSh.ALIAS_GROUP_ID%>',
-				width : 50		
-			}, {
+				field : 'status',
+				title : '审核状态',
+				width : 40,
+				formatter : function(value, row, index) {
+					var str;
+					if(row.status == 1) str = '审核中';
+					else if(row.status == 2) str =  '审核通过';
+					else str =  '审核拒绝';
+
+					return str;
+				}
+				}, {
+				field : 'reason',
+				title : '处理结果',
+				width : 150
+				}, {
 				field : 'action',
 				title : '操作',
-				width : 100,
+				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
 					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
+						str += '<a onclick="editFun(\'' + row.id + '\')">审核</a>';
 					}
 					str += '&nbsp;';
 					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
+						//str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
 					}
 					str += '&nbsp;';
 					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
+						//str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
 					}
 					return str;
 				}
@@ -184,18 +143,36 @@
 			id = rows[0].id;
 		}
 		parent.$.modalDialog({
-			title : '编辑数据',
+			title : '审核',
 			width : 780,
 			height : 500,
 			href : '${pageContext.request.contextPath}/fdMemberDoctorShController/editPage?id=' + id,
 			buttons : [ {
-				text : '编辑',
+				text : '通过',
 				handler : function() {
-					parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
-					var f = parent.$.modalDialog.handler.find('#form');
-					f.submit();
+					parent.$.messager.confirm('询问', '审核通过，是否继续？', function(b) {
+						if (b) {
+							parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
+							var f = parent.$.modalDialog.handler.find('#form');
+							f.find("input[name=status]").val(2);
+							f.submit();
+						}
+					});
 				}
-			} ]
+			},{
+				text : '拒绝',
+				handler : function() {
+					parent.$.messager.confirm('询问', '审核拒绝，是否继续？', function(b) {
+						if (b) {
+							parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
+							var f = parent.$.modalDialog.handler.find('#form');
+							f.find("input[name=status]").val(0);
+							f.submit();
+						}
+					});
+				}
+
+			}]
 		});
 	}
 
@@ -256,97 +233,20 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
-						<tr>	
-							<th><%=TfdMemberDoctorSh.ALIAS_LEVEL%></th>	
-							<td>
-											<input type="text" name="level" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_HOSPITAL%></th>	
-							<td>
-											<input type="text" name="hospital" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_DEPARTMENT%></th>	
-							<td>
-											<input type="text" name="department" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_EDUCATION%></th>	
-							<td>
-											<input type="text" name="education" maxlength="100" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMemberDoctorSh.ALIAS_CONSULTING_HOUR%></th>	
-							<td>
-											<input type="text" name="consultingHour" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_SPECIAL_HOUR%></th>	
-							<td>
-											<input type="text" name="specialHour" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_SPECIALITY%></th>	
-							<td>
-											<input type="text" name="speciality" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_INTRODUCE%></th>	
-							<td>
-											<input type="text" name="introduce" maxlength="500" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMemberDoctorSh.ALIAS_PICS%></th>	
-							<td>
-											<input type="text" name="pics" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_CREATE_BY%></th>	
-							<td>
-											<input type="text" name="createBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_CREATE_TIME%></th>	
-							<td>
-								<input type="text" class="span2" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_CREATE_TIME%>'})" id="createTimeBegin" name="createTimeBegin"/>
-								<input type="text" class="span2" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_CREATE_TIME%>'})" id="createTimeEnd" name="createTimeEnd"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_UPDATE_BY%></th>	
-							<td>
-											<input type="text" name="updateBy" maxlength="10" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMemberDoctorSh.ALIAS_UPDATE_TIME%></th>	
-							<td>
-								<input type="text" class="span2" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_UPDATE_TIME%>'})" id="updateTimeBegin" name="updateTimeBegin"/>
-								<input type="text" class="span2" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctorSh.FORMAT_UPDATE_TIME%>'})" id="updateTimeEnd" name="updateTimeEnd"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="2" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_REASON%></th>	
-							<td>
-											<input type="text" name="reason" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_REAL_NAME%></th>	
-							<td>
-											<input type="text" name="realName" maxlength="100" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMemberDoctorSh.ALIAS_SEX%></th>	
-							<td>
-											<input type="text" name="sex" maxlength="0" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_BIRTHDAY%></th>	
-							<td>
-											<input type="text" name="birthday" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorSh.ALIAS_GROUP_ID%></th>	
-							<td>
-											<input type="text" name="groupId" maxlength="10" class="span2"/>
-							</td>
-						</tr>	
+					<tr>
+						<th>手机号</th>
+						<td>
+							<input type="text" name="mobile" maxlength="100" class="span2"/>
+						</td>
+						<th><%=TfdMemberDoctorSh.ALIAS_REAL_NAME%></th>
+						<td>
+							<input type="text" name="realName" maxlength="100" class="span2"/>
+						</td>
+					</tr>
+
 				</table>
 			</form>
 		</div>
@@ -356,11 +256,11 @@
 	</div>
 	<div id="toolbar" style="display: none;">
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberDoctorShController/addPage')}">
-			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
+			<%--<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>--%>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberDoctorShController/download')}">
-			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
+			<%--<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		--%>
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">
 			</form>
 			<iframe id="downloadIframe" name="downloadIframe" style="display: none;"></iframe>

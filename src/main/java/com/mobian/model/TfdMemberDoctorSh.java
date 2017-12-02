@@ -23,7 +23,7 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	//alias
 	public static final String TABLE_ALIAS = "FdMemberDoctorSh";
 	public static final String ALIAS_ID = "用户ID";
-	public static final String ALIAS_LEVEL = "职称ID";
+	public static final String ALIAS_LEVEL = "职称";
 	public static final String ALIAS_HOSPITAL = "所在医院ID";
 	public static final String ALIAS_DEPARTMENT = "所在科室ID";
 	public static final String ALIAS_EDUCATION = "学历配置名称";
@@ -90,6 +90,8 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	private java.lang.Long birthday;
 	//
 	private java.lang.Integer groupId;
+	private String hospitalName;
+	private String departmentName;
 	//columns END
 
 
@@ -105,7 +107,6 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	}
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id", unique = true, nullable = false, length = 10)
 	public java.lang.Integer getId() {
 		return this.id;
@@ -283,8 +284,24 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	public void setGroupId(java.lang.Integer groupId) {
 		this.groupId = groupId;
 	}
-	
-	
+
+	@Column(name = "hospital_name", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
+	@Column(name = "department_name", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

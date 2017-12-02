@@ -51,4 +51,7 @@ public interface FdMemberDoctorShServiceI {
 	 */
 	public void delete(Integer id);
 
+	void addOrUpdateMemberDoctorSh(FdMemberDoctorSh sh);
+
+	void editAudit(FdMemberDoctorSh fdMemberDoctorSh);
 }

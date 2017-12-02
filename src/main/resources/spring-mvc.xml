@@ -93,6 +93,9 @@
 						<value>/api/member/register</value><!-- 注册 -->
 						<value>/api/apiCommon/error</value><!-- token过期错误返回 -->
 
+						<value>/api/member/addDoctorInfo</value><!-- 医生注册第2步 -->
+						<value>/api/apiCommon/getLevels</value><!-- 获取职称列表 -->
+
 						<value>/api/pay/wxpay/notify</value><!-- 微信支付成功回调 -->
 						<value>/api/pay/alipay/notify</value><!-- 微信支付成功回调 -->
 					</list>

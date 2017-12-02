@@ -26,9 +26,12 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 	private java.lang.String realName;	
 	private java.lang.Boolean sex;	
 	private java.lang.Long birthday;	
-	private java.lang.Integer groupId;	
+	private java.lang.Integer groupId;
+	private String hospitalName;
+	private String departmentName;
 
-	
+	private String mobile;
+	private String levelName;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -173,4 +176,35 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 		return this.groupId;
 	}
 
+	public String getHospitalName() {
+		return hospitalName;
+	}
+
+	public void setHospitalName(String hospitalName) {
+		this.hospitalName = hospitalName;
+	}
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getLevelName() {
+		return levelName;
+	}
+
+	public void setLevelName(String levelName) {
+		this.levelName = levelName;
+	}
 }

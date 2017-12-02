@@ -130,9 +130,13 @@ public class FdCustomerServiceImpl extends BaseServiceImpl<FdCustomer> implement
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", userId);
 		TfdCustomer t = fdCustomerDao.get("from TfdCustomer t  where t.userId = :userId", params);
-		FdCustomer o = new FdCustomer();
-		BeanUtils.copyProperties(t, o);
-		return o;
+		if(t != null) {
+			FdCustomer o = new FdCustomer();
+			BeanUtils.copyProperties(t, o);
+			return o;
+		}
+
+		return null;
 	}
 
 	@Override
