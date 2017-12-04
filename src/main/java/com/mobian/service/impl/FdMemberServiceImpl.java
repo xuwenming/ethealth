@@ -374,13 +374,14 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 				doctor.setLevelName(level.getName());
 			}
 			member.setMemberDoctor(doctor);
+
+			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
+			if(sh != null && "2".equals(sh.getStatus())) {
+				if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
+				if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
+			}
 		}
 
-		FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
-		if(sh != null && "2".equals(sh.getStatus())) {
-			if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
-			if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
-		}
 	}
 
 }
