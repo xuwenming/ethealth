@@ -255,6 +255,7 @@ public class ApiUserController extends BaseController {
     public Json addDoctorInfo(FdMemberDoctorSh sh) {
         Json j = new Json();
         try {
+            sh.setStatus("1"); // 审核中
             fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 
             FdMember member = fdMemberService.get(sh.getId());

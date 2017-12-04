@@ -104,4 +104,17 @@ CREATE TABLE `fd_member_appointment_comment` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='预约评价表';
 
+CREATE TABLE `fd_member_consultation_friend` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `user_id` int(10) DEFAULT NULL COMMENT '病人id',
+  `doctor_id` int(10) DEFAULT NULL COMMENT '医生id',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '更新时间',
+  `status` varchar(2) DEFAULT '0' COMMENT '是否删除 0 否 1 病人删除 2医生删除 3 互删',
+  `last_content` text COMMENT '最后聊天记录',
+  `last_time` datetime DEFAULT NULL COMMENT '最后消息时间',
+  `sender_type` int(1) DEFAULT NULL COMMENT '发送方类型1患者 2医生',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='咨询好友表';
+
 

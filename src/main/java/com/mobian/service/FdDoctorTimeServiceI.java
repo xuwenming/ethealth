@@ -4,6 +4,8 @@ import com.mobian.pageModel.FdDoctorTime;
 import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
 
+import java.util.List;
+
 /**
  * 
  * @author John
@@ -51,4 +53,5 @@ public interface FdDoctorTimeServiceI {
 	 */
 	public void delete(Integer id);
 
+	List<String> getGroupTimesByDoctorId(Integer doctorId);
 }

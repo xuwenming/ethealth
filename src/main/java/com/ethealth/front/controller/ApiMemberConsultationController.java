@@ -1,15 +1,17 @@
 package com.ethealth.front.controller;
 
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdDoctorTimeServiceI;
-import com.mobian.service.FdMemberConsultationExpireServiceI;
-import com.mobian.service.FdMemberConsultationOrderServiceI;
-import com.mobian.service.FdMemberDoctorServiceI;
+import com.mobian.service.*;
+import com.mobian.service.impl.CompletionFactory;
 import com.mobian.util.Util;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +43,9 @@ public class ApiMemberConsultationController extends BaseController {
 	@Autowired
 	private FdMemberConsultationOrderServiceI fdMemberConsultationOrderService;
 
+	@Autowired
+	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
+
 	/**
 	 * 获取专家咨询信息接口
 	 */
@@ -55,33 +60,7 @@ public class ApiMemberConsultationController extends BaseController {
 			obj.put("doctor", fdMemberDoctorService.getDetail(doctorId)); // 专家信息
 
 			// 获取接诊时间/预约时间
-			FdDoctorTime doctorTime = new FdDoctorTime();
-			doctorTime.setUserId(doctorId);
-			PageHelper ph = new PageHelper();
-			ph.setSort("week");
-			ph.setOrder("asc");
-			ph.setHiddenTotal(true);
-			List<FdDoctorTime> doctorTimes = fdDoctorTimeService.dataGrid(doctorTime, ph).getRows();
-
-			Map<Integer, FdDoctorTime> doctorTimeMap = new HashMap<Integer, FdDoctorTime>();
-			Map<String, String> dtMap = new HashMap<String, String>();
-			for(FdDoctorTime dt : doctorTimes) {
-				if(!F.empty(dt.getAddress())) {
-					if(dtMap.get(dt.getAddress()) != null) {
-						dtMap.put(dt.getAddress(), dtMap.get(dt.getAddress()) + "、" + dt.getWeekZh() + dt.getTimeZh());
-					} else {
-						dtMap.put(dt.getAddress(), dt.getWeekZh() + dt.getTimeZh());
-					}
-				}
-
-				doctorTimeMap.put(dt.getWeek(), dt);
-			}
-
-			List<String> dts = new ArrayList<String>();
-			for(String key : dtMap.keySet()) {
-				dts.add(dtMap.get(key) + key);
-			}
-			obj.put("doctorTimes", dts);
+			obj.put("doctorTimes", fdDoctorTimeService.getGroupTimesByDoctorId(doctorId));
 
 			// 获取咨询有效期
 			FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
@@ -163,6 +142,95 @@ public class ApiMemberConsultationController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("预约下单接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取我的咨询
+	 */
+	@RequestMapping("/getMyConsultations")
+	@ResponseBody
+	public Json getMyConsultations(FdMemberConsultationFriend consultationFriend, PageHelper ph, Integer isAdmin, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+
+			if(ph.getRows() == 0 || ph.getRows() > 50) {
+				ph.setRows(10);
+			}
+			if(F.empty(ph.getSort())) {
+				ph.setSort("lastTime");
+			}
+			if(F.empty(ph.getOrder())) {
+				ph.setOrder("desc");
+			}
+
+			isAdmin = F.empty(isAdmin) ? 0 : isAdmin;
+			consultationFriend.setIsAdmin(isAdmin);
+			if(isAdmin == 0) {
+				consultationFriend.setUserId(Integer.valueOf(s.getId()));
+			} else {
+				consultationFriend.setDoctorId(Integer.valueOf(s.getId()));
+			}
+			DataGrid dg = fdMemberConsultationFriendService.dataGridComplex(consultationFriend, ph);
+			j.setObj(dg);
+			j.setSuccess(true);
+			j.setMsg("获取我的预约成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取我的预约接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取我的预约接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 上传最新聊天咨询接口
+	 */
+	@RequestMapping("/updateNewestConsultation")
+	@ResponseBody
+	public Json updateNewestConsultation(FdMemberConsultationFriend consultationFriend, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			if(!F.empty(s.getId())) {
+				Integer userId = 0, doctorId = 0;
+				if(consultationFriend.getSenderType() == 1) { // 患者发来的消息
+					userId = Integer.valueOf(s.getId());
+					doctorId = consultationFriend.getReceiverId();
+				} else { // 医生发来的消息
+					doctorId = Integer.valueOf(s.getId());
+					userId = consultationFriend.getReceiverId();
+				}
+				consultationFriend.setUserId(userId);
+				consultationFriend.setDoctorId(doctorId);
+				consultationFriend.setLastTime(new Date());
+				consultationFriend.setStatus("0");
+				FdMemberConsultationFriend friend = fdMemberConsultationFriendService.getByUserIdAndDoctorId(userId, doctorId);
+				if(friend == null) {
+					fdMemberConsultationFriendService.add(consultationFriend);
+				} else {
+					consultationFriend.setId(friend.getId());
+					fdMemberConsultationFriendService.edit(consultationFriend);
+				}
+
+				// TODO 广播消息 刷新首页的就诊动态
+				j.setSuccess(true);
+				j.setMsg("更新成功！");
+			}
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("上传最新咨询接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("上传最新咨询接口异常", e);
 		}
 
 		return j;

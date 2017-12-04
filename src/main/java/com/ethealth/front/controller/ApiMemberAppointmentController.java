@@ -297,7 +297,9 @@ public class ApiMemberAppointmentController extends BaseController {
 			SessionInfo s = getSessionInfo(request);
 			if(!F.empty(s.getId())) {
 				FdMemberAppointment appointment = fdMemberAppointmentService.get(id);
-				appointment.setDoctor(fdMemberDoctorService.getDetail(appointment.getDoctorId()));
+				FdMemberDoctor doctor = fdMemberDoctorService.getDetail(appointment.getDoctorId());
+				doctor.setDoctorTimes(fdDoctorTimeService.getGroupTimesByDoctorId(doctor.getId()));
+				appointment.setDoctor(doctor);
 				appointment.setIsCommented(false);
 				if("2".equals(appointment.getAppointStatus())) {
 					FdMemberAppointmentComment comment = new FdMemberAppointmentComment();

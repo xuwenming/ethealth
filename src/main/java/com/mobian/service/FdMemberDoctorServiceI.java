@@ -53,7 +53,7 @@ public interface FdMemberDoctorServiceI {
 
 	DataGrid dataGridComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph);
 
-	Object dataGridMoreComplex(FdMemberDoctor doctor, PageHelper ph);
+	DataGrid dataGridMoreComplex(FdMemberDoctor doctor, PageHelper ph);
 
 	FdMemberDoctor getDetail(Integer id);
 }

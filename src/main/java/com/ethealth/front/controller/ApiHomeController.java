@@ -7,9 +7,7 @@ import com.mobian.concurrent.Task;
 import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdBannerServiceI;
-import com.mobian.service.FdDoctorGroupServiceI;
-import com.mobian.service.FdPictureServiceI;
+import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
 import com.mobian.util.PathUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -39,6 +37,12 @@ public class ApiHomeController extends BaseController {
 	@Autowired
 	private FdDoctorGroupServiceI fdDoctorGroupService;
 
+	@Autowired
+	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
+
 	/**
 	 * 获取首页数据接口
 	 */
@@ -61,8 +65,42 @@ public class ApiHomeController extends BaseController {
 			ph.setHiddenTotal(true);
 			obj.put("doctorGroups", fdDoctorGroupService.dataGridComplex(new FdDoctorGroup(), ph).getRows());
 
-			// TODO 就诊动态
-			obj.put("consultationDynamic", new ArrayList<Object>());
+			// 就诊动态
+			ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(5);
+			ph.setHiddenTotal(true);
+			ph.setSort("lastTime");
+			ph.setOrder("desc");
+			FdMemberConsultationFriend friend = new FdMemberConsultationFriend();
+			friend.setIsAdmin(0);
+			List<FdMemberConsultationFriend> friends = fdMemberConsultationFriendService.dataGridComplex(friend, ph).getRows();
+			if(CollectionUtils.isNotEmpty(friends)) {
+				CompletionService completionService = CompletionFactory.initCompletion();
+				for(FdMemberConsultationFriend f : friends) {
+					completionService.submit(new Task<FdMemberConsultationFriend, String>(f) {
+						@Override
+						public String call() throws Exception {
+							String str = "";
+							FdCustomer customer = fdCustomerService.get(Long.valueOf(getD().getUserId()));
+							if(customer != null) {
+								if(!F.empty(customer.getRealName())) {
+									str = customer.getRealName().substring(0, 1) + "**";
+								} else {
+									str = customer.getPhone().substring(0, 3) + "****" + customer.getPhone().substring(customer.getPhone().length() - 4);
+								}
+							}
+							return str;
+						}
+
+						protected void set(FdMemberConsultationFriend d, String v) {
+							d.setUserName(v);
+						}
+					});
+				}
+				completionService.sync();
+			}
+			obj.put("consultationDynamic", friends);
 
 
 			j.setSuccess(true);

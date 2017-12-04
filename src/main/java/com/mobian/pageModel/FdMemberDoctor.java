@@ -3,6 +3,7 @@ package com.mobian.pageModel;
 import com.mobian.listener.Application;
 
 import java.util.Date;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public class FdMemberDoctor implements java.io.Serializable {
@@ -35,6 +36,7 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String key; // 关键字查询
 	private String groupName; // 团队名称
 	private boolean isLeader; // 是否领导
+	private List<String> doctorTimes;
 
 	public String getEducationName() {
 		return Application.getString(this.education);
@@ -227,5 +229,13 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setLeader(boolean isLeader) {
 		this.isLeader = isLeader;
+	}
+
+	public List<String> getDoctorTimes() {
+		return doctorTimes;
+	}
+
+	public void setDoctorTimes(List<String> doctorTimes) {
+		this.doctorTimes = doctorTimes;
 	}
 }

@@ -18,8 +18,6 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 	private java.lang.String status;
 	private java.lang.Long amount;
 
-	
-
 	public void setId(java.lang.Integer value) {
 		this.id = value;
 	}
@@ -93,4 +91,6 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 	public void setAmount(Long amount) {
 		this.amount = amount;
 	}
+
+
 }

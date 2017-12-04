@@ -45,6 +45,9 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	@Autowired
 	private FdDoctorGroupServiceI fdDoctorGroupService;
 
+	@Autowired
+	private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
 	@Override
 	public DataGrid dataGrid(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
 		List<FdMemberDoctor> ol = new ArrayList<FdMemberDoctor>();
@@ -183,7 +186,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	}
 
 	@Override
-	public Object dataGridMoreComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
+	public DataGrid dataGridMoreComplex(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
 		return dataGridComplex(fdMemberDoctor, ph, true);
 	}
 
@@ -191,7 +194,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		DataGrid dg = dataGrid(doctor, ph);
 		List<FdMemberDoctor> ol = dg.getRows();
 		if(CollectionUtils.isNotEmpty(ol)) {
-			CompletionService completionService = CompletionFactory.initCompletion();
+			final CompletionService completionService = CompletionFactory.initCompletion();
 			for(FdMemberDoctor o : ol) {
 				// 设置头像
 				completionService.submit(new Task<FdMemberDoctor, String>(o) {
@@ -237,6 +240,20 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 					protected void set(FdMemberDoctor d, String v) {
 						if(!F.empty(v))
 							d.setDepartmentName(v);
+						else
+							completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
+								@Override
+								public String call() throws Exception {
+									FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
+									return sh == null ? null : sh.getDepartmentName();
+								}
+
+								protected void set(FdMemberDoctor d, String v) {
+									if(!F.empty(v))
+										d.setDepartmentName(v);
+
+								}
+							});
 					}
 				});
 
@@ -267,6 +284,20 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 						protected void set(FdMemberDoctor d, String v) {
 							if(!F.empty(v))
 								d.setHospitalName(v);
+							else
+								completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
+									@Override
+									public String call() throws Exception {
+										FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
+										return sh == null ? null : sh.getHospitalName();
+									}
+
+									protected void set(FdMemberDoctor d, String v) {
+										if (!F.empty(v))
+											d.setHospitalName(v);
+
+									}
+								});
 						}
 					});
 
@@ -310,6 +341,12 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			if(!F.empty(group.getLeader()) && group.getLeader().intValue() == id.intValue()) {
 				doctor.setLeader(true);
 			}
+		}
+
+		FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
+		if(sh != null && "2".equals(sh.getStatus())) {
+			if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
+			if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
 		}
 
 		return doctor;

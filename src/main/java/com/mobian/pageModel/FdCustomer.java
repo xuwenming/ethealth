@@ -1,5 +1,9 @@
 package com.mobian.pageModel;
 
+import com.mobian.util.DateUtil;
+
+import java.util.Calendar;
+
 @SuppressWarnings("serial")
 public class FdCustomer implements java.io.Serializable {
 
@@ -24,7 +28,14 @@ public class FdCustomer implements java.io.Serializable {
 	private java.lang.Long checkinTime;	
 	private java.lang.String nickName;	
 
-	
+	public Integer getAge() {
+		if(birthday != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(birthday);
+			return DateUtil.getAgeByBirthday(c.getTime());
+		}
+		return null;
+	}
 
 	public void setUserId(java.lang.Long value) {
 		this.userId = value;

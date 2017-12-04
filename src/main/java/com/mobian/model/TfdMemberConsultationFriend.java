@@ -1,6 +1,6 @@
 /*
  * @author John
- * @date - 2017-11-18
+ * @date - 2017-12-04
  */
 
 package com.mobian.model;
@@ -14,25 +14,25 @@ import org.hibernate.annotations.DynamicUpdate;
 
 @SuppressWarnings("serial")
 @Entity
-@Table(name = "fd_member_consultation_order")
+@Table(name = "fd_member_consultation_friend")
 @DynamicInsert(true)
 @DynamicUpdate(true)
-public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
+public class TfdMemberConsultationFriend implements java.io.Serializable,IEntity{
 	private static final long serialVersionUID = 5454155825314635342L;
 	
 	//alias
-	public static final String TABLE_ALIAS = "FdMemberConsultationOrder";
+	public static final String TABLE_ALIAS = "FdMemberConsultationFriend";
 	public static final String ALIAS_ID = "主键";
 	public static final String ALIAS_USER_ID = "病人id";
 	public static final String ALIAS_DOCTOR_ID = "医生id";
-	public static final String ALIAS_ORDER_NO = "订单号";
-	public static final String ALIAS_CREATE_BY = "创建人";
 	public static final String ALIAS_CREATE_TIME = "创建时间";
-	public static final String ALIAS_UPDATE_BY = "修改人";
 	public static final String ALIAS_UPDATE_TIME = "修改时间";
-	public static final String ALIAS_STATUS = "是否删除 1 是 0 否";
+	public static final String ALIAS_STATUS = "是否删除 0 否 1 病人删除 2医生删除 3 互删";
+	public static final String ALIAS_LAST_CONTENT = "最后聊天记录";
+	public static final String ALIAS_LAST_TIME = "最后消息时间";
 	
 	//date formats
+	public static final String FORMAT_LAST_TIME = com.mobian.util.Constants.DATE_FORMAT_FOR_ENTITY;
 	
 
 	//可以直接使用: @Length(max=50,message="用户名长度不能大于50")显示错误消息
@@ -43,25 +43,22 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	private java.lang.Integer userId;
 	//
 	private java.lang.Integer doctorId;
-	//@Length(max=50)
-	private java.lang.String orderNo;
-	private java.lang.Long amount;
-	//
-	private java.lang.Integer createBy;
 	//
 	private java.lang.Long createTime;
-	//
-	private java.lang.Integer updateBy;
-	//
 	private java.lang.Long updateTime;
 	//@Length(max=2)
 	private java.lang.String status;
+	//@Length(max=65535)
+	private java.lang.String lastContent;
+	//
+	private java.util.Date lastTime;
+	private Integer senderType;
 	//columns END
 
 
-		public TfdMemberConsultationOrder(){
+		public TfdMemberConsultationFriend(){
 		}
-		public TfdMemberConsultationOrder(Integer id) {
+		public TfdMemberConsultationFriend(Integer id) {
 			this.id = id;
 		}
 	
@@ -95,33 +92,6 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 		this.doctorId = doctorId;
 	}
 	
-	@Column(name = "order_no", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
-	public java.lang.String getOrderNo() {
-		return this.orderNo;
-	}
-	
-	public void setOrderNo(java.lang.String orderNo) {
-		this.orderNo = orderNo;
-	}
-
-	@Column(name = "amount", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
-	public Long getAmount() {
-		return amount;
-	}
-
-	public void setAmount(Long amount) {
-		this.amount = amount;
-	}
-
-	@Column(name = "create_by", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-	public java.lang.Integer getCreateBy() {
-		return this.createBy;
-	}
-	
-	public void setCreateBy(java.lang.Integer createBy) {
-		this.createBy = createBy;
-	}
-	
 	@Column(name = "create_time", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
 	public java.lang.Long getCreateTime() {
 		return this.createTime;
@@ -130,21 +100,12 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	public void setCreateTime(java.lang.Long createTime) {
 		this.createTime = createTime;
 	}
-	
-	@Column(name = "update_by", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
-	public java.lang.Integer getUpdateBy() {
-		return this.updateBy;
-	}
-	
-	public void setUpdateBy(java.lang.Integer updateBy) {
-		this.updateBy = updateBy;
-	}
-	
+
 	@Column(name = "update_time", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
 	public java.lang.Long getUpdateTime() {
 		return this.updateTime;
 	}
-	
+
 	public void setUpdateTime(java.lang.Long updateTime) {
 		this.updateTime = updateTime;
 	}
@@ -157,19 +118,44 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	public void setStatus(java.lang.String status) {
 		this.status = status;
 	}
+	
+	@Column(name = "last_content", unique = false, nullable = true, insertable = true, updatable = true, length = 65535)
+	public java.lang.String getLastContent() {
+		return this.lastContent;
+	}
+	
+	public void setLastContent(java.lang.String lastContent) {
+		this.lastContent = lastContent;
+	}
+	
 
+	@Column(name = "last_time", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
+	public java.util.Date getLastTime() {
+		return this.lastTime;
+	}
+	
+	public void setLastTime(java.util.Date lastTime) {
+		this.lastTime = lastTime;
+	}
+
+	@Column(name = "sender_type", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Integer getSenderType() {
+		return senderType;
+	}
+
+	public void setSenderType(Integer senderType) {
+		this.senderType = senderType;
+	}
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
 			.append("Id",getId())
 			.append("UserId",getUserId())
 			.append("DoctorId",getDoctorId())
-			.append("OrderNo",getOrderNo())
-			.append("CreateBy",getCreateBy())
 			.append("CreateTime",getCreateTime())
-			.append("UpdateBy",getUpdateBy())
-			.append("UpdateTime",getUpdateTime())
 			.append("Status",getStatus())
+			.append("LastContent",getLastContent())
+			.append("LastTime",getLastTime())
 			.toString();
 	}
 	
@@ -180,9 +166,9 @@ public class TfdMemberConsultationOrder implements java.io.Serializable,IEntity{
 	}
 	
 	public boolean equals(Object obj) {
-		if(obj instanceof FdMemberConsultationOrder == false) return false;
+		if(obj instanceof FdMemberConsultationFriend == false) return false;
 		if(this == obj) return true;
-		FdMemberConsultationOrder other = (FdMemberConsultationOrder)obj;
+		FdMemberConsultationFriend other = (FdMemberConsultationFriend)obj;
 		return new EqualsBuilder()
 			.append(getId(),other.getId())
 			.isEquals();

@@ -35,6 +35,12 @@ public class ApiDoctorServiceController extends BaseController {
 	@Autowired
 	private FdMemberDoctorServiceI fdMemberDoctorService;
 
+	@Autowired
+	private FdDoctorTimeServiceI fdDoctorTimeService;
+
+	@Autowired
+	private FdMemberAppointmentCommentServiceI fdMemberAppointmentCommentService;
+
 	/**
 	 * 获取专家服务数据接口
 	 */
@@ -114,8 +120,22 @@ public class ApiDoctorServiceController extends BaseController {
 	public Json getDoctorDetail(Integer id) {
 		Json j = new Json();
 		try{
+			Map<String, Object> obj = new HashMap<String, Object>();
 			FdMemberDoctor doctor = fdMemberDoctorService.getDetail(id);
-			j.setObj(doctor);
+			doctor.setDoctorTimes(fdDoctorTimeService.getGroupTimesByDoctorId(id));
+			obj.put("doctor", doctor);
+
+			// 获取评价
+			FdMemberAppointmentComment comment = new FdMemberAppointmentComment();
+			comment.setDoctorId(id);
+			PageHelper ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(2);
+			ph.setSort("createTime");
+			ph.setOrder("desc");
+			obj.put("comments", fdMemberAppointmentCommentService.dataGrid(comment, ph));
+
+			j.setObj(obj);
 			j.setSuccess(true);
 			j.setMsg("获取专家详情成功！");
 		}catch(Exception e){

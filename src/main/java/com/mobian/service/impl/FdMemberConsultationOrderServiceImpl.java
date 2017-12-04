@@ -4,11 +4,9 @@ import com.mobian.absx.F;
 import com.mobian.dao.FdMemberConsultationOrderDaoI;
 import com.mobian.listener.Application;
 import com.mobian.model.TfdMemberConsultationOrder;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.FdMemberConsultationExpire;
-import com.mobian.pageModel.FdMemberConsultationOrder;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.pageModel.*;
 import com.mobian.service.FdMemberConsultationExpireServiceI;
+import com.mobian.service.FdMemberConsultationFriendServiceI;
 import com.mobian.service.FdMemberConsultationOrderServiceI;
 import com.mobian.util.MyBeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,6 +24,9 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 
 	@Autowired
 	private FdMemberConsultationExpireServiceI fdMemberConsultationExpireService;
+
+	@Autowired
+	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
@@ -156,6 +157,19 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			c.add(Calendar.DAY_OF_MONTH, Integer.valueOf(Application.getString("SV300", "7")));
 			expire.setExpireDate(c.getTime());
 			fdMemberConsultationExpireService.edit(expire);
+		}
+
+		FdMemberConsultationFriend friend = fdMemberConsultationFriendService.getByUserIdAndDoctorId(consultationOrder.getUserId(), consultationOrder.getDoctorId());
+		if(friend == null) {
+			friend = new FdMemberConsultationFriend();
+			friend.setUserId(consultationOrder.getUserId());
+			friend.setDoctorId(consultationOrder.getDoctorId());
+			friend.setLastTime(new Date());
+			fdMemberConsultationFriendService.add(friend);
+		} else {
+			friend.setStatus("0");
+			friend.setLastTime(new Date());
+			fdMemberConsultationFriendService.edit(friend);
 		}
 
 	}

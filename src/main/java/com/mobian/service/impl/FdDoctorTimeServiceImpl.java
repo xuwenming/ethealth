@@ -131,4 +131,36 @@ public class FdDoctorTimeServiceImpl extends BaseServiceImpl<FdDoctorTime> imple
 		//fdDoctorTimeDao.delete(fdDoctorTimeDao.get(TfdDoctorTime.class, id));
 	}
 
+	@Override
+	public List<String> getGroupTimesByDoctorId(Integer doctorId) {
+		// 获取接诊时间/预约时间
+		FdDoctorTime doctorTime = new FdDoctorTime();
+		doctorTime.setUserId(doctorId);
+		PageHelper ph = new PageHelper();
+		ph.setSort("week");
+		ph.setOrder("asc");
+		ph.setHiddenTotal(true);
+		List<FdDoctorTime> doctorTimes = dataGrid(doctorTime, ph).getRows();
+
+		Map<Integer, FdDoctorTime> doctorTimeMap = new HashMap<Integer, FdDoctorTime>();
+		Map<String, String> dtMap = new HashMap<String, String>();
+		for(FdDoctorTime dt : doctorTimes) {
+			if(!F.empty(dt.getAddress())) {
+				if(dtMap.get(dt.getAddress()) != null) {
+					dtMap.put(dt.getAddress(), dtMap.get(dt.getAddress()) + "、" + dt.getWeekZh() + dt.getTimeZh());
+				} else {
+					dtMap.put(dt.getAddress(), dt.getWeekZh() + dt.getTimeZh());
+				}
+			}
+
+			doctorTimeMap.put(dt.getWeek(), dt);
+		}
+
+		List<String> dts = new ArrayList<String>();
+		for(String key : dtMap.keySet()) {
+			dts.add(dtMap.get(key) + key);
+		}
+		return dts;
+	}
+
 }
