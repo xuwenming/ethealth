@@ -406,7 +406,7 @@ public class ApiPayController extends BaseController {
 		// 公众账号ID
 		params.put("appid", resultMap.get("appid"));
 		// 时间戳
-		params.put("timeStamp", Long.toString(nowDate.getTime()));
+		params.put("timeStamp", Long.toString(nowDate.getTime()).substring(0, 10));
 		// 随机串
 		params.put("nonceStr", WeixinUtil.CreateNoncestr());
 		// 商品包信息

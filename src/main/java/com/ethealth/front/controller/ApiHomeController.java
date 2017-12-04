@@ -117,9 +117,9 @@ public class ApiHomeController extends BaseController {
 	/**
 	 * 获取banner列表接口
 	 */
-	@RequestMapping("/list")
+	@RequestMapping("/banners")
 	@ResponseBody
-	public Json list(FdBanner banner, PageHelper ph) {
+	public Json banners(FdBanner banner, PageHelper ph) {
 		Json j = new Json();
 		try{
 			ph.setHiddenTotal(true);

@@ -166,6 +166,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		TfdMemberDoctorSh t = fdMemberDoctorShDao.get(TfdMemberDoctorSh.class, fdMemberDoctorSh.getId());
 		if (t != null) {
 			MyBeanUtils.copyProperties(fdMemberDoctorSh, t, new String[] { "id" , "addtime", "isdeleted","updatetime" },true);
+			fdMemberDoctorSh.setRealName(t.getRealName());
 		}
 	}
 
@@ -203,6 +204,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 			FdCustomer customer = new FdCustomer();
 			customer.setUserId(member.getId().longValue());
+			customer.setRealName(fdMemberDoctorSh.getRealName());
 			customer.setPhone(member.getMobile());
 			fdCustomerService.add(customer);
 
