@@ -173,4 +173,17 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 		}
 	}
 
+	@Override
+	public FdBalanceLog getByBalanceNo(String balanceNo) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("balanceNo", balanceNo);
+		TfdBalanceLog t = fdBalanceLogDao.get("from TfdBalanceLog t  where t.balanceNo = :balanceNo", params);
+		if(t != null) {
+			FdBalanceLog o = new FdBalanceLog();
+			BeanUtils.copyProperties(t, o);
+			return o;
+		}
+		return null;
+	}
+
 }

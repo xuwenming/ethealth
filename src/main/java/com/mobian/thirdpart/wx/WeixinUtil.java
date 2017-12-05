@@ -57,6 +57,11 @@ public class WeixinUtil {
 	public final static String TRANSFERS_URL = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
 
 	/**
+	 * 微信查询订单接口(POST)
+	 */
+	public final static String ORDER_QUERY_URL = "https://api.mch.weixin.qq.com/pay/orderquery";
+
+	/**
 	 * 微信用户授权，通过code换取用户信息
 	 */
 	public final static String AUTHORIZE_URL = "https://api.weixin.qq.com/sns/oauth2/access_token?&appid=APPID&secret=APPSECRET&code=CODE&grant_type=authorization_code";

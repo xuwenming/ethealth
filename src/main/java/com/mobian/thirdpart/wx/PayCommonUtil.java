@@ -38,6 +38,33 @@ public class PayCommonUtil {
 	    
 	    return sign;
 	}
+
+	/**
+	 * 是否签名正确,规则是:按参数名称a-z排序,遇到空值的参数不参加签名。
+	 * @return boolean
+	 */
+	public static boolean isTenpaySign(String characterEncoding, SortedMap<Object, Object> packageParams) {
+		StringBuffer sb = new StringBuffer();
+		Set es = packageParams.entrySet();
+		Iterator it = es.iterator();
+		while(it.hasNext()) {
+			Map.Entry entry = (Map.Entry)it.next();
+			String k = (String)entry.getKey();
+			String v = (String)entry.getValue();
+			if(!"sign".equals(k) && null != v && !"".equals(v)) {
+				sb.append(k + "=" + v + "&");
+			}
+		}
+
+		sb.append("key=" + Application.getString(WeixinUtil.API_KEY));
+
+		//算出摘要
+		String mysign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toLowerCase();
+		String tenpaySign = ((String)packageParams.get("sign")).toLowerCase();
+
+		return tenpaySign.equals(mysign);
+	}
+
 	/**
 	 * @author 李欣桦
 	 * @date 2014-12-5下午2:32:05
@@ -141,6 +168,40 @@ public class PayCommonUtil {
 			parameters.put("refund_fee", (long)((double)params.get("amount")*100) + "");
 			// 总金额  必填（单位为分必须为整数）
 			parameters.put("total_fee", (long)((double)params.get("amount")*100) + "");
+
+			// 签名 必填
+			String sign = PayCommonUtil.createSign("UTF-8", parameters);
+			parameters.put("sign", sign);
+
+			return PayCommonUtil.getRequestXml(parameters);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
+	 * 微信查询订单请求参数
+	 * @return
+	 */
+	public static String requestOrderQueryXML(Map<String, Object> params) {
+		try {
+			SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();
+			// 公众账号ID 必填
+			parameters.put("appid", Application.getString(WeixinUtil.APPID));
+			// 商户号 必填
+			parameters.put("mch_id", Application.getString(WeixinUtil.MCH_ID));
+			if(params.get("out_trade_no") != null) {
+				// 商户订单号
+				parameters.put("out_trade_no", params.get("out_trade_no").toString());
+			}
+			if(params.get("transaction_id") != null) {
+				// 微信订单号
+				parameters.put("transaction_id", params.get("transaction_id").toString());
+			}
+			// 随机字符串  必填 不长于32位
+			parameters.put("nonce_str", WeixinUtil.CreateNoncestr());
 
 			// 签名 必填
 			String sign = PayCommonUtil.createSign("UTF-8", parameters);

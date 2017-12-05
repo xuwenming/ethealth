@@ -98,6 +98,8 @@
 
 						<value>/api/pay/wxpay/notify</value><!-- 微信支付成功回调 -->
 						<value>/api/pay/alipay/notify</value><!-- 微信支付成功回调 -->
+
+						<value>/api/pay/wxpay/check</value><!-- 校验微信支付结果 -->
 					</list>
 				</property>
 				<property name="tokenManage" ref="tokenManage" />

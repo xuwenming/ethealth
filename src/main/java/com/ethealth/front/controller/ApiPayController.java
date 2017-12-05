@@ -18,6 +18,8 @@ import com.mobian.thirdpart.wx.HttpUtil;
 import com.mobian.thirdpart.wx.PayCommonUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
 import com.mobian.thirdpart.wx.XMLUtil;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.IpUtil;
 import com.mobian.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -279,37 +281,87 @@ public class ApiPayController extends BaseController {
 			System.out.println(keyValue+"="+map.get(keyValue));
 		}
 
-		// 对数据库的操作
-		String orderNo = map.get("out_trade_no").toString();
-		String transaction_id = map.get("transaction_id").toString(); // 微信支付订单号
-		if(orderNo.startsWith("Y")) {
-			FdPaymentBase payment = new FdPaymentBase();
-			payment.setOrderNo(orderNo);
-			payment.setRefId(transaction_id);
-			if (map.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
-				payment.setStatus("2");
-			} else {
-				payment.setStatus("0");
-				payment.setRemark(map.get("return_msg").toString());
-			}
+		//过滤空 设置 TreeMap
+		SortedMap<Object,Object> packageParams = new TreeMap<Object,Object>();
+		Iterator it = map.keySet().iterator();
+		while (it.hasNext()) {
+			String parameter = (String) it.next();
+			String parameterValue = (String)map.get(parameter);
 
-			fdPaymentBaseService.addOrUpdate(payment);
-		} else if(orderNo.startsWith("Q")) {
-			FdBalanceLog balanceLog = new FdBalanceLog();
-			balanceLog.setBalanceNo(orderNo);
-			balanceLog.setRefId(transaction_id);
-			if (map.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
-				balanceLog.setStatus(false);
-			} else {
-				balanceLog.setNote(map.get("return_msg").toString());
-				balanceLog.setStatus(true);
+			String v = "";
+			if(null != parameterValue) {
+				v = parameterValue.trim();
 			}
-			fdBalanceLogService.updateLogAndBalance(balanceLog);
+			packageParams.put(parameter, v);
 		}
 
+		String resXml = "";
+		if(PayCommonUtil.isTenpaySign("UTF-8", packageParams)) {
+			if("SUCCESS".equals((String)packageParams.get("result_code"))){
+				// 这里是支付成功
+				//////////执行自己的业务逻辑////////////////
+				String mch_id = (String)packageParams.get("mch_id"); //商户号
+//				String openid = (String)packageParams.get("openid");  //用户标识
+				String out_trade_no = (String)packageParams.get("out_trade_no"); //商户订单号
+				String total_fee = (String)packageParams.get("total_fee");
+				String transaction_id = (String)packageParams.get("transaction_id"); //微信支付订单
 
-		response.getWriter().write(PayCommonUtil.setXML("SUCCESS", ""));   //告诉微信服务器，我收到信息了，不要在调用回调action了
-		System.out.println("-------------"+PayCommonUtil.setXML("SUCCESS", ""));
+				FdPaymentBase trade = null;
+				if(out_trade_no.startsWith("Y") || out_trade_no.startsWith("Z")) {
+					trade = fdPaymentBaseService.getByOrderNo(out_trade_no);
+				} else if(out_trade_no.startsWith("Q")){
+					FdBalanceLog bl = fdBalanceLogService.getByBalanceNo(out_trade_no);
+					if(bl != null) {
+						trade = new FdPaymentBase();
+						trade.setStatus(bl.getStatus() ? "0" : "2");
+						trade.setPrice(new BigDecimal(bl.getAmount()).multiply(new BigDecimal(100)).intValue());
+					}
+				}
+
+
+				if(!Application.getString(WeixinUtil.MCH_ID).equals(mch_id)
+						|| trade == null || new BigDecimal(total_fee).compareTo(new BigDecimal(trade.getPrice())) != 0) {
+					logger.info("支付失败,错误信息：" + "参数错误");
+					resXml = PayCommonUtil.setXML("FAIL", "参数错误");
+				}else{
+					if(!"2".equals(trade.getStatus())){
+						//订单状态的修改。根据实际业务逻辑执行
+						if(out_trade_no.startsWith("Y") || out_trade_no.startsWith("Z")) {
+							FdPaymentBase payment = new FdPaymentBase();
+							payment.setOrderNo(out_trade_no);
+							payment.setRefId(transaction_id);
+							payment.setStatus("2");
+
+							fdPaymentBaseService.addOrUpdate(payment);
+						} else if(out_trade_no.startsWith("Q")) {
+							FdBalanceLog balanceLog = new FdBalanceLog();
+							balanceLog.setBalanceNo(out_trade_no);
+							balanceLog.setRefId(transaction_id);
+							balanceLog.setStatus(false);
+
+							fdBalanceLogService.updateLogAndBalance(balanceLog);
+						}
+
+						resXml = PayCommonUtil.setXML("SUCCESS", "OK");
+					}else{
+						resXml = PayCommonUtil.setXML("SUCCESS", "OK");
+						logger.info("订单已处理");
+					}
+				}
+
+			} else {
+				logger.info("支付失败,错误信息：" + packageParams.get("err_code"));
+				resXml = PayCommonUtil.setXML("FAIL", "报文为空");
+			}
+
+
+		} else{
+			resXml = PayCommonUtil.setXML("FAIL", "通知签名验证失败");
+			logger.info("通知签名验证失败");
+		}
+
+		response.getWriter().write(resXml);   //告诉微信服务器，我收到信息了，不要在调用回调action了
+		System.out.println("-------------"+resXml);
 	}
 
 	@RequestMapping("/alipay/notify")
@@ -356,6 +408,51 @@ public class ApiPayController extends BaseController {
 			}
 		}
 		response.getWriter().println("success");
+	}
+
+	/**
+	 * 校验微信支付结果
+	 */
+	@RequestMapping("/wxpay/check")
+	@ResponseBody
+	public Json wxpay_check(String orderNo, HttpServletRequest request) {
+		Json j = new Json();
+		try {
+			FdPaymentBase trade = null;
+			if(orderNo.startsWith("Y") || orderNo.startsWith("Z")) {
+				trade = fdPaymentBaseService.getByOrderNo(orderNo);
+			} else if(orderNo.startsWith("Q")){
+				FdBalanceLog bl = fdBalanceLogService.getByBalanceNo(orderNo);
+				if(bl != null) {
+					trade = new FdPaymentBase();
+					trade.setStatus(bl.getStatus() ? "0" : "2");
+				}
+			}
+			if("2".equals(trade.getStatus())) {
+				j.success();
+				j.setMsg("支付成功");
+				j.setObj("SUCCESS");
+			} else {
+				Map<String, Object> params = new HashMap<String, Object>();
+				params.put("out_trade_no", orderNo);
+				String result = HttpUtil.httpsRequest(WeixinUtil.ORDER_QUERY_URL, "POST", PayCommonUtil.requestOrderQueryXML(params));
+				Map<String, String> resultMap = XMLUtil.doXMLParse(result);
+				if("SUCCESS".equals(resultMap.get("result_code"))) {
+					j.success();
+					j.setMsg("支付成功");
+					j.setObj("SUCCESS");
+				} else {
+					j.success();
+					j.setMsg("支付失败");
+					j.setObj("FAIL");
+				}
+			}
+		} catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取钱包明细接口异常", e);
+		}
+
+		return j;
 	}
 
 

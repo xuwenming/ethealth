@@ -54,4 +54,6 @@ public interface FdBalanceLogServiceI {
 	void updateLogAndBalance(FdBalanceLog balanceLog);
 
 	void addLogAndUpdateBalance(FdBalanceLog balanceLog);
+
+	FdBalanceLog getByBalanceNo(String balanceNo);
 }
