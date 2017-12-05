@@ -428,6 +428,10 @@ public class ApiPayController extends BaseController {
 					trade.setStatus(bl.getStatus() ? "0" : "2");
 				}
 			}
+			if(trade == null) {
+				j.setMsg("订单号不存在");
+				return j;
+			}
 			if("2".equals(trade.getStatus())) {
 				j.success();
 				j.setMsg("支付成功");
