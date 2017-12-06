@@ -324,7 +324,7 @@ public class ApiPayController extends BaseController {
 				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + trade.getPrice());
 
 				if(!Application.getString(WeixinUtil.MCH_ID).equals(mch_id)
-						|| trade == null || new BigDecimal(total_fee).compareTo(new BigDecimal(trade.getPrice())) != 0) {
+						|| trade == null) {
 					logger.info("支付失败,错误信息：" + "参数错误");
 					resXml = PayCommonUtil.setXML("FAIL", "参数错误");
 				}else{
