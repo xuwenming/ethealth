@@ -106,7 +106,7 @@ public class PayCommonUtil {
 	}
 
 	/**
-	 * 微信退款请求参数
+	 * 微信企业付款请求参数
 	 * @return
 	 */
 	public static String requestTransfersXML(Map<String, Object> params) {
@@ -159,7 +159,7 @@ public class PayCommonUtil {
 			// 随机字符串  必填 不长于32位
 			parameters.put("nonce_str", WeixinUtil.CreateNoncestr());
 			// 操作员  必填
-			parameters.put("op_user_id", Application.getString(WeixinUtil.MCH_ID));
+//			parameters.put("op_user_id", Application.getString(WeixinUtil.MCH_ID));
 			// 商户退款单号  必填
 			parameters.put("out_refund_no", params.get("refund_no").toString());
 			// 商户订单号  必填

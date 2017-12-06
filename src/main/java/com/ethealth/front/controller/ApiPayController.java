@@ -107,7 +107,9 @@ public class ApiPayController extends BaseController {
 			System.out.println("~~~~~~~~~~~~微信支付接口返回结果result:" + result);
 			Map<String, String> resultMap = XMLUtil.doXMLParse(result);
 			if(resultMap.get("return_code").toString().equalsIgnoreCase("SUCCESS") && resultMap.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
-				j.setObj(returnJsonStr(resultMap));
+				SortedMap<Object,Object> obj = returnJsonStr(resultMap);
+				obj.put("orderNo", orderNo);
+				j.setObj(obj);
 				j.setSuccess(true);
 				j.setMsg("微信统一下单成功！");
 			} else {
