@@ -227,7 +227,7 @@ public class ApiPayController extends BaseController {
             }
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
-			if(customer == null || BigDecimal.valueOf(customer.getBalance()).multiply(new BigDecimal(100)).intValue() < payment.getPrice()) {
+			if(customer == null || new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < payment.getPrice()) {
 				j.setMsg("支付失败，余额不足！");
                 return j;
 			}
@@ -316,15 +316,12 @@ public class ApiPayController extends BaseController {
 					if(bl != null) {
 						trade = new FdPaymentBase();
 						trade.setStatus(bl.getStatus() ? "0" : "2");
-						trade.setPrice(new BigDecimal(bl.getAmount()).multiply(new BigDecimal(100)).intValue());
+						trade.setPrice(new BigDecimal(bl.getAmount().toString()).multiply(new BigDecimal(100)).intValue());
 					}
 				}
 
-				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + total_fee);
-				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + trade.getPrice());
-
 				if(!Application.getString(WeixinUtil.MCH_ID).equals(mch_id)
-						|| trade == null) {
+						|| trade == null || new BigDecimal(total_fee).compareTo(new BigDecimal(trade.getPrice())) != 0) {
 					logger.info("支付失败,错误信息：" + "参数错误");
 					resXml = PayCommonUtil.setXML("FAIL", "参数错误");
 				}else{

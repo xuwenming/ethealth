@@ -179,8 +179,8 @@ public class ApiMemberAppointmentController extends BaseController {
 				return j;
 			}
 
-			double fee = Double.valueOf(Application.getString("UC001", "99"));
-			long totalFee = BigDecimal.valueOf(fee).multiply(new BigDecimal(100)).longValue();
+			Double fee = Double.valueOf(Application.getString("UC001", "99"));
+			long totalFee = new BigDecimal(fee.toString()).multiply(new BigDecimal(100)).longValue();
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
 			appointment.setUserId(Integer.valueOf(s.getId()));
