@@ -320,9 +320,8 @@ public class ApiPayController extends BaseController {
 					}
 				}
 
-				System.out.println("~~~~~~~~~~~~~~~~~~~~1:" + (!Application.getString(WeixinUtil.MCH_ID).equals(mch_id)));
-				System.out.println("~~~~~~~~~~~~~~~~~~~~2:" + (trade == null));
-				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + (new BigDecimal(total_fee).compareTo(new BigDecimal(trade.getPrice()))));
+				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + total_fee);
+				System.out.println("~~~~~~~~~~~~~~~~~~~~3:" + trade.getPrice());
 
 				if(!Application.getString(WeixinUtil.MCH_ID).equals(mch_id)
 						|| trade == null || new BigDecimal(total_fee).compareTo(new BigDecimal(trade.getPrice())) != 0) {
