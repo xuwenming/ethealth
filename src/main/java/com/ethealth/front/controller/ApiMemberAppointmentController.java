@@ -49,6 +49,9 @@ public class ApiMemberAppointmentController extends BaseController {
 	@Autowired
 	private FdMemberAppointmentCommentServiceI fdMemberAppointmentCommentService;
 
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
 	/**
 	 * 获取专家预约信息接口
 	 */
@@ -106,6 +109,7 @@ public class ApiMemberAppointmentController extends BaseController {
 					timeM.put("time", dt.getTime());
 					timeM.put("weekZh", dt.getWeekZh());
 					timeM.put("timeZh", dt.getTimeZh());
+					timeM.put("address", dt.getAddress());
 
 					// 获取预约余号
 					FdMemberAppointment appointment = new FdMemberAppointment();
@@ -225,55 +229,11 @@ public class ApiMemberAppointmentController extends BaseController {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
-
-			if(ph.getRows() == 0 || ph.getRows() > 50) {
-				ph.setRows(10);
-			}
-			if(F.empty(ph.getSort())) {
-				ph.setSort("createTime");
-			}
-			if(F.empty(ph.getOrder())) {
-				ph.setOrder("desc");
-			}
-
 			appointment.setUserId(Integer.valueOf(s.getId()));
-			DataGrid dg = fdMemberAppointmentService.dataGrid(appointment, ph);
-			List<FdMemberAppointment> list = dg.getRows();
-			if(CollectionUtils.isNotEmpty(list)) {
-				CompletionService completionService = CompletionFactory.initCompletion();
-				for(FdMemberAppointment o : list) {
-					completionService.submit(new Task<FdMemberAppointment, FdMemberDoctor>(new CacheKey("fdMemberDoctor", o.getDoctorId() + ""), o) {
-						@Override
-						public FdMemberDoctor call() throws Exception {
-							return fdMemberDoctorService.getDetail(getD().getDoctorId());
-						}
 
-						protected void set(FdMemberAppointment d, FdMemberDoctor v) {
-							d.setDoctor(v);
-						}
-					});
-					if("2".equals(o.getAppointStatus())) {
-						completionService.submit(new Task<FdMemberAppointment, Boolean>(o) {
-							@Override
-							public Boolean call() throws Exception {
-								FdMemberAppointmentComment comment = new FdMemberAppointmentComment();
-								comment.setAppointmentId(getD().getId());
-								comment.setUserId(getD().getUserId());
-								List<FdMemberAppointmentComment> comments = fdMemberAppointmentCommentService.query(comment);
-								return CollectionUtils.isNotEmpty(comments) ? true : false;
-							}
-
-							protected void set(FdMemberAppointment d, Boolean v) {
-								d.setIsCommented(v);
-							}
-						});
-					}
-				}
-				completionService.sync();
-			}
-			j.setObj(dg);
+			j.setObj(appointmentDataGrid(appointment, ph, 0));
 			j.setSuccess(true);
-			j.setMsg("获取我的预约成功！");
+			j.setMsg("获取成功！");
 
 		} catch (ServiceException e) {
 			j.setObj(e.getMessage());
@@ -287,19 +247,124 @@ public class ApiMemberAppointmentController extends BaseController {
 	}
 
 	/**
+	 * 获取医生加号列表
+	 */
+	@RequestMapping("/doctor/appointments")
+	@ResponseBody
+	public Json appointments(FdMemberAppointment appointment, PageHelper ph, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			appointment.setDoctorId(Integer.valueOf(s.getId()));
+			appointment.setStatus("1");
+
+			j.setObj(appointmentDataGrid(appointment, ph, 2));
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取医生加号列表接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取医生加号列表接口异常", e);
+		}
+
+		return j;
+	}
+
+	private DataGrid appointmentDataGrid(FdMemberAppointment appointment, PageHelper ph, Integer isAdmin) {
+		isAdmin = F.empty(isAdmin) ? 0 : isAdmin;
+		if(ph.getRows() == 0 || ph.getRows() > 50) {
+			ph.setRows(10);
+		}
+		if(F.empty(ph.getSort())) {
+			ph.setSort("createTime");
+		}
+		if(F.empty(ph.getOrder())) {
+			ph.setOrder("desc");
+		}
+
+		DataGrid dg = fdMemberAppointmentService.dataGrid(appointment, ph);
+		List<FdMemberAppointment> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberAppointment o : list) {
+				if(isAdmin == 0)
+					completionService.submit(new Task<FdMemberAppointment, FdMemberDoctor>(new CacheKey("fdMemberDoctor", o.getDoctorId() + ""), o) {
+						@Override
+						public FdMemberDoctor call() throws Exception {
+							return fdMemberDoctorService.getDetail(getD().getDoctorId());
+						}
+
+						protected void set(FdMemberAppointment d, FdMemberDoctor v) {
+							d.setDoctor(v);
+						}
+					});
+				else
+					completionService.submit(new Task<FdMemberAppointment, FdMember>(new CacheKey("fdMember", o.getUserId() + ""), o) {
+						@Override
+						public FdMember call() throws Exception {
+							return fdMemberService.getDetail(getD().getUserId());
+						}
+
+						protected void set(FdMemberAppointment d, FdMember v) {
+							d.setUser(v);
+						}
+					});
+
+				if("2".equals(o.getAppointStatus())) {
+					completionService.submit(new Task<FdMemberAppointment, Boolean>(o) {
+						@Override
+						public Boolean call() throws Exception {
+							FdMemberAppointmentComment comment = new FdMemberAppointmentComment();
+							comment.setAppointmentId(getD().getId());
+							comment.setUserId(getD().getUserId());
+							List<FdMemberAppointmentComment> comments = fdMemberAppointmentCommentService.query(comment);
+							return CollectionUtils.isNotEmpty(comments) ? true : false;
+						}
+
+						protected void set(FdMemberAppointment d, Boolean v) {
+							d.setIsCommented(v);
+						}
+					});
+				}
+			}
+			completionService.sync();
+		}
+
+		return dg;
+	}
+
+	/**
 	 * 获取预约详情
 	 */
 	@RequestMapping("/getAppointmentDetail")
 	@ResponseBody
-	public Json getAppointmentDetail(Integer id, HttpServletRequest request) {
+	public Json getAppointmentDetail(Integer id, String appointmentNo, Integer isAdmin, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			if(F.empty(id) && F.empty(appointmentNo)) {
+				j.setMsg("请求参数有误");
+				return j;
+			}
 			SessionInfo s = getSessionInfo(request);
 			if(!F.empty(s.getId())) {
-				FdMemberAppointment appointment = fdMemberAppointmentService.get(id);
-				FdMemberDoctor doctor = fdMemberDoctorService.getDetail(appointment.getDoctorId());
-				doctor.setDoctorTimes(fdDoctorTimeService.getGroupTimesByDoctorId(doctor.getId()));
-				appointment.setDoctor(doctor);
+				isAdmin = F.empty(isAdmin) ? 0 : isAdmin;
+				FdMemberAppointment appointment = null;
+				if(!F.empty(id)) {
+					appointment = fdMemberAppointmentService.get(id);
+				} else {
+					appointment = fdMemberAppointmentService.getByAppointmentNo(appointmentNo);
+				}
+				if(isAdmin == 2) {
+					appointment.setUser(fdMemberService.getDetail(appointment.getUserId()));
+				} else {
+					FdMemberDoctor doctor = fdMemberDoctorService.getDetail(appointment.getDoctorId());
+					doctor.setDoctorTimes(fdDoctorTimeService.getGroupTimesByDoctorId(doctor.getId()));
+					appointment.setDoctor(doctor);
+				}
+
 				appointment.setIsCommented(false);
 				if("2".equals(appointment.getAppointStatus())) {
 					FdMemberAppointmentComment comment = new FdMemberAppointmentComment();

@@ -101,6 +101,7 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 	private java.lang.String sourse;
 	private java.lang.String appointmentNo;
 	private java.lang.Long amount;
+	private String appointAddress;
 	//columns END
 
 
@@ -345,6 +346,15 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 
 	public void setAmount(Long amount) {
 		this.amount = amount;
+	}
+
+	@Column(name = "appoint_address", unique = false, nullable = true, insertable = true, updatable = true, length = 200)
+	public String getAppointAddress() {
+		return appointAddress;
+	}
+
+	public void setAppointAddress(String appointAddress) {
+		this.appointAddress = appointAddress;
 	}
 
 	/*

@@ -54,4 +54,6 @@ public interface FdMemberAppointmentCommentServiceI {
 	public void delete(Integer id);
 
 	List<FdMemberAppointmentComment> query(FdMemberAppointmentComment comment);
+
+	Object dataGridComplex(FdMemberAppointmentComment comment, PageHelper ph);
 }

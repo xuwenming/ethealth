@@ -1,5 +1,6 @@
 package com.ethealth.front.controller;
 
+import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
@@ -133,7 +134,10 @@ public class ApiDoctorServiceController extends BaseController {
 			ph.setRows(2);
 			ph.setSort("createTime");
 			ph.setOrder("desc");
-			obj.put("comments", fdMemberAppointmentCommentService.dataGrid(comment, ph));
+			obj.put("comments", fdMemberAppointmentCommentService.dataGridComplex(comment, ph));
+
+			// 在线咨询
+
 
 			j.setObj(obj);
 			j.setSuccess(true);
@@ -141,6 +145,35 @@ public class ApiDoctorServiceController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取专家详情接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取更多患者评价接口
+	 */
+	@RequestMapping("/comments")
+	@ResponseBody
+	public Json comments(FdMemberAppointmentComment comment, PageHelper ph) {
+		Json j = new Json();
+		try{
+			if(ph.getRows() == 0 || ph.getRows() > 50) {
+				ph.setRows(10);
+			}
+			if(F.empty(ph.getSort())) {
+				ph.setSort("createTime");
+			}
+			if(F.empty(ph.getOrder())) {
+				ph.setOrder("desc");
+			}
+
+			j.setObj(fdMemberAppointmentCommentService.dataGridComplex(comment, ph));
+			j.setSuccess(true);
+			j.setMsg("获取专家列表成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取专家列表接口异常", e);
 		}
 
 		return j;

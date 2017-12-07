@@ -23,7 +23,7 @@ public class FdMemberAppointmentComment implements java.io.Serializable {
 	private java.lang.String therapyOther;	
 	private java.lang.String comment;	
 
-	
+	private String userName;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -133,4 +133,11 @@ public class FdMemberAppointmentComment implements java.io.Serializable {
 		return this.comment;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 }

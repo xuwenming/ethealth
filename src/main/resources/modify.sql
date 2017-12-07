@@ -21,6 +21,8 @@ ALTER TABLE `fd_member_appointment`
   ADD COLUMN `appointment_no`  varchar(64) NULL COMMENT '预约订单号' AFTER `sourse`;
 ALTER TABLE `fd_member_appointment`
   ADD COLUMN `amount`  bigint NULL COMMENT '订单金额' AFTER `appointment_no`;
+ALTER TABLE `fd_member_appointment`
+  ADD COLUMN `appoint_address`  varchar(200) NULL COMMENT '预约门诊地址' AFTER `amount`;
 
 ALTER TABLE `fd_member_doctor_sh`
   ADD COLUMN `hospital_name`  varchar(100) NULL COMMENT '医院名称',

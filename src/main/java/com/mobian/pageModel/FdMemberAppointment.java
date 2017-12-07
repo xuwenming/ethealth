@@ -1,5 +1,6 @@
 package com.mobian.pageModel;
 
+import com.mobian.absx.F;
 import com.mobian.enums.EnumConstants;
 
 import java.util.Date;
@@ -35,13 +36,16 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private java.lang.String sourse;
 	private java.lang.String appointmentNo;
 	private java.lang.Long amount;
+	private String appointAddress;
 
 
 	private FdMemberDoctor doctor;
+	private FdMember user;
 	private Boolean isCommented;
 	private FdMemberAppointmentComment comment;
 
 	public String getTimeZh() {
+		if(F.empty(time)) return null;
 		return EnumConstants.TIME.getCnName(time);
 	}
 
@@ -255,5 +259,21 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setComment(FdMemberAppointmentComment comment) {
 		this.comment = comment;
+	}
+
+	public String getAppointAddress() {
+		return appointAddress;
+	}
+
+	public void setAppointAddress(String appointAddress) {
+		this.appointAddress = appointAddress;
+	}
+
+	public FdMember getUser() {
+		return user;
+	}
+
+	public void setUser(FdMember user) {
+		this.user = user;
 	}
 }

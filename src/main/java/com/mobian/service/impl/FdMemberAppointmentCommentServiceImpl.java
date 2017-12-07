@@ -1,13 +1,19 @@
 package com.mobian.service.impl;
 
 import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
 import com.mobian.dao.FdMemberAppointmentCommentDaoI;
 import com.mobian.model.TfdMemberAppointmentComment;
 import com.mobian.pageModel.DataGrid;
+import com.mobian.pageModel.FdCustomer;
 import com.mobian.pageModel.FdMemberAppointmentComment;
 import com.mobian.pageModel.PageHelper;
+import com.mobian.service.FdCustomerServiceI;
 import com.mobian.service.FdMemberAppointmentCommentServiceI;
 import com.mobian.util.MyBeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +28,9 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 
 	@Autowired
 	private FdMemberAppointmentCommentDaoI fdMemberAppointmentCommentDao;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberAppointmentComment fdMemberAppointmentComment, PageHelper ph) {
@@ -148,6 +157,41 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 			}
 		}
 		return ol;
+	}
+
+	@Override
+	public Object dataGridComplex(FdMemberAppointmentComment comment, PageHelper ph) {
+		DataGrid dg = dataGrid(comment, ph);
+		List<FdMemberAppointmentComment> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberAppointmentComment o : list) {
+
+				completionService.submit(new Task<FdMemberAppointmentComment, String>(new CacheKey("fdCustomer", o.getUserId() + ""), o) {
+					@Override
+					public String call() throws Exception {
+						String str = "";
+						FdCustomer customer = fdCustomerService.get(Long.valueOf(getD().getUserId()));
+						if(customer != null) {
+							if(!F.empty(customer.getRealName())) {
+								str = customer.getRealName().substring(0, 1) + "**";
+							} else {
+								str = customer.getPhone().substring(0, 3) + "****" + customer.getPhone().substring(customer.getPhone().length() - 4);
+							}
+						}
+						return str;
+					}
+
+					protected void set(FdMemberAppointmentComment d, String v) {
+						d.setUserName(v);
+					}
+				});
+
+			}
+			completionService.sync();
+		}
+
+		return dg;
 	}
 
 }

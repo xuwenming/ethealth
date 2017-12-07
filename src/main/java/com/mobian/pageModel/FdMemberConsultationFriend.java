@@ -23,6 +23,9 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 	private Integer isAdmin;
 	private String userName;
 
+	private FdMemberConsultationExpire expire;
+	private Boolean isConsultation;
+
 	public void setId(java.lang.Integer value) {
 		this.id = value;
 	}
@@ -84,11 +87,11 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 		return this.lastTime;
 	}
 
-	public int getSenderType() {
+	public Integer getSenderType() {
 		return senderType;
 	}
 
-	public void setSenderType(int senderType) {
+	public void setSenderType(Integer senderType) {
 		this.senderType = senderType;
 	}
 
@@ -122,5 +125,21 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public FdMemberConsultationExpire getExpire() {
+		return expire;
+	}
+
+	public void setExpire(FdMemberConsultationExpire expire) {
+		this.expire = expire;
+	}
+
+	public Boolean getIsConsultation() {
+		return isConsultation;
+	}
+
+	public void setIsConsultation(Boolean isConsultation) {
+		this.isConsultation = isConsultation;
 	}
 }

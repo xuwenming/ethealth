@@ -175,19 +175,57 @@ public class ApiMemberConsultationController extends BaseController {
 				consultationFriend.setDoctorId(Integer.valueOf(s.getId()));
 			}
 			DataGrid dg = fdMemberConsultationFriendService.dataGridComplex(consultationFriend, ph);
+			List<FdMemberConsultationFriend> list = dg.getRows();
+			if(CollectionUtils.isNotEmpty(list)) {
+				CompletionService completionService = CompletionFactory.initCompletion();
+				for(FdMemberConsultationFriend o : list) {
+					completionService.submit(new Task<FdMemberConsultationFriend, FdMemberConsultationExpire>(o) {
+						@Override
+						public FdMemberConsultationExpire call() throws Exception {
+							FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(getD().getUserId(), getD().getDoctorId());
+							return expire;
+						}
+
+						protected void set(FdMemberConsultationFriend d, FdMemberConsultationExpire v) {
+							if(v != null) {
+								if(v.getExpireDate().before(new Date())) {
+									d.setExpire(v);
+									d.setIsConsultation(true);
+								} else {
+									d.setIsConsultation(false);
+								}
+							} else {
+								d.setIsConsultation(false);
+							}
+						}
+					});
+
+				}
+				completionService.sync();
+			}
 			j.setObj(dg);
 			j.setSuccess(true);
-			j.setMsg("获取我的预约成功！");
+			j.setMsg("获取我的咨询列表成功！");
 
 		} catch (ServiceException e) {
 			j.setObj(e.getMessage());
-			logger.error("获取我的预约接口异常", e);
+			logger.error("获取我的咨询列表接口异常", e);
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
-			logger.error("获取我的预约接口异常", e);
+			logger.error("获取我的咨询列表接口异常", e);
 		}
 
 		return j;
+	}
+
+	/**
+	 * 获取我的咨询
+	 */
+	@RequestMapping("/doctor/consultations")
+	@ResponseBody
+	public Json consultations(FdMemberConsultationFriend consultationFriend, PageHelper ph, HttpServletRequest request) {
+
+		return getMyConsultations(consultationFriend, ph, 2, request);
 	}
 
 	/**

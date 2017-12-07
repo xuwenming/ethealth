@@ -122,6 +122,9 @@ public class ApiHomeController extends BaseController {
 	public Json banners(FdBanner banner, PageHelper ph) {
 		Json j = new Json();
 		try{
+			// TODO 先使用患者轮播图
+			if("6".equals(banner.getSource()))
+				banner.setSource("1");
 			ph.setHiddenTotal(true);
 			j.setObj(fdBannerService.dataGridComplex(banner, ph).getRows());
 
