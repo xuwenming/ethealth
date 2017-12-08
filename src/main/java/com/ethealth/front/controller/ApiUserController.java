@@ -296,6 +296,11 @@ public class ApiUserController extends BaseController {
     public Json editAudit(FdMemberDoctorSh sh) {
         Json j = new Json();
         try {
+            FdMember member = fdMemberService.get(sh.getId());
+            if(member.getStatus() == -1) {
+                j.setMsg("用户不存在");
+                return j;
+            }
             fdMemberDoctorShService.editAudit(sh);
             j.setSuccess(true);
             j.setMsg("编辑成功！");
