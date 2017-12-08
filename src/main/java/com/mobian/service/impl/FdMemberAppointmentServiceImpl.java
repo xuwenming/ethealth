@@ -136,8 +136,12 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			if (!F.empty(fdMemberAppointment.getFile())) {
 				whereHql += " and t.file = :file";
 				params.put("file", fdMemberAppointment.getFile());
-			}		
-		}	
+			}
+			if(!F.empty(fdMemberAppointment.getQuery())) {
+				whereHql += " and (t.appointName like :query or t.linkName like :query or t.linkWay like :query) ";
+				params.put("query", "%" + fdMemberAppointment.getQuery() + "%");
+			}
+		}
 		return whereHql;
 	}
 

@@ -289,6 +289,25 @@ public class ApiUserController extends BaseController {
     }
 
     /**
+     * 医生端账号审核（非开发接口）
+     */
+    @RequestMapping("/editAudit")
+    @ResponseBody
+    public Json editAudit(FdMemberDoctorSh sh) {
+        Json j = new Json();
+        try {
+            fdMemberDoctorShService.editAudit(sh);
+            j.setSuccess(true);
+            j.setMsg("编辑成功！");
+        }catch(Exception e){
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("医生端账号审核异常", e);
+        }
+
+        return j;
+    }
+
+    /**
      * 找回密码
      */
     @RequestMapping("/forgetPwd")

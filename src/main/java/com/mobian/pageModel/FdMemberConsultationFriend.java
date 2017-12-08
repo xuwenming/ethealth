@@ -25,6 +25,7 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 
 	private FdMemberConsultationExpire expire;
 	private Boolean isConsultation;
+	private String query;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -141,5 +142,13 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 
 	public void setIsConsultation(Boolean isConsultation) {
 		this.isConsultation = isConsultation;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
 	}
 }

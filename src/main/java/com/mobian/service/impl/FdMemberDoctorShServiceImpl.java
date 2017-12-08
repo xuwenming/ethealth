@@ -202,15 +202,24 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			member.setStatus(1);
 			fdMemberService.edit(member);
 
-			FdCustomer customer = new FdCustomer();
-			customer.setUserId(member.getId().longValue());
-			customer.setRealName(fdMemberDoctorSh.getRealName());
-			customer.setPhone(member.getMobile());
-			fdCustomerService.add(customer);
+			FdCustomer customer = fdCustomerService.get(member.getId().longValue());
+			if(customer == null) {
+				customer = new FdCustomer();
+				customer.setUserId(member.getId().longValue());
+				customer.setRealName(fdMemberDoctorSh.getRealName());
+				customer.setPhone(member.getMobile());
+				fdCustomerService.add(customer);
+			} else {
+				customer.setRealName(fdMemberDoctorSh.getRealName());
+				customer.setPhone(member.getMobile());
+				fdCustomerService.edit(customer);
+			}
 
-			FdMemberDoctor doctor = new FdMemberDoctor();
-			doctor.setId(member.getId());
-			fdMemberDoctorService.add(doctor);
+			if(fdMemberDoctorService.get(member.getId()) == null) {
+				FdMemberDoctor doctor = new FdMemberDoctor();
+				doctor.setId(member.getId());
+				fdMemberDoctorService.add(doctor);
+			}
 		} else {
 			member.setStatus(3);
 			fdMemberService.edit(member);

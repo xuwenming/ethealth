@@ -43,6 +43,7 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private FdMember user;
 	private Boolean isCommented;
 	private FdMemberAppointmentComment comment;
+	private String query;
 
 	public String getTimeZh() {
 		if(F.empty(time)) return null;
@@ -275,5 +276,13 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setUser(FdMember user) {
 		this.user = user;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
 	}
 }

@@ -74,7 +74,16 @@ public class FdMemberConsultationFriendServiceImpl extends BaseServiceImpl<FdMem
 			if (!F.empty(fdMemberConsultationFriend.getLastContent())) {
 				whereHql += " and t.lastContent = :lastContent";
 				params.put("lastContent", fdMemberConsultationFriend.getLastContent());
-			}		
+			}
+			if (!F.empty(fdMemberConsultationFriend.getSenderType())) {
+				whereHql += " and t.senderType = :senderType";
+				params.put("senderType", fdMemberConsultationFriend.getSenderType());
+			}
+			if(!F.empty(fdMemberConsultationFriend.getQuery())) {
+				whereHql += " and exists (select 1 from TfdCustomer c where c.userId = t.userId and (c.realName like :query or c.phone like :query or c.nickName like :query))";
+				params.put("query", "%" + fdMemberConsultationFriend.getQuery() + "%");
+			}
+
 		}	
 		return whereHql;
 	}

@@ -37,6 +37,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Autowired
 	private FdMemberDoctorShServiceI fdMemberDoctorShService;
 
+	@Autowired
+	private FdHospitalDeptServiceI fdHospitalDeptService;
+
 	@Override
 	public DataGrid dataGrid(FdMember fdMember, PageHelper ph) {
 		List<FdMember> ol = new ArrayList<FdMember>();
@@ -267,6 +270,14 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			customer.setSex(member.getSex());
 			fdCustomerService.edit(customer);
 		}
+
+		if(!F.empty(member.getSpeciality()) || !F.empty(member.getIntroduce())) {
+			FdMemberDoctor doctor = new FdMemberDoctor();
+			doctor.setId(member.getId());
+			doctor.setSpeciality(member.getSpeciality());
+			doctor.setIntroduce(member.getIntroduce());
+			fdMemberDoctorService.edit(doctor);
+		}
 	}
 
 	@Override
@@ -372,6 +383,10 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			if(!F.empty(doctor.getLevel())) {
 				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
 				doctor.setLevelName(level.getName());
+			}
+			if(!F.empty(doctor.getDepartment())) {
+				FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+				doctor.setDepartmentName(dept.getName());
 			}
 			member.setMemberDoctor(doctor);
 

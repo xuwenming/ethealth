@@ -223,7 +223,14 @@ public class ApiMemberConsultationController extends BaseController {
 	 */
 	@RequestMapping("/doctor/consultations")
 	@ResponseBody
-	public Json consultations(FdMemberConsultationFriend consultationFriend, PageHelper ph, HttpServletRequest request) {
+	public Json consultations(FdMemberConsultationFriend consultationFriend, PageHelper ph, Boolean isReply, HttpServletRequest request) {
+		if(isReply != null) {
+			if(isReply) {
+				consultationFriend.setSenderType(2); 
+			} else {
+				consultationFriend.setSenderType(1);
+			}
+		}
 
 		return getMyConsultations(consultationFriend, ph, 2, request);
 	}

@@ -187,6 +187,7 @@ public class ApiMemberAppointmentController extends BaseController {
 			long totalFee = new BigDecimal(fee.toString()).multiply(new BigDecimal(100)).longValue();
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
+			if(F.empty(customer.getRealName())) customer.setRealName(s.getName());
 			appointment.setUserId(Integer.valueOf(s.getId()));
 			appointment.setAppointName(customer.getRealName());
 			appointment.setLinkName(customer.getRealName());
@@ -251,12 +252,19 @@ public class ApiMemberAppointmentController extends BaseController {
 	 */
 	@RequestMapping("/doctor/appointments")
 	@ResponseBody
-	public Json appointments(FdMemberAppointment appointment, PageHelper ph, HttpServletRequest request) {
+	public Json appointments(FdMemberAppointment appointment, Boolean isReply, PageHelper ph, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
 			appointment.setDoctorId(Integer.valueOf(s.getId()));
 			appointment.setStatus("1");
+			if(isReply != null) {
+				if(isReply) {
+					appointment.setAppointStatus("1,2,3"); // 已回复
+				} else {
+					appointment.setAppointStatus("0"); // 未回复
+				}
+			}
 
 			j.setObj(appointmentDataGrid(appointment, ph, 2));
 			j.setSuccess(true);
