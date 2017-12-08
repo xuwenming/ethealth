@@ -42,6 +42,12 @@ public class ApiDoctorServiceController extends BaseController {
 	@Autowired
 	private FdMemberAppointmentCommentServiceI fdMemberAppointmentCommentService;
 
+	@Autowired
+	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
+
+	@Autowired
+	private FdDoctorOpinionServiceI fdDoctorOpinionService;
+
 	/**
 	 * 获取专家服务数据接口
 	 */
@@ -134,10 +140,28 @@ public class ApiDoctorServiceController extends BaseController {
 			ph.setRows(2);
 			ph.setSort("createTime");
 			ph.setOrder("desc");
+			ph.setHiddenTotal(true);
 			obj.put("comments", fdMemberAppointmentCommentService.dataGridComplex(comment, ph));
 
 			// 在线咨询
+			FdMemberConsultationFriend friend = new FdMemberConsultationFriend();
+			ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(2);
+			ph.setSort("lastTime");
+			ph.setOrder("desc");
+			friend.setIsAdmin(2);
+			friend.setDoctorId(id);
+			obj.put("consultations", fdMemberConsultationFriendService.dataGridComplex(friend, ph));
 
+			// 专家笔谈
+			FdDoctorOpinion doctorOpinion = new FdDoctorOpinion();
+			ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(2);
+			ph.setHiddenTotal(true);
+			doctorOpinion.setUserId(id);
+			obj.put("doctorOpinions", fdDoctorOpinionService.dataGridComplex(doctorOpinion, ph));
 
 			j.setObj(obj);
 			j.setSuccess(true);
@@ -174,6 +198,36 @@ public class ApiDoctorServiceController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取专家列表接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取更多咨询接口
+	 */
+	@RequestMapping("/consultations")
+	@ResponseBody
+	public Json consultations(FdMemberConsultationFriend friend, PageHelper ph) {
+		Json j = new Json();
+		try{
+			if(ph.getRows() == 0 || ph.getRows() > 50) {
+				ph.setRows(10);
+			}
+			if(F.empty(ph.getSort())) {
+				ph.setSort("lastTime");
+			}
+			if(F.empty(ph.getOrder())) {
+				ph.setOrder("desc");
+			}
+
+			friend.setIsAdmin(2);
+			j.setObj(fdMemberConsultationFriendService.dataGridComplex(friend, ph));
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取更多咨询接口异常", e);
 		}
 
 		return j;

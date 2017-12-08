@@ -175,34 +175,37 @@ public class ApiMemberConsultationController extends BaseController {
 				consultationFriend.setDoctorId(Integer.valueOf(s.getId()));
 			}
 			DataGrid dg = fdMemberConsultationFriendService.dataGridComplex(consultationFriend, ph);
-			List<FdMemberConsultationFriend> list = dg.getRows();
-			if(CollectionUtils.isNotEmpty(list)) {
-				CompletionService completionService = CompletionFactory.initCompletion();
-				for(FdMemberConsultationFriend o : list) {
-					completionService.submit(new Task<FdMemberConsultationFriend, FdMemberConsultationExpire>(o) {
-						@Override
-						public FdMemberConsultationExpire call() throws Exception {
-							FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(getD().getUserId(), getD().getDoctorId());
-							return expire;
-						}
+			if(isAdmin == 0) {
+				List<FdMemberConsultationFriend> list = dg.getRows();
+				if(CollectionUtils.isNotEmpty(list)) {
+					CompletionService completionService = CompletionFactory.initCompletion();
+					for(FdMemberConsultationFriend o : list) {
+						completionService.submit(new Task<FdMemberConsultationFriend, FdMemberConsultationExpire>(o) {
+							@Override
+							public FdMemberConsultationExpire call() throws Exception {
+								FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(getD().getUserId(), getD().getDoctorId());
+								return expire;
+							}
 
-						protected void set(FdMemberConsultationFriend d, FdMemberConsultationExpire v) {
-							if(v != null) {
-								if(v.getExpireDate().before(new Date())) {
-									d.setExpire(v);
-									d.setIsConsultation(true);
+							protected void set(FdMemberConsultationFriend d, FdMemberConsultationExpire v) {
+								if(v != null) {
+									if(v.getExpireDate().before(new Date())) {
+										d.setExpire(v);
+										d.setIsConsultation(true);
+									} else {
+										d.setIsConsultation(false);
+									}
 								} else {
 									d.setIsConsultation(false);
 								}
-							} else {
-								d.setIsConsultation(false);
 							}
-						}
-					});
+						});
 
+					}
+					completionService.sync();
 				}
-				completionService.sync();
 			}
+
 			j.setObj(dg);
 			j.setSuccess(true);
 			j.setMsg("获取我的咨询列表成功！");
