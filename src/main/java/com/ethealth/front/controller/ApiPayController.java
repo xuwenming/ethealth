@@ -444,11 +444,11 @@ public class ApiPayController extends BaseController {
 				Map<String, String> resultMap = XMLUtil.doXMLParse(result);
 				if("SUCCESS".equals(resultMap.get("result_code"))) {
 					j.success();
-					j.setMsg("支付成功");
-					j.setObj("SUCCESS");
+					j.setMsg("查询成功");
+					j.setObj(resultMap.get("trade_state"));
 				} else {
 					j.success();
-					j.setMsg("支付失败");
+					j.setMsg(resultMap.get("return_msg"));
 					j.setObj("FAIL");
 				}
 			}
