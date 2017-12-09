@@ -65,7 +65,7 @@ public class ApiMemberConsultationController extends BaseController {
 			// 获取咨询有效期
 			FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
 			if(expire != null) {
-				if(expire.getExpireDate().before(new Date())) {
+				if(expire.getExpireDate().after(new Date())) {
 					obj.put("isConsultation", true);
 					obj.put("expire", expire);
 				} else {
