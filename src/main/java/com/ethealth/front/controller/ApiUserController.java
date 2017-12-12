@@ -11,6 +11,7 @@ import com.mobian.service.FdMemberDoctorShServiceI;
 import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.easemob.HuanxinUtil;
+import com.mobian.thirdpart.oss.OSSUtil;
 import com.mobian.thirdpart.yunpian.YunpianUtil;
 import com.mobian.util.MD5Util;
 import com.mobian.util.Util;
@@ -217,6 +218,8 @@ public class ApiUserController extends BaseController {
             member.setPassword(MD5Util.encryptPassword(password));
 
             if(member.getIsAdmin() == 0) {
+                member.setHeadImage(OSSUtil.cdnUrl + "mmopen/headimage/user-default-icon.png");
+
                 String uuid = UUID.uuid();
                 member.setHxPassword(uuid);
                 if(!F.empty(HuanxinUtil.createUser(member.getIsAdmin() + "-" + username, uuid))) {
@@ -225,6 +228,7 @@ public class ApiUserController extends BaseController {
                     member.setHxStatus(false);
                 }
             } else if(member.getIsAdmin() == 2) {
+                member.setHeadImage(OSSUtil.cdnUrl + "mmopen/headimage/doctor-default-icon.png");
                 member.setStatus(-1);
             }
 
