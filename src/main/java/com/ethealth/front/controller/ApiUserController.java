@@ -218,7 +218,7 @@ public class ApiUserController extends BaseController {
             member.setPassword(MD5Util.encryptPassword(password));
 
             if(member.getIsAdmin() == 0) {
-                member.setHeadImage(OSSUtil.cdnUrl + "mmopen/headimage/user-default-icon.png");
+                member.setHeadImage(OSSUtil.cdnUrl + "ethealth/mmopen/headimage/user-default-icon.png");
 
                 String uuid = UUID.uuid();
                 member.setHxPassword(uuid);
@@ -228,7 +228,7 @@ public class ApiUserController extends BaseController {
                     member.setHxStatus(false);
                 }
             } else if(member.getIsAdmin() == 2) {
-                member.setHeadImage(OSSUtil.cdnUrl + "mmopen/headimage/doctor-default-icon.png");
+                member.setHeadImage(OSSUtil.cdnUrl + "ethealth/mmopen/headimage/doctor-default-icon.png");
                 member.setStatus(-1);
             }
 
