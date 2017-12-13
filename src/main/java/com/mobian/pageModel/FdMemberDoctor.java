@@ -26,6 +26,8 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private Date updateTime;
 	private java.lang.Integer sort;
 	private java.lang.Integer groupId;
+	private Boolean acceptAppointment;
+	private Boolean acceptConsultation;
 
 	private String hospitalName;
 	private String departmentName;
@@ -158,6 +160,22 @@ public class FdMemberDoctor implements java.io.Serializable {
 	
 	public java.lang.Integer getGroupId() {
 		return this.groupId;
+	}
+
+	public Boolean getAcceptAppointment() {
+		return acceptAppointment;
+	}
+
+	public void setAcceptAppointment(Boolean acceptAppointment) {
+		this.acceptAppointment = acceptAppointment;
+	}
+
+	public Boolean getAcceptConsultation() {
+		return acceptConsultation;
+	}
+
+	public void setAcceptConsultation(Boolean acceptConsultation) {
+		this.acceptConsultation = acceptConsultation;
 	}
 
 	public String getHospitalName() {

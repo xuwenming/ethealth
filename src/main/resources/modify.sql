@@ -32,6 +32,10 @@ ALTER TABLE `fd_member`
   DROP INDEX `username` ,
   ADD UNIQUE INDEX `username` (`username`, `is_admin`) USING BTREE ;
 
+ALTER TABLE `fd_member_doctor`
+  ADD COLUMN `accept_appointment`  tinyint NULL DEFAULT 1 COMMENT '是否接受预约1是 0否',
+  ADD COLUMN `accept_consultation`  tinyint NULL DEFAULT 1 COMMENT '是否接受咨询1是 0否';
+
 CREATE TABLE `fd_feedback` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `contact_way` varchar(50) DEFAULT NULL COMMENT '联系方式',
@@ -118,5 +122,16 @@ CREATE TABLE `fd_member_consultation_friend` (
   `sender_type` int(1) DEFAULT NULL COMMENT '发送方类型1患者 2医生',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='咨询好友表';
+
+CREATE TABLE `fd_doctor_close_time` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `doctor_id` int(10) DEFAULT NULL COMMENT '医生id',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '更新时间',
+  `status` tinyint DEFAULT '0' COMMENT '是否删除 0 否 1 是',
+  `close_date` date DEFAULT NULL COMMENT '停诊日期',
+	`time` int(2) DEFAULT NULL COMMENT '0不限 1 上午 2 下午 3 夜班',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='停诊发布记录表';
 
 
