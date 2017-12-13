@@ -323,6 +323,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
 		}
 		doctor.setPicUrl(picUrl);
+		doctor.setMobile(member.getMobile());
 
 		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
 

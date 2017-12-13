@@ -31,6 +31,7 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String departmentName;
 	private String levelName;
 	private String picUrl;
+	private String mobile;
 	private FdCustomer customer;
 	private Boolean isBest; // 是否著名
 	private String key; // 关键字查询
@@ -237,5 +238,13 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setDoctorTimes(List<String> doctorTimes) {
 		this.doctorTimes = doctorTimes;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 }
