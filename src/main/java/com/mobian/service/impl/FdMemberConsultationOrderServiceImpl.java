@@ -189,6 +189,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			friend.setUserId(consultationOrder.getUserId());
 			friend.setDoctorId(consultationOrder.getDoctorId());
 			friend.setLastTime(new Date());
+			friend.setLastContent(msg);
 			friend.setSenderType(1);
 			fdMemberConsultationFriendService.add(friend);
 		} else {
