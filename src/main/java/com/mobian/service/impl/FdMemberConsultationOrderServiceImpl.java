@@ -173,7 +173,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			String msg;
 			if(CollectionUtils.isNotEmpty(bds)) {
 				baseData = bds.get(random.nextInt(bds.size()));
-				msg = baseData.getDescription();
+				msg = baseData.getName();
 			} else {
 				msg = "您好，请问有什么需要咨询的吗？";
 			}
