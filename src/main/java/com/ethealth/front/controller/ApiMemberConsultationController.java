@@ -189,7 +189,7 @@ public class ApiMemberConsultationController extends BaseController {
 
 							protected void set(FdMemberConsultationFriend d, FdMemberConsultationExpire v) {
 								if(v != null) {
-									if(v.getExpireDate().before(new Date())) {
+									if(v.getExpireDate().after(new Date())) {
 										d.setExpire(v);
 										d.setIsConsultation(true);
 									} else {
@@ -279,6 +279,45 @@ public class ApiMemberConsultationController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("上传最新咨询接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取咨询有效期
+	 */
+	@RequestMapping("/getExpire")
+	@ResponseBody
+	public Json getExpire(Integer doctorId, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			Map<String, Object> obj = new HashMap<String, Object>();
+
+			// 获取咨询有效期
+			FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
+			if(expire != null) {
+				if(expire.getExpireDate().after(new Date())) {
+					obj.put("isConsultation", true);
+					obj.put("expire", expire);
+				} else {
+					obj.put("isConsultation", false);
+				}
+			} else {
+				obj.put("isConsultation", false);
+			}
+
+			j.setObj(obj);
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取咨询有效期接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取咨询有效期接口异常", e);
 		}
 
 		return j;

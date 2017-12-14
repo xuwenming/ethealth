@@ -254,6 +254,17 @@ public class HuanxinUtil {
 		log.info(response);
 		return response;
 	}
+
+	/**
+	 * 发送文本消息
+	 * @return
+	 */
+	public static String sendTxtMessage(String from, String to, String msg) {
+		String params = "{\"target_type\":\"users\",\"target\": [\""+to+"\"], \"msg\":{\"type\":\"txt\",\"msg\":\""+msg+"\"},\"from\":\""+from+"\"}";
+		String response = httpsRequest(getUrl("messages"), "POST", params, true);
+		log.info(response);
+		return response;
+	}
 	
 	private static String getUrl(String action) {
 		String[] keys = Application.getString(APPKEY).split("#");
@@ -264,6 +275,6 @@ public class HuanxinUtil {
 	public static void main(String[] args) {
 		HxAccessTokenInstance.accessToken = getAccessToken();
 		getFriends("cs");
-		//delFriend("cs", "da810fe5750049698c09dd2761267a39");
+
 	}
 }

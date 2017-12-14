@@ -5,9 +5,8 @@ import com.mobian.dao.FdMemberConsultationOrderDaoI;
 import com.mobian.listener.Application;
 import com.mobian.model.TfdMemberConsultationOrder;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdMemberConsultationExpireServiceI;
-import com.mobian.service.FdMemberConsultationFriendServiceI;
-import com.mobian.service.FdMemberConsultationOrderServiceI;
+import com.mobian.service.*;
+import com.mobian.thirdpart.easemob.HuanxinUtil;
 import com.mobian.util.MyBeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +26,12 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 
 	@Autowired
 	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
+
+	@Autowired
+	private BasedataServiceI basedataService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
@@ -161,6 +166,25 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 
 		FdMemberConsultationFriend friend = fdMemberConsultationFriendService.getByUserIdAndDoctorId(consultationOrder.getUserId(), consultationOrder.getDoctorId());
 		if(friend == null) {
+			Random random = new Random();
+			BaseData baseData = new BaseData();
+			baseData.setBasetypeCode("WL");
+			List<BaseData> bds = basedataService.getBaseDatas(baseData);
+			String msg;
+			if(CollectionUtils.isNotEmpty(bds)) {
+				baseData = bds.get(random.nextInt(bds.size()));
+				msg = baseData.getDescription();
+			} else {
+				msg = "您好，请问有什么需要咨询的吗？";
+			}
+
+			FdMember user = fdMemberService.get(consultationOrder.getUserId());
+			FdMember doctor = fdMemberService.get(consultationOrder.getDoctorId());
+
+//			HuanxinUtil.addFriend(user.getIsAdmin() + "-" + user.getMobile(), doctor.getIsAdmin() + "-" + doctor.getMobile());
+
+			HuanxinUtil.sendTxtMessage(user.getIsAdmin() + "-" + user.getMobile(), doctor.getIsAdmin() + "-" + doctor.getMobile(), msg);
+
 			friend = new FdMemberConsultationFriend();
 			friend.setUserId(consultationOrder.getUserId());
 			friend.setDoctorId(consultationOrder.getDoctorId());
