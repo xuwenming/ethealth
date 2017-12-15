@@ -183,7 +183,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 
 //			HuanxinUtil.addFriend(user.getIsAdmin() + "-" + user.getMobile(), doctor.getIsAdmin() + "-" + doctor.getMobile());
 
-			HuanxinUtil.sendTxtMessage(user.getIsAdmin() + "-" + user.getMobile(), doctor.getIsAdmin() + "-" + doctor.getMobile(), msg);
+			HuanxinUtil.sendTxtMessage(doctor.getIsAdmin() + "-" + doctor.getMobile(), user.getIsAdmin() + "-" + user.getMobile(),  msg);
 
 			friend = new FdMemberConsultationFriend();
 			friend.setUserId(consultationOrder.getUserId());
