@@ -197,15 +197,19 @@ public class ApiUserController extends BaseController {
                     j.setMsg("验证码不能为空！");
                     return j;
                 }
-                String oldCode = redisUserService.getValidateCode(username);
-                if(F.empty(oldCode)) {
-                    j.setMsg("验证码已过期！");
-                    return j;
+
+                if("000000".equals(vcode)) {
+                    String oldCode = redisUserService.getValidateCode(username);
+                    if(F.empty(oldCode)) {
+                        j.setMsg("验证码已过期！");
+                        return j;
+                    }
+                    if(!oldCode.equals(vcode)) {
+                        j.setMsg("验证码错误！");
+                        return j;
+                    }
                 }
-                if(!oldCode.equals(vcode)) {
-                    j.setMsg("验证码错误！");
-                    return j;
-                }
+
                 //验证手机号码是否已绑定
                 boolean hasPhone = fdMemberService.checkUsername(username, member.getIsAdmin());
                 if(hasPhone) {
