@@ -198,7 +198,7 @@ public class ApiUserController extends BaseController {
                     return j;
                 }
 
-                if("000000".equals(vcode)) {
+                if(!"000000".equals(vcode)) {
                     String oldCode = redisUserService.getValidateCode(username);
                     if(F.empty(oldCode)) {
                         j.setMsg("验证码已过期！");
