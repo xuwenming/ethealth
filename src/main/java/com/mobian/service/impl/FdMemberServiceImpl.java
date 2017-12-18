@@ -40,6 +40,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Autowired
 	private FdHospitalDeptServiceI fdHospitalDeptService;
 
+	@Autowired
+	private FdPatientServiceI fdPatientService;
+
 	@Override
 	public DataGrid dataGrid(FdMember fdMember, PageHelper ph) {
 		List<FdMember> ol = new ArrayList<FdMember>();
@@ -373,6 +376,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		member.setPicUrl(picUrl);
 
 		member.setCustomer(fdCustomerService.get(member.getId().longValue()));
+		member.setPatient(fdPatientService.get(member.getId()));
 		FdMemberDoctor doctor = fdMemberDoctorService.get(member.getId());
 
 		if(doctor != null) {

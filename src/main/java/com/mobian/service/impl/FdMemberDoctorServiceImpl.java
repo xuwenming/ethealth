@@ -353,4 +353,37 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		return doctor;
 	}
 
+	@Override
+	public DataGrid patientDataGrid(Integer doctorId, PageHelper ph) {
+		DataGrid dg = new DataGrid();
+		List<FdMember> ol = new ArrayList<FdMember>();
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("doctorId", doctorId);
+		String sql = "select DISTINCT t.user_id userId from "
+				+ " (select a.user_id, a.create_time from fd_member_appointment a where a.status = 1 and a.doctor_id = :doctorId "
+				+ " UNION "
+				+ " select c.user_id, c.create_time from fd_member_consultation_friend c where c.status = 0 and c.doctor_id = :doctorId) t "
+				+ " order by t.create_time desc ";
+		List<Map> l = fdMemberDoctorDao.findBySql2Map(sql, params, ph.getPage(), ph.getRows());
+		if(CollectionUtils.isNotEmpty(l)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(Map m : l) {
+				final Integer userId = (Integer)m.get("userId");
+				completionService.submit(new Task<List<FdMember>, FdMember>(new CacheKey("fdMember", userId + ""), ol) {
+					@Override
+					public FdMember call() throws Exception {
+						return fdMemberService.getDetail(userId);
+					}
+
+					protected void set(List<FdMember> d, FdMember v) {
+						d.add(v);
+					}
+				});
+			}
+			completionService.sync();
+			dg.setRows(ol);
+		}
+		return dg;
+	}
+
 }

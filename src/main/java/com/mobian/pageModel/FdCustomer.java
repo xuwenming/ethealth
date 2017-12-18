@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.absx.F;
+import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
 
 import java.util.Calendar;
@@ -34,6 +36,16 @@ public class FdCustomer implements java.io.Serializable {
 			c.setTimeInMillis(birthday);
 			return DateUtil.getAgeByBirthday(c.getTime());
 		}
+		return null;
+	}
+
+	public String getBirthdayStr() {
+		if(!F.empty(birthday)) {
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(birthday);
+			return DateUtil.format(c.getTime(), Constants.DATE_FORMAT_YMD);
+		}
+
 		return null;
 	}
 

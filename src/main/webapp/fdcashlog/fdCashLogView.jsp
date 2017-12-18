@@ -1,0 +1,100 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.mobian.model.TfdCashLog" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<script type="text/javascript">
+	$(function() {
+		parent.$.messager.progress('close');		
+	});
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+	<div data-options="region:'center',border:false">
+		<table class="table table-hover table-condensed">
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_STATUS%></th>	
+					<td>
+						${fdCashLog.status}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_CREATE_TIME%></th>	
+					<td>
+						${fdCashLog.createTime}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_UPDATE_TIME%></th>	
+					<td>
+						${fdCashLog.updateTime}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_HANDLE_STATUS%></th>	
+					<td>
+						${fdCashLog.handleStatus}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_HANDLE_LOGIN_ID%></th>	
+					<td>
+						${fdCashLog.handleLoginId}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_HANDLE_REMARK%></th>	
+					<td>
+						${fdCashLog.handleRemark}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_HANDLE_TIME%></th>	
+					<td>
+						${fdCashLog.handleTime}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_USER_ID%></th>	
+					<td>
+						${fdCashLog.userId}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_AMOUNT%></th>	
+					<td>
+						${fdCashLog.amount}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_REF_TYPE%></th>	
+					<td>
+						${fdCashLog.refType}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_CONTENT%></th>	
+					<td>
+						${fdCashLog.content}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_BANK_ACCOUNT%></th>	
+					<td>
+						${fdCashLog.bankAccount}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_BANK_PHONE%></th>	
+					<td>
+						${fdCashLog.bankPhone}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_BANK_ID_NO%></th>	
+					<td>
+						${fdCashLog.bankIdNo}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_BANK_NAME%></th>	
+					<td>
+						${fdCashLog.bankName}							
+					</td>							
+					<th><%=TfdCashLog.ALIAS_BANK_CARD%></th>	
+					<td>
+						${fdCashLog.bankCard}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdCashLog.ALIAS_ALIPAY%></th>	
+					<td>
+						${fdCashLog.alipay}							
+					</td>							
+				</tr>		
+		</table>
+	</div>
+</div>

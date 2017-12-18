@@ -134,4 +134,76 @@ CREATE TABLE `fd_doctor_close_time` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='停诊发布记录表';
 
+CREATE TABLE `fd_account` (
+  `user_id` bigint(20) NOT NULL,
+  `bank_account` varchar(18) DEFAULT NULL COMMENT '开户名',
+  `bank_phone` varchar(18) DEFAULT NULL COMMENT '开户预留手机号',
+  `bank_id_no` varchar(18) DEFAULT NULL COMMENT '开户身份证号',
+  `bank_name` varchar(36) DEFAULT NULL COMMENT '开户行名称',
+  `bank_card` varchar(36) DEFAULT NULL COMMENT '银行卡号',
+  `alipay` varchar(100) DEFAULT NULL COMMENT '支付宝账号',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户账号信息表';
+
+CREATE TABLE `fd_cash_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '提现时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '修改时间',
+  `handle_status` varchar(4) DEFAULT 'HS01' COMMENT '处理状态{HS}',
+  `handle_login_id` varchar(36) DEFAULT NULL COMMENT '处理人',
+  `handle_remark` varchar(512) DEFAULT NULL COMMENT '处理结果',
+  `handle_time` datetime DEFAULT NULL COMMENT '处理时间',
+  `user_id` int(11) NOT NULL COMMENT '提现用户id',
+  `amount` int(11) NOT NULL COMMENT '提现金额',
+  `ref_type` varchar(10) NOT NULL COMMENT '业务类型',
+  `content` varchar(512) DEFAULT NULL COMMENT '申请备注',
+  `bank_account` varchar(18) DEFAULT NULL COMMENT '开户名',
+  `bank_phone` varchar(18) DEFAULT NULL COMMENT '开户预留手机号',
+  `bank_id_no` varchar(18) DEFAULT NULL COMMENT '开户身份证号',
+  `bank_name` varchar(36) DEFAULT NULL COMMENT '开户行名称',
+  `bank_card` varchar(36) DEFAULT NULL COMMENT '银行卡号',
+  `alipay` varchar(100) DEFAULT NULL COMMENT '支付宝账号',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='提现申请记录表';
+
+DROP TABLE IF EXISTS `fd_message`;
+CREATE TABLE `fd_message` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '消息ID',
+  `title` varchar(100) DEFAULT NULL COMMENT '标题',
+  `content` text DEFAULT NULL COMMENT '正文',
+  `create_by` int(10) DEFAULT NULL COMMENT '创建人',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `update_by` int(10) DEFAULT NULL COMMENT '修改人',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
+	`user_id` int(10) DEFAULT NULL COMMENT '用户id',
+	`mtype` varchar(6) DEFAULT NULL COMMENT '消息类型{MT}',
+	`is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读1:是 0:否',
+	`url` varchar(100) DEFAULT NULL COMMENT '正文链接',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='消息表';
+
+CREATE TABLE `fd_message_read_log` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
+	`user_id` int(10) DEFAULT NULL COMMENT '用户id',
+	`message_id` int(10) DEFAULT NULL COMMENT '消息Id',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='消息查看记录表';
+
+CREATE TABLE `fd_patient` (
+  `user_id` int(20) NOT NULL COMMENT '用户ID',
+  `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
+	`real_name` varchar(50) DEFAULT NULL COMMENT '姓名',
+	`sex` int(1) DEFAULT '1' COMMENT '1男2女 0未知',
+	`birthday` bigint(13) DEFAULT NULL COMMENT '出生日期',
+	`relation` varchar(6) DEFAULT NULL COMMENT '与患者关系{PR}',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='患者信息表';
+
 

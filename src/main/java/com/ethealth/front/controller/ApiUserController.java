@@ -9,10 +9,13 @@ import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.FdMemberDoctorShServiceI;
 import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.FdPatientServiceI;
 import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.easemob.HuanxinUtil;
 import com.mobian.thirdpart.oss.OSSUtil;
 import com.mobian.thirdpart.yunpian.YunpianUtil;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.MD5Util;
 import com.mobian.util.Util;
 import com.yunpian.sdk.model.Result;
@@ -49,6 +52,9 @@ public class ApiUserController extends BaseController {
 
     @Autowired
     private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
+    @Autowired
+    private FdPatientServiceI fdPatientService;
 
     /**
      * 登录接口
@@ -432,6 +438,65 @@ public class ApiUserController extends BaseController {
         } catch(Exception e) {
             j.setMsg(Application.getString(EX_0001));
             logger.error("获取用户信息接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 获取患者信息接口
+     */
+    @RequestMapping("/getPatient")
+    @ResponseBody
+    public Json getPatient(HttpServletRequest request) {
+        Json j = new Json();
+        try{
+            SessionInfo s = getSessionInfo(request);
+            FdPatient patient = fdPatientService.get(Integer.valueOf(s.getId()));
+            j.setObj(patient != null ? patient : new FdPatient());
+            j.setSuccess(true);
+            j.setMsg("获取成功！");
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("获取患者信息接口异常", e);
+        } catch(Exception e) {
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("获取患者信息接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 修改患者信息接口
+     */
+    @RequestMapping("/updatePatient")
+    @ResponseBody
+    public Json updatePatient(FdPatient patient, String birthdayStr, HttpServletRequest request) {
+        Json j = new Json();
+        try{
+            SessionInfo s = getSessionInfo(request);
+
+            patient.setUserId(Integer.valueOf(s.getId()));
+            if(!F.empty(birthdayStr)) {
+                patient.setBirthday(DateUtil.parse(birthdayStr, Constants.DATE_FORMAT_YMD).getTime());
+            }
+
+            FdPatient fdPatient = fdPatientService.get(Integer.valueOf(s.getId()));
+            if(fdPatient == null) {
+                fdPatientService.add(patient);
+            } else {
+                fdPatientService.edit(patient);
+            }
+
+            j.setSuccess(true);
+            j.setMsg("修改成功！");
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("修改患者信息接口异常", e);
+        } catch(Exception e) {
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("修改患者信息接口异常", e);
         }
 
         return j;

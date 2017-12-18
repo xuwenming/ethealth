@@ -24,6 +24,7 @@ public class FdMemberAppointmentComment implements java.io.Serializable {
 	private java.lang.String comment;	
 
 	private String userName;
+	private Integer isAdmin;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -139,5 +140,13 @@ public class FdMemberAppointmentComment implements java.io.Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public Integer getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Integer isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

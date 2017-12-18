@@ -35,6 +35,7 @@ public class FdMember implements java.io.Serializable {
 
 	private FdCustomer customer;
 	private FdMemberDoctor memberDoctor;
+	private FdPatient patient;
 	private String picUrl;
 	private String groupName;
 	private String tokenId;
@@ -315,5 +316,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setIntroduce(String introduce) {
 		this.introduce = introduce;
+	}
+
+	public FdPatient getPatient() {
+		return patient;
+	}
+
+	public void setPatient(FdPatient patient) {
+		this.patient = patient;
 	}
 }

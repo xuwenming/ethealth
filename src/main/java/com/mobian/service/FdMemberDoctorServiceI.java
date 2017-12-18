@@ -56,4 +56,12 @@ public interface FdMemberDoctorServiceI {
 	DataGrid dataGridMoreComplex(FdMemberDoctor doctor, PageHelper ph);
 
 	FdMemberDoctor getDetail(Integer id);
+
+	/**
+	 * 根据医生id获取我的患者（包括咨询和预约）
+	 * @param doctorId
+	 * @param ph
+	 * @return
+	 */
+	DataGrid patientDataGrid(Integer doctorId, PageHelper ph);
 }

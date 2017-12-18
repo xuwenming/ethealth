@@ -22,6 +22,7 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 	private FdMember member;
 	private Integer isAdmin;
 	private String userName;
+	private String userMobile;
 
 	private FdMemberConsultationExpire expire;
 	private Boolean isConsultation;
@@ -126,6 +127,14 @@ public class FdMemberConsultationFriend implements java.io.Serializable {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getUserMobile() {
+		return userMobile;
+	}
+
+	public void setUserMobile(String userMobile) {
+		this.userMobile = userMobile;
 	}
 
 	public FdMemberConsultationExpire getExpire() {

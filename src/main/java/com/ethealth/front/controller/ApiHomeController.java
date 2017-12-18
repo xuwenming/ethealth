@@ -43,6 +43,9 @@ public class ApiHomeController extends BaseController {
 	@Autowired
 	private FdCustomerServiceI fdCustomerService;
 
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
 	/**
 	 * 获取首页数据接口
 	 */
@@ -78,7 +81,7 @@ public class ApiHomeController extends BaseController {
 			if(CollectionUtils.isNotEmpty(friends)) {
 				CompletionService completionService = CompletionFactory.initCompletion();
 				for(FdMemberConsultationFriend f : friends) {
-					completionService.submit(new Task<FdMemberConsultationFriend, String>(f) {
+					completionService.submit(new Task<FdMemberConsultationFriend, String>(new CacheKey("fdCustomer", f.getUserId() + ""), f) {
 						@Override
 						public String call() throws Exception {
 							String str = "";
@@ -95,6 +98,16 @@ public class ApiHomeController extends BaseController {
 
 						protected void set(FdMemberConsultationFriend d, String v) {
 							d.setUserName(v);
+						}
+					});
+					completionService.submit(new Task<FdMemberConsultationFriend, String>(new CacheKey("fdCustomer", f.getUserId() + ""), f) {
+						@Override
+						public String call() throws Exception {
+							return fdMemberService.get(getD().getUserId()).getMobile();
+						}
+
+						protected void set(FdMemberConsultationFriend d, String v) {
+							d.setUserMobile(v);
 						}
 					});
 				}

@@ -9,16 +9,12 @@ import com.mobian.pageModel.Json;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.pageModel.SessionInfo;
 import com.mobian.service.FdBalanceLogServiceI;
-import com.mobian.util.Constants;
-import com.mobian.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.Date;
 
 /**
 * Created by xuwm on 2017/5/17.
@@ -51,15 +47,15 @@ public class ApiBalanceController extends BaseController {
                 ph.setOrder("desc");
             }
 
-            Calendar now = Calendar.getInstance();
-            if(F.empty(date)) {
-                date = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) ;
-            }
-            Date createDateStart = DateUtil.parse(date, Constants.DATE_FORMAT_YM);
-            balanceLog.setCreateTimeStart(createDateStart.getTime());
-            now.setTime(createDateStart);
-            now.add(Calendar.MONTH, 1);
-            balanceLog.setCreateTimeEnd(now.getTimeInMillis());
+//            Calendar now = Calendar.getInstance();
+//            if(F.empty(date)) {
+//                date = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) ;
+//            }
+//            Date createDateStart = DateUtil.parse(date, Constants.DATE_FORMAT_YM);
+//            balanceLog.setCreateTimeStart(createDateStart.getTime());
+//            now.setTime(createDateStart);
+//            now.add(Calendar.MONTH, 1);
+//            balanceLog.setCreateTimeEnd(now.getTimeInMillis());
 
             balanceLog.setUserId(Long.valueOf(s.getId()));
             j.setObj(fdBalanceLogService.dataGrid(balanceLog, ph));

@@ -174,9 +174,17 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 						FdCustomer customer = fdCustomerService.get(Long.valueOf(getD().getUserId()));
 						if(customer != null) {
 							if(!F.empty(customer.getRealName())) {
-								str = customer.getRealName().substring(0, 1) + "**";
+								if(!F.empty(getD().getIsAdmin()) && getD().getIsAdmin() == 2) {
+									str = customer.getRealName();
+								} else {
+									str = customer.getRealName().substring(0, 1) + "**";
+								}
 							} else {
-								str = customer.getPhone().substring(0, 3) + "****" + customer.getPhone().substring(customer.getPhone().length() - 4);
+								if(!F.empty(getD().getIsAdmin()) && getD().getIsAdmin() == 2) {
+									str = customer.getPhone();
+								} else {
+									str = customer.getPhone().substring(0, 3) + "****" + customer.getPhone().substring(customer.getPhone().length() - 4);
+								}
 							}
 						}
 						return str;
