@@ -1,7 +1,6 @@
 package com.ethealth.front.controller;
 
 import com.mobian.absx.F;
-import com.mobian.concurrent.CacheKey;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
 import com.mobian.controller.BaseController;
@@ -10,6 +9,8 @@ import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.Util;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 专家咨询接口
@@ -46,6 +50,9 @@ public class ApiMemberConsultationController extends BaseController {
 	@Autowired
 	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
 
+	@Autowired
+	private FdMessageServiceI fdMessageService;
+
 	/**
 	 * 获取专家咨询信息接口
 	 */
@@ -62,17 +69,30 @@ public class ApiMemberConsultationController extends BaseController {
 			// 获取接诊时间/预约时间
 			obj.put("doctorTimes", fdDoctorTimeService.getGroupTimesByDoctorId(doctorId));
 
-			// 获取咨询有效期
-			FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
-			if(expire != null) {
-				if(expire.getExpireDate().after(new Date())) {
-					obj.put("isConsultation", true);
-					obj.put("expire", expire);
+			FdMessage message = new FdMessage();
+			message.setMtype("MT03");
+			message.setStartDate(DateUtil.parse(DateUtil.format(new Date(), Constants.DATE_FORMAT_YMD), Constants.DATE_FORMAT_YMD));
+			message.setEndDate(message.getStartDate());
+			PageHelper ph = new PageHelper();
+			ph.setHiddenTotal(true);
+			List<FdMessage> messages = fdMessageService.dataGrid(message, ph).getRows();
+			if(CollectionUtils.isNotEmpty(messages)) {
+				obj.put("isConsultation", true);
+				obj.put("isFree", true);
+			} else {
+				obj.put("isFree", false);
+				// 获取咨询有效期
+				FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
+				if(expire != null) {
+					if(expire.getExpireDate().after(new Date())) {
+						obj.put("isConsultation", true);
+						obj.put("expire", expire);
+					} else {
+						obj.put("isConsultation", false);
+					}
 				} else {
 					obj.put("isConsultation", false);
 				}
-			} else {
-				obj.put("isConsultation", false);
 			}
 
 			j.setObj(obj);

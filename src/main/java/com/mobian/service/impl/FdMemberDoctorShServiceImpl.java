@@ -144,6 +144,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 	public void add(FdMemberDoctorSh fdMemberDoctorSh) {
 		TfdMemberDoctorSh t = new TfdMemberDoctorSh();
 		BeanUtils.copyProperties(fdMemberDoctorSh, t);
+		t.setCreateTime(new Date());
 		//t.setId(jb.absx.UUID.uuid());
 		fdMemberDoctorShDao.save(t);
 	}

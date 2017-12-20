@@ -92,7 +92,15 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 			if (!F.empty(fdMessage.getUrl())) {
 				whereHql += " and t.url = :url";
 				params.put("url", fdMessage.getUrl());
-			}		
+			}
+			if(fdMessage.getStartDate() != null) {
+				whereHql += " and t.startDate <= :startDate";
+				params.put("startDate", fdMessage.getStartDate());
+			}
+			if(fdMessage.getEndDate() != null) {
+				whereHql += " and t.endDate >= :endDate";
+				params.put("endDate", fdMessage.getEndDate());
+			}
 		}	
 		return whereHql;
 	}

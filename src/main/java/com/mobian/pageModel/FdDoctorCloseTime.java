@@ -15,6 +15,8 @@ public class FdDoctorCloseTime implements java.io.Serializable {
 	private Date closeDate;			
 	private java.lang.Integer time;	
 	private String week;
+
+	private Integer[] times;
 	
 
 	public void setId(java.lang.Integer value) {
@@ -75,5 +77,13 @@ public class FdDoctorCloseTime implements java.io.Serializable {
 
 	public void setWeek(String week) {
 		this.week = week;
+	}
+
+	public Integer[] getTimes() {
+		return times;
+	}
+
+	public void setTimes(Integer[] times) {
+		this.times = times;
 	}
 }

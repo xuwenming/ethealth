@@ -93,7 +93,7 @@ public class FdPatientServiceImpl extends BaseServiceImpl<FdPatient> implements 
 	public FdPatient get(Integer userId) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", userId);
-		TfdPatient t = fdPatientDao.get("from TfdPatient t  where t.userId = :userId", params);
+		TfdPatient t = fdPatientDao.get("from TfdPatient t  where t.status = 0 and t.userId = :userId", params);
 		if(t != null) {
 			FdPatient o = new FdPatient();
 			BeanUtils.copyProperties(t, o);

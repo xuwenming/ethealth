@@ -65,11 +65,19 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 			if (!F.empty(fdDoctorCloseTime.getStatus())) {
 				whereHql += " and t.status = :status";
 				params.put("status", fdDoctorCloseTime.getStatus());
-			}		
-			if (!F.empty(fdDoctorCloseTime.getTime())) {
+			}
+			if (fdDoctorCloseTime.getCloseDate() != null) {
+				whereHql += " and t.closeDate = :closeDate";
+				params.put("closeDate", fdDoctorCloseTime.getCloseDate());
+			}
+			if (fdDoctorCloseTime.getTime() != null) {
 				whereHql += " and t.time = :time";
 				params.put("time", fdDoctorCloseTime.getTime());
-			}		
+			}
+			if(fdDoctorCloseTime.getTimes() != null) {
+				whereHql += " and t.time in (:times)";
+				params.put("times", fdDoctorCloseTime.getTimes());
+			}
 		}	
 		return whereHql;
 	}

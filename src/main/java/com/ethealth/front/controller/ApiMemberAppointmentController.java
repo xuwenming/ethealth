@@ -52,6 +52,12 @@ public class ApiMemberAppointmentController extends BaseController {
 	@Autowired
 	private FdMemberServiceI fdMemberService;
 
+	@Autowired
+	private FdDoctorCloseTimeServiceI fdDoctorCloseTimeService;
+
+	@Autowired
+	private FdPatientServiceI fdPatientService;
+
 	/**
 	 * 获取专家预约信息接口
 	 */
@@ -95,7 +101,9 @@ public class ApiMemberAppointmentController extends BaseController {
 			List<Map<String, Object>> times = new ArrayList<Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.add(Calendar.DAY_OF_MONTH, 2); // 两天后
-			for(int i=1; i<=30; i++) {
+
+			int days = Integer.valueOf(Application.getString("SV400", "30"));
+			for(int i=1; i<=days; i++) {
 				Map<String, Object> timeM = new HashMap<String, Object>();
 				c.add(Calendar.DAY_OF_MONTH, 1);
 				int week = c.get(Calendar.DAY_OF_WEEK);
@@ -104,6 +112,19 @@ public class ApiMemberAppointmentController extends BaseController {
 				if(doctorTimeMap.containsKey(week)) {
 					FdDoctorTime dt = doctorTimeMap.get(week);
 					String date = DateUtil.format(c.getTime(), Constants.DATE_FORMAT_YMD);
+
+					// 排除医生停诊日期
+					FdDoctorCloseTime closeTime = new FdDoctorCloseTime();
+					closeTime.setCloseDate(DateUtil.parse(date, Constants.DATE_FORMAT_YMD));
+					closeTime.setDoctorId(doctorId);
+					closeTime.setTimes(new Integer[]{0, dt.getTime()});
+					ph = new PageHelper();
+					ph.setHiddenTotal(true);
+					List<FdDoctorCloseTime> closeTimes = fdDoctorCloseTimeService.dataGrid(closeTime, ph).getRows();
+					if(CollectionUtils.isNotEmpty(closeTimes)) {
+						continue;
+					}
+
 					timeM.put("date", date);
 					timeM.put("week", dt.getWeek());
 					timeM.put("time", dt.getTime());
@@ -114,7 +135,8 @@ public class ApiMemberAppointmentController extends BaseController {
 					// 获取预约余号
 					FdMemberAppointment appointment = new FdMemberAppointment();
 					appointment.setDoctorId(doctorId);
-					appointment.setAppointStatus("1,2");
+					appointment.setStatus("1");
+					appointment.setAppointStatus("0,1,2");
 					appointment.setConfirmTime(date);
 					appointment.setTime(dt.getTime());
 					ph = new PageHelper();
@@ -156,7 +178,18 @@ public class ApiMemberAppointmentController extends BaseController {
 				j.setMsg("预约时间不能为空！");
 				return j;
 			}
+
 			SessionInfo s = getSessionInfo(request);
+
+			FdPatient patient = fdPatientService.get(Integer.valueOf(s.getId()));
+			if(patient == null || (F.empty(patient.getRealName()) || F.empty(patient.getSex()) || F.empty(patient.getBirthday()) || F.empty(patient.getRelation()))) {
+				obj.put("appointmentNo", -3);
+				j.setMsg("患者信息不完善，请前往个人中心完善信息！");
+				j.setObj(obj);
+				return j;
+			}
+
+
 			FdMemberAppointment exist = new FdMemberAppointment();
 			exist.setUserId(Integer.valueOf(s.getId()));
 			exist.setDoctorId(appointment.getDoctorId());
@@ -189,7 +222,7 @@ public class ApiMemberAppointmentController extends BaseController {
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
 			if(F.empty(customer.getRealName())) customer.setRealName(s.getName());
 			appointment.setUserId(Integer.valueOf(s.getId()));
-			appointment.setAppointName(customer.getRealName());
+			appointment.setAppointName(patient.getRealName());
 			appointment.setLinkName(customer.getRealName());
 			appointment.setLinkWay(s.getName());
 			appointment.setCreateBy(appointment.getUserId());
