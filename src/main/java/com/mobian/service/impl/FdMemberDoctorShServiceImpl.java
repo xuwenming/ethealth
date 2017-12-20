@@ -179,10 +179,12 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Override
 	public void edit(FdMemberDoctorSh fdMemberDoctorSh) {
-		FdMemberDoctorSh t = get(fdMemberDoctorSh.getId(), fdMemberDoctorSh.getAuditType());
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", fdMemberDoctorSh.getId());
+		params.put("auditType", fdMemberDoctorSh.getAuditType());
+		TfdMemberDoctorSh t = fdMemberDoctorShDao.get("from TfdMemberDoctorSh t  where t.id = :id and t.auditType = :auditType", params);
 		if (t != null) {
 			MyBeanUtils.copyProperties(fdMemberDoctorSh, t, new String[] { "id" , "addtime", "isdeleted","updatetime" },true);
-			fdMemberDoctorSh.setRealName(t.getRealName());
 		}
 	}
 
@@ -212,6 +214,8 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 	@Override
 	public void editAudit(FdMemberDoctorSh fdMemberDoctorSh) {
 		edit(fdMemberDoctorSh);
+
+		fdMemberDoctorSh = get(fdMemberDoctorSh.getId(), fdMemberDoctorSh.getAuditType());
 
 		FdMember member = fdMemberService.get(fdMemberDoctorSh.getId());
 		if("2".equals(fdMemberDoctorSh.getStatus())) {
