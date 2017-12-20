@@ -85,13 +85,15 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	//@Length(max=100)
 	private java.lang.String realName;
 	//
-	private java.lang.Boolean sex;
+	private java.lang.Integer sex;
 	//
 	private java.lang.Long birthday;
 	//
 	private java.lang.Integer groupId;
 	private String hospitalName;
 	private String departmentName;
+	private Integer auditType;
+	private String email;
 	//columns END
 
 
@@ -258,12 +260,12 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 		this.realName = realName;
 	}
 	
-	@Column(name = "sex", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
-	public java.lang.Boolean getSex() {
+	@Column(name = "sex", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public java.lang.Integer getSex() {
 		return this.sex;
 	}
 	
-	public void setSex(java.lang.Boolean sex) {
+	public void setSex(java.lang.Integer sex) {
 		this.sex = sex;
 	}
 	
@@ -301,6 +303,24 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
+	}
+
+	@Column(name = "audit_type", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Integer getAuditType() {
+		return auditType;
+	}
+
+	@Column(name = "email", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setAuditType(Integer auditType) {
+		this.auditType = auditType;
 	}
 	/*
 	public String toString() {

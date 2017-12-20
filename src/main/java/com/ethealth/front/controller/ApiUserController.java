@@ -39,8 +39,6 @@ import java.util.List;
 @RequestMapping("/api/member")
 public class ApiUserController extends BaseController {
 
-    public static final String HEAD_IMAGE = "mmopen";
-
     @Autowired
     private FdMemberServiceI fdMemberService;
 
@@ -270,6 +268,7 @@ public class ApiUserController extends BaseController {
         Json j = new Json();
         try {
             sh.setStatus("1"); // 审核中
+            sh.setAuditType(1); // 注册审核
             fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 
             FdMember member = fdMemberService.get(sh.getId());

@@ -43,6 +43,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Autowired
 	private FdPatientServiceI fdPatientService;
 
+	@Autowired
+	private FdMessageServiceI fdMessageService;
+
 	@Override
 	public DataGrid dataGrid(FdMember fdMember, PageHelper ph) {
 		List<FdMember> ol = new ArrayList<FdMember>();
@@ -189,6 +192,15 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			customer.setUserId(member.getId().longValue());
 			customer.setPhone(member.getMobile());
 			fdCustomerService.add(customer);
+
+			FdMessage message = new FdMessage();
+			message.setTitle("注册成功");
+			message.setContent("尊敬的用户您好，您已经注册成功，可以开始使用客户端的全部功能。\n有任何疑问可通过客户端直接联系我们，谢谢！");
+			message.setUserId(member.getId());
+			message.setMtype("MT02");
+			message.setIsRead(false);
+			message.setAlias("0-" + member.getMobile());
+			fdMessageService.addAndPushMessage(message);
 		}
 
 //		if(member.getIsAdmin() == 2) {
@@ -388,17 +400,21 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
 				doctor.setLevelName(level.getName());
 			}
-			if(!F.empty(doctor.getDepartment())) {
-				FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
-				doctor.setDepartmentName(dept.getName());
+
+			if(F.empty(doctor.getDepartmentName())) {
+				if(!F.empty(doctor.getDepartment())) {
+					FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+					doctor.setDepartmentName(dept.getName());
+				}
 			}
+
 			member.setMemberDoctor(doctor);
 
-			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
-			if(sh != null && "2".equals(sh.getStatus())) {
-				if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
-				if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
-			}
+//			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
+//			if(sh != null && "2".equals(sh.getStatus())) {
+//				if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
+//				if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
+//			}
 		}
 
 	}

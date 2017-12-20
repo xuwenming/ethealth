@@ -36,6 +36,7 @@
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
 		<form id="form" method="post">
 			<input type="hidden" name="id" value = "${fdMemberDoctorSh.id}"/>
+			<input type="hidden" name="auditType" value = "${fdMemberDoctorSh.auditType}"/>
 			<table class="table table-hover table-condensed">
 				<tr>
 					<th width="10%">手机号</th>

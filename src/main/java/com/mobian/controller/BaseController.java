@@ -53,6 +53,7 @@ public class BaseController extends Objectx {
 	protected static final String SUCCESS_MESSAGE = "操作成功";
 	public static final String DEFAULT_TOKEN = TokenManage.DEFAULT_TOKEN;
 	private String _publishSettingVal = "2"; //生产环境
+	public static final String HEAD_IMAGE = "mmopen";
 
 
 	@Autowired

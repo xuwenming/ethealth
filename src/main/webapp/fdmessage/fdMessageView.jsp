@@ -52,11 +52,15 @@
 				<tr>	
 					<th><%=TfdMessage.ALIAS_MTYPE%></th>	
 					<td>
-						${fdMessage.mtype}							
+						${fdMessage.mtypeZh}
 					</td>							
-					<th><%=TfdMessage.ALIAS_IS_READ%></th>	
+					<th>消费方类型</th>
 					<td>
-						${fdMessage.isRead}							
+						<c:choose>
+							<c:when test="${fdMessage.consumerType == 1}">患者端</c:when>
+							<c:when test="${fdMessage.consumerType == 2}">医生端</c:when>
+							<c:otherwise>不限</c:otherwise>
+						</c:choose>
 					</td>							
 				</tr>		
 				<tr>	

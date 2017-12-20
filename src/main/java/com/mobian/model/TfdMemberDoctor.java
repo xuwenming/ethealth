@@ -62,6 +62,7 @@ public class TfdMemberDoctor implements java.io.Serializable{
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
+	private String departmentName;
 
 	public TfdMemberDoctor(){
 	}
@@ -232,6 +233,15 @@ public class TfdMemberDoctor implements java.io.Serializable{
 
 	public void setAcceptConsultation(Boolean acceptConsultation) {
 		this.acceptConsultation = acceptConsultation;
+	}
+
+	@Column(name = "department_name", unique = false, nullable = true, insertable = true, updatable = true, length = 100)
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 
 	/*

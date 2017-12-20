@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'createTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -67,6 +67,17 @@
 				field : 'departmentName',
 				title : '科室',
 				width : 50
+				}, {
+				field : 'auditType',
+				title : '审核类型',
+				width : 40,
+				formatter : function(value, row, index) {
+					var str;
+					if(row.auditType == 1) str = '注册';
+					else str =  '编辑';
+
+					return str;
+				}
 				}, {
 				field : 'status',
 				title : '审核状态',

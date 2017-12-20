@@ -24,14 +24,17 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 	private java.lang.String status;	
 	private java.lang.String reason;	
 	private java.lang.String realName;	
-	private java.lang.Boolean sex;	
+	private java.lang.Integer sex;
 	private java.lang.Long birthday;	
 	private java.lang.Integer groupId;
 	private String hospitalName;
 	private String departmentName;
+	private Integer auditType;
+	private String email;
 
 	private String mobile;
 	private String levelName;
+	private String birthdayStr;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -154,13 +157,23 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 	public java.lang.String getRealName() {
 		return this.realName;
 	}
-	public void setSex(java.lang.Boolean sex) {
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
 		this.sex = sex;
 	}
-	
-	public java.lang.Boolean getSex() {
-		return this.sex;
+
+	public Integer getAuditType() {
+		return auditType;
 	}
+
+	public void setAuditType(Integer auditType) {
+		this.auditType = auditType;
+	}
+
 	public void setBirthday(java.lang.Long birthday) {
 		this.birthday = birthday;
 	}
@@ -206,5 +219,21 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 
 	public void setLevelName(String levelName) {
 		this.levelName = levelName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getBirthdayStr() {
+		return birthdayStr;
+	}
+
+	public void setBirthdayStr(String birthdayStr) {
+		this.birthdayStr = birthdayStr;
 	}
 }

@@ -8,10 +8,13 @@ import com.mobian.pageModel.*;
 import com.mobian.service.*;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
+import com.mobian.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -42,6 +45,42 @@ public class ApiDoctorController extends BaseController {
 
 	@Autowired
 	private FdMemberAppointmentServiceI fdMemberAppointmentService;
+
+	@Autowired
+	private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
+	/**
+	 * 医生信息修改接口
+	 */
+	@RequestMapping("/edit")
+	@ResponseBody
+	public Json edit(FdMemberDoctorSh sh, HttpServletRequest request, @RequestParam(required = false) MultipartFile headImageFile) {
+		Json j = new Json();
+		try{
+			SessionInfo s = getSessionInfo(request);
+			sh.setId(Integer.valueOf(s.getId()));
+			sh.setStatus("1"); // 审核中
+			sh.setAuditType(2); // 修改审核
+
+			if(!F.empty(sh.getBirthdayStr()))
+				sh.setBirthday(DateUtil.parse(sh.getBirthdayStr(), Constants.DATE_FORMAT_YMD).getTime());
+
+			sh.setPics(uploadFile(HEAD_IMAGE, headImageFile));
+
+			fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
+
+			j.setSuccess(true);
+			j.setMsg("修改成功！");
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("医生信息修改接口异常", e);
+		} catch(Exception e) {
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("医生信息修改接口异常", e);
+		}
+
+		return j;
+	}
 
 	/**
 	 * 获取业务设置信息

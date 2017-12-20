@@ -230,32 +230,33 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 				});
 
 				// 设置科室名称
-				completionService.submit(new Task<FdMemberDoctor, String>(o) {
-					@Override
-					public String call() throws Exception {
-						FdHospitalDept dept = fdHospitalDeptService.get(getD().getDepartment());
-						return dept == null ? null : dept.getName();
-					}
+				if(F.empty(o.getDepartmentName()))
+					completionService.submit(new Task<FdMemberDoctor, String>(o) {
+						@Override
+						public String call() throws Exception {
+							FdHospitalDept dept = fdHospitalDeptService.get(getD().getDepartment());
+							return dept == null ? null : dept.getName();
+						}
 
-					protected void set(FdMemberDoctor d, String v) {
-						if(!F.empty(v))
-							d.setDepartmentName(v);
-						else
-							completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
-								@Override
-								public String call() throws Exception {
-									FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
-									return sh == null ? null : sh.getDepartmentName();
-								}
-
-								protected void set(FdMemberDoctor d, String v) {
-									if(!F.empty(v))
-										d.setDepartmentName(v);
-
-								}
-							});
-					}
-				});
+						protected void set(FdMemberDoctor d, String v) {
+							if(!F.empty(v))
+								d.setDepartmentName(v);
+	//						else
+	//							completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
+	//								@Override
+	//								public String call() throws Exception {
+	//									FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
+	//									return sh == null ? null : sh.getDepartmentName();
+	//								}
+	//
+	//								protected void set(FdMemberDoctor d, String v) {
+	//									if(!F.empty(v))
+	//										d.setDepartmentName(v);
+	//
+	//								}
+	//							});
+						}
+					});
 
 
 				if(isMoreComplex) {
@@ -284,20 +285,20 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 						protected void set(FdMemberDoctor d, String v) {
 							if(!F.empty(v))
 								d.setHospitalName(v);
-							else
-								completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
-									@Override
-									public String call() throws Exception {
-										FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
-										return sh == null ? null : sh.getHospitalName();
-									}
-
-									protected void set(FdMemberDoctor d, String v) {
-										if (!F.empty(v))
-											d.setHospitalName(v);
-
-									}
-								});
+//							else
+//								completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdMemberDoctorSh", d.getId() + ""), d) {
+//									@Override
+//									public String call() throws Exception {
+//										FdMemberDoctorSh sh = fdMemberDoctorShService.get(getD().getId());
+//										return sh == null ? null : sh.getHospitalName();
+//									}
+//
+//									protected void set(FdMemberDoctor d, String v) {
+//										if (!F.empty(v))
+//											d.setHospitalName(v);
+//
+//									}
+//								});
 						}
 					});
 
@@ -327,8 +328,10 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 
 		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
 
-		FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
-		if(dept != null) doctor.setDepartmentName(dept.getName());
+		if(F.empty(doctor.getDepartmentName())) {
+			FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+			if(dept != null) doctor.setDepartmentName(dept.getName());
+		}
 
 		FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
 		if(level != null) doctor.setLevelName(level.getName());
@@ -344,11 +347,11 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			}
 		}
 
-		FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
-		if(sh != null && "2".equals(sh.getStatus())) {
-			if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
-			if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
-		}
+//		FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
+//		if(sh != null && "2".equals(sh.getStatus())) {
+//			if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
+//			if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
+//		}
 
 		return doctor;
 	}

@@ -55,7 +55,8 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	//
 	private java.lang.Long updateTime;
 	//
-	private java.lang.Boolean status;
+	private java.lang.String status;
+	private java.lang.Boolean isdeleted;
 	//
 	private java.lang.Integer userId;
 	//@Length(max=6)
@@ -64,6 +65,12 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	private java.lang.Boolean isRead;
 	//@Length(max=100)
 	private java.lang.String url;
+	//
+	private java.util.Date startDate;
+	//
+	private java.util.Date endDate;
+
+	private Integer consumerType;
 	//columns END
 
 
@@ -138,16 +145,25 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	public void setUpdateTime(java.lang.Long updateTime) {
 		this.updateTime = updateTime;
 	}
-	
-	@Column(name = "status", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
-	public java.lang.Boolean getStatus() {
-		return this.status;
+
+	@Column(name = "status", unique = false, nullable = true, insertable = true, updatable = true, length = 6)
+	public String getStatus() {
+		return status;
 	}
-	
-	public void setStatus(java.lang.Boolean status) {
+
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	
+
+	@Column(name = "isdeleted", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
+	public Boolean getIsdeleted() {
+		return isdeleted;
+	}
+
+	public void setIsdeleted(Boolean isdeleted) {
+		this.isdeleted = isdeleted;
+	}
+
 	@Column(name = "user_id", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public java.lang.Integer getUserId() {
 		return this.userId;
@@ -183,8 +199,34 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	public void setUrl(java.lang.String url) {
 		this.url = url;
 	}
-	
-	
+
+	@Column(name = "start_date", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+	public java.util.Date getStartDate() {
+		return this.startDate;
+	}
+
+	public void setStartDate(java.util.Date startDate) {
+		this.startDate = startDate;
+	}
+
+
+	@Column(name = "end_date", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+	public java.util.Date getEndDate() {
+		return this.endDate;
+	}
+
+	public void setEndDate(java.util.Date endDate) {
+		this.endDate = endDate;
+	}
+
+	@Column(name = "consumer_type", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Integer getConsumerType() {
+		return consumerType;
+	}
+
+	public void setConsumerType(Integer consumerType) {
+		this.consumerType = consumerType;
+	}
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

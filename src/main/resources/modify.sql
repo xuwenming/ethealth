@@ -26,7 +26,13 @@ ALTER TABLE `fd_member_appointment`
 
 ALTER TABLE `fd_member_doctor_sh`
   ADD COLUMN `hospital_name`  varchar(100) NULL COMMENT '医院名称',
-  ADD COLUMN `department_name`  varchar(100) NULL COMMENT '科室名称';
+  ADD COLUMN `department_name`  varchar(100) NULL COMMENT '科室名称',
+  ADD COLUMN `audit_type`  int(1) NOT NULL DEFAULT 2 COMMENT '审核类型1注册审核 2编辑审核',
+  ADD COLUMN `email`  varchar(50) NULL COMMENT '邮箱';
+
+ALTER TABLE `fd_member_doctor_sh`
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (`id`, `audit_type`);
 
 ALTER TABLE `fd_member`
   DROP INDEX `username` ,
@@ -34,7 +40,9 @@ ALTER TABLE `fd_member`
 
 ALTER TABLE `fd_member_doctor`
   ADD COLUMN `accept_appointment`  tinyint NULL DEFAULT 1 COMMENT '是否接受预约1是 0否',
-  ADD COLUMN `accept_consultation`  tinyint NULL DEFAULT 1 COMMENT '是否接受咨询1是 0否';
+  ADD COLUMN `accept_consultation`  tinyint NULL DEFAULT 1 COMMENT '是否接受咨询1是 0否',
+  ADD COLUMN `department_name`  varchar(100) NULL COMMENT '科室名称';
+
 
 CREATE TABLE `fd_feedback` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键id',
@@ -171,16 +179,20 @@ DROP TABLE IF EXISTS `fd_message`;
 CREATE TABLE `fd_message` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '消息ID',
   `title` varchar(100) DEFAULT NULL COMMENT '标题',
-  `content` text DEFAULT NULL COMMENT '正文',
+  `content` text COMMENT '正文',
   `create_by` int(10) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `update_by` int(10) DEFAULT NULL COMMENT '修改人',
   `update_time` bigint(13) DEFAULT NULL COMMENT '修改时间',
-  `status` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
-	`user_id` int(10) DEFAULT NULL COMMENT '用户id',
-	`mtype` varchar(6) DEFAULT NULL COMMENT '消息类型{MT}',
-	`is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读1:是 0:否',
-	`url` varchar(100) DEFAULT NULL COMMENT '正文链接',
+  `isdeleted` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
+  `status` varchar(4) DEFAULT 'ST01' COMMENT '业务状态{ST}',
+  `user_id` int(10) DEFAULT NULL COMMENT '用户id',
+  `mtype` varchar(6) DEFAULT NULL COMMENT '消息类型{MT}',
+  `is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读1:是 0:否',
+  `url` varchar(100) DEFAULT NULL COMMENT '正文链接',
+  `start_date` date DEFAULT NULL COMMENT '开始时间',
+  `end_date` date DEFAULT NULL COMMENT '结束时间',
+  `consumer_type` int(1) DEFAULT '0' COMMENT '消费方类型0不限 1患者方 2医生方',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='消息表';
 

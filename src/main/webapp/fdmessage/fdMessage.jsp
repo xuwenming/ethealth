@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'createTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -53,45 +53,28 @@
 				title : '<%=TfdMessage.ALIAS_TITLE%>',
 				width : 50		
 				}, {
-				field : 'content',
-				title : '<%=TfdMessage.ALIAS_CONTENT%>',
-				width : 50		
-				}, {
-				field : 'createBy',
-				title : '<%=TfdMessage.ALIAS_CREATE_BY%>',
-				width : 50		
+				field : 'mtypeZh',
+				title : '<%=TfdMessage.ALIAS_MTYPE%>',
+				width : 50
 				}, {
 				field : 'createTime',
-				title : '<%=TfdMessage.ALIAS_CREATE_TIME%>',
+				title : '发布时间',
+				width : 50,
+				formatter : function (value, row, index) {
+					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
+				}
+				}, {
+				field : 'startDateStr',
+				title : '开始时间',
 				width : 50		
 				}, {
-				field : 'updateBy',
-				title : '<%=TfdMessage.ALIAS_UPDATE_BY%>',
-				width : 50		
+				field : 'endDateStr',
+				title : '结束时间',
+				width : 50
 				}, {
-				field : 'updateTime',
-				title : '<%=TfdMessage.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdMessage.ALIAS_STATUS%>',
-				width : 50		
-				}, {
-				field : 'userId',
-				title : '<%=TfdMessage.ALIAS_USER_ID%>',
-				width : 50		
-				}, {
-				field : 'mtype',
-				title : '<%=TfdMessage.ALIAS_MTYPE%>',
-				width : 50		
-				}, {
-				field : 'isRead',
-				title : '<%=TfdMessage.ALIAS_IS_READ%>',
-				width : 50		
-				}, {
-				field : 'url',
-				title : '<%=TfdMessage.ALIAS_URL%>',
-				width : 50		
+				field : 'statusZh',
+				title : '状态',
+				width : 50
 			}, {
 				field : 'action',
 				title : '操作',
@@ -152,12 +135,12 @@
 			id = rows[0].id;
 		}
 		parent.$.modalDialog({
-			title : '编辑数据',
+			title : '编辑消息',
 			width : 780,
 			height : 500,
 			href : '${pageContext.request.contextPath}/fdMessageController/editPage?id=' + id,
 			buttons : [ {
-				text : '编辑',
+				text : '更新',
 				handler : function() {
 					parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
 					var f = parent.$.modalDialog.handler.find('#form');
@@ -182,12 +165,12 @@
 
 	function addFun() {
 		parent.$.modalDialog({
-			title : '添加数据',
+			title : '发布消息',
 			width : 780,
 			height : 500,
 			href : '${pageContext.request.contextPath}/fdMessageController/addPage',
 			buttons : [ {
-				text : '添加',
+				text : '发布',
 				handler : function() {
 					parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
 					var f = parent.$.modalDialog.handler.find('#form');
@@ -224,59 +207,27 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
-						<tr>	
-							<th><%=TfdMessage.ALIAS_TITLE%></th>	
-							<td>
-											<input type="text" name="title" maxlength="100" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_CONTENT%></th>	
-							<td>
-											<input type="text" name="content" maxlength="65535" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_CREATE_BY%></th>	
-							<td>
-											<input type="text" name="createBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_CREATE_TIME%></th>	
-							<td>
-											<input type="text" name="createTime" maxlength="19" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMessage.ALIAS_UPDATE_BY%></th>	
-							<td>
-											<input type="text" name="updateBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="0" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_USER_ID%></th>	
-							<td>
-											<input type="text" name="userId" maxlength="10" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMessage.ALIAS_MTYPE%></th>	
-							<td>
-											<jb:select dataType="MT" name="mtype"></jb:select>	
-							</td>
-							<th><%=TfdMessage.ALIAS_IS_READ%></th>	
-							<td>
-											<input type="text" name="isRead" maxlength="0" class="span2"/>
-							</td>
-							<th><%=TfdMessage.ALIAS_URL%></th>	
-							<td>
-											<input type="text" name="url" maxlength="100" class="span2"/>
-							</td>
-						</tr>	
+					<tr>
+						<th><%=TfdMessage.ALIAS_TITLE%></th>
+						<td>
+							<input type="text" name="title" maxlength="100" class="span2"/>
+						</td>
+						<th>状态</th>
+						<td>
+							<jb:select dataType="ST" name="status"></jb:select>
+						</td>
+						<th><%=TfdMessage.ALIAS_MTYPE%></th>
+						<td>
+							<select name="mtype" class="easyui-combobox"
+									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="MT01">系统消息</option>
+								<option value="MT03">免费咨询</option>
+							</select>
+						</td>
+					</tr>
 				</table>
 			</form>
 		</div>
@@ -286,9 +237,9 @@
 	</div>
 	<div id="toolbar" style="display: none;">
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMessageController/addPage')}">
-			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
+			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">发布</a>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMessageController/download')}">
 			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">

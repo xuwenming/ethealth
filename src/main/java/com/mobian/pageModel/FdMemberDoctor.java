@@ -28,9 +28,9 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
+	private String departmentName;
 
 	private String hospitalName;
-	private String departmentName;
 	private String levelName;
 	private String picUrl;
 	private String mobile;

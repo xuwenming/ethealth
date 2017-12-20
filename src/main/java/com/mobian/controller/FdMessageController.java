@@ -7,14 +7,16 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import com.mobian.pageModel.Colum;
-import com.mobian.pageModel.FdMessage;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.absx.F;
+import com.mobian.pageModel.*;
 import com.mobian.service.FdMessageServiceI;
 
+import com.mobian.util.ConfigUtil;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,7 +57,15 @@ public class FdMessageController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMessage fdMessage, PageHelper ph) {
-		return fdMessageService.dataGrid(fdMessage, ph);
+		DataGrid dg = fdMessageService.dataGrid(fdMessage, ph);
+		List<FdMessage> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(FdMessage message : list) {
+				if(message.getStartDate() != null) message.setStartDateStr(DateUtil.format(message.getStartDate(), Constants.DATE_FORMAT_YMD));
+				if(message.getEndDate() != null) message.setEndDateStr(DateUtil.format(message.getEndDate(), Constants.DATE_FORMAT_YMD));
+			}
+		}
+		return dg;
 	}
 	/**
 	 * 获取FdMessage数据表格excel
@@ -96,8 +106,14 @@ public class FdMessageController extends BaseController {
 	 */
 	@RequestMapping("/add")
 	@ResponseBody
-	public Json add(FdMessage fdMessage) {
-		Json j = new Json();		
+	public Json add(FdMessage fdMessage, HttpSession session) {
+		Json j = new Json();
+		if(!F.empty(fdMessage.getStartDateStr())) {
+			fdMessage.setStartDate(DateUtil.parse(fdMessage.getStartDateStr(), Constants.DATE_FORMAT_YMD));
+		}
+		if(!F.empty(fdMessage.getEndDateStr())) {
+			fdMessage.setEndDate(DateUtil.parse(fdMessage.getEndDateStr(), Constants.DATE_FORMAT_YMD));
+		}
 		fdMessageService.add(fdMessage);
 		j.setSuccess(true);
 		j.setMsg("添加成功！");		
@@ -112,6 +128,8 @@ public class FdMessageController extends BaseController {
 	@RequestMapping("/view")
 	public String view(HttpServletRequest request, Integer id) {
 		FdMessage fdMessage = fdMessageService.get(id);
+		if(fdMessage.getStartDate() != null) fdMessage.setStartDateStr(DateUtil.format(fdMessage.getStartDate(), Constants.DATE_FORMAT_YMD));
+		if(fdMessage.getEndDate() != null) fdMessage.setEndDateStr(DateUtil.format(fdMessage.getEndDate(), Constants.DATE_FORMAT_YMD));
 		request.setAttribute("fdMessage", fdMessage);
 		return "/fdmessage/fdMessageView";
 	}
@@ -124,6 +142,8 @@ public class FdMessageController extends BaseController {
 	@RequestMapping("/editPage")
 	public String editPage(HttpServletRequest request, Integer id) {
 		FdMessage fdMessage = fdMessageService.get(id);
+		if(fdMessage.getStartDate() != null) fdMessage.setStartDateStr(DateUtil.format(fdMessage.getStartDate(), Constants.DATE_FORMAT_YMD));
+		if(fdMessage.getEndDate() != null) fdMessage.setEndDateStr(DateUtil.format(fdMessage.getEndDate(), Constants.DATE_FORMAT_YMD));
 		request.setAttribute("fdMessage", fdMessage);
 		return "/fdmessage/fdMessageEdit";
 	}
@@ -137,7 +157,13 @@ public class FdMessageController extends BaseController {
 	@RequestMapping("/edit")
 	@ResponseBody
 	public Json edit(FdMessage fdMessage) {
-		Json j = new Json();		
+		Json j = new Json();
+		if(!F.empty(fdMessage.getStartDateStr())) {
+			fdMessage.setStartDate(DateUtil.parse(fdMessage.getStartDateStr(), Constants.DATE_FORMAT_YMD));
+		}
+		if(!F.empty(fdMessage.getEndDateStr())) {
+			fdMessage.setEndDate(DateUtil.parse(fdMessage.getEndDateStr(), Constants.DATE_FORMAT_YMD));
+		}
 		fdMessageService.edit(fdMessage);
 		j.setSuccess(true);
 		j.setMsg("编辑成功！");		

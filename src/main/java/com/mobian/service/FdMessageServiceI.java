@@ -51,4 +51,5 @@ public interface FdMessageServiceI {
 	 */
 	public void delete(Integer id);
 
+	void addAndPushMessage(FdMessage message);
 }

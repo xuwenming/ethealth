@@ -6,6 +6,7 @@ import com.mobian.concurrent.CacheKey;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
 import com.mobian.pageModel.*;
+import com.mobian.service.FdHospitalServiceI;
 import com.mobian.service.FdMemberDoctorLevelServiceI;
 import com.mobian.service.FdMemberDoctorShServiceI;
 import com.mobian.service.FdMemberServiceI;
@@ -41,6 +42,9 @@ public class FdMemberDoctorShController extends BaseController {
 	@Autowired
 	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
 
+	@Autowired
+	private FdHospitalServiceI fdHospitalService;
+
 
 	/**
 	 * 跳转到FdMemberDoctorSh管理页面
@@ -66,11 +70,11 @@ public class FdMemberDoctorShController extends BaseController {
 		if(CollectionUtils.isNotEmpty(list)) {
 			CompletionService completionService = CompletionFactory.initCompletion();
 			for(FdMemberDoctorSh sh : list) {
-				completionService.submit(new Task<FdMemberDoctorSh, String>(sh) {
+				completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdMember", sh.getId() + ""), sh) {
 					@Override
 					public String call() throws Exception {
 						FdMember member = fdMemberService.get(getD().getId());
-						return member.getUsername();
+						return member.getMobile();
 					}
 
 					protected void set(FdMemberDoctorSh d, String v) {
@@ -79,19 +83,36 @@ public class FdMemberDoctorShController extends BaseController {
 						}
 					}
 				});
-				completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdMemberDoctorLevel", sh.getLevel() + ""), sh) {
-					@Override
-					public String call() throws Exception {
-						FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(getD().getLevel());
-						return level.getName();
-					}
 
-					protected void set(FdMemberDoctorSh d, String v) {
-						if(!F.empty(v)) {
-							d.setLevelName(v);
+				if(!F.empty(sh.getLevel()))
+					completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdMemberDoctorLevel", sh.getLevel() + ""), sh) {
+						@Override
+						public String call() throws Exception {
+							FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(getD().getLevel());
+							return level.getName();
 						}
-					}
-				});
+
+						protected void set(FdMemberDoctorSh d, String v) {
+							if(!F.empty(v)) {
+								d.setLevelName(v);
+							}
+						}
+					});
+
+				if(!F.empty(sh.getHospital()))
+					completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdHospital", sh.getHospital() + ""), sh) {
+						@Override
+						public String call() throws Exception {
+							FdHospital hospital = fdHospitalService.get(getD().getHospital());
+							return hospital.getHospitalName();
+						}
+
+						protected void set(FdMemberDoctorSh d, String v) {
+							if(!F.empty(v)) {
+								d.setHospitalName(v);
+							}
+						}
+					});
 			}
 			completionService.sync();
 		}

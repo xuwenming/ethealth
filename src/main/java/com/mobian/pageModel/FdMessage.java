@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.listener.Application;
+
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -14,13 +16,26 @@ public class FdMessage implements java.io.Serializable {
 	private java.lang.Long createTime;	
 	private java.lang.Integer updateBy;	
 	private java.lang.Long updateTime;	
-	private java.lang.Boolean status;	
-	private java.lang.Integer userId;	
+	private java.lang.Boolean isdeleted;
+	private java.lang.String status;
+	private java.lang.Integer userId;
 	private java.lang.String mtype;	
 	private java.lang.Boolean isRead;	
-	private java.lang.String url;	
+	private java.lang.String url;
+	private Date startDate;
+	private Date endDate;
+	private Integer consumerType;
 
-	
+	private String startDateStr;
+	private String endDateStr;
+	private String alias;
+
+	public String getStatusZh() {
+		return Application.getString(status);
+	}
+	public String getMtypeZh() {
+		return Application.getString(mtype);
+	}
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -73,13 +88,23 @@ public class FdMessage implements java.io.Serializable {
 	public java.lang.Long getUpdateTime() {
 		return this.updateTime;
 	}
-	public void setStatus(java.lang.Boolean status) {
+
+	public Boolean getIsdeleted() {
+		return isdeleted;
+	}
+
+	public void setIsdeleted(Boolean isdeleted) {
+		this.isdeleted = isdeleted;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
 		this.status = status;
 	}
-	
-	public java.lang.Boolean getStatus() {
-		return this.status;
-	}
+
 	public void setUserId(java.lang.Integer userId) {
 		this.userId = userId;
 	}
@@ -109,4 +134,51 @@ public class FdMessage implements java.io.Serializable {
 		return this.url;
 	}
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Integer getConsumerType() {
+		return consumerType;
+	}
+
+	public void setConsumerType(Integer consumerType) {
+		this.consumerType = consumerType;
+	}
+
+	public String getStartDateStr() {
+		return startDateStr;
+	}
+
+	public void setStartDateStr(String startDateStr) {
+		this.startDateStr = startDateStr;
+	}
+
+	public String getEndDateStr() {
+		return endDateStr;
+	}
+
+	public void setEndDateStr(String endDateStr) {
+		this.endDateStr = endDateStr;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
 }

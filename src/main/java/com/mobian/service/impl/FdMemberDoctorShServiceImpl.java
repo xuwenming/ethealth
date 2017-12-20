@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberDoctorShDaoI;
+import com.mobian.exception.ServiceException;
 import com.mobian.model.TfdMemberDoctorSh;
 import com.mobian.pageModel.*;
 import com.mobian.service.FdCustomerServiceI;
@@ -129,10 +130,10 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			}
 
 			if(!F.empty(fdMemberDoctorSh.getMobile())) {
-				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status in (2,3) and m.username like :mobile)";
+				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.username like :mobile)";
 				params.put("mobile", "%" + fdMemberDoctorSh.getMobile() + "%");
 			} else {
-				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status in (2,3))";
+				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status <> -1)";
 			}
 
 		}	
@@ -161,9 +162,24 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		return null;
 	}
 
+	public FdMemberDoctorSh get(Integer id, Integer auditType) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("id", id);
+		params.put("auditType", auditType == null ? 2 : auditType);
+		TfdMemberDoctorSh t = fdMemberDoctorShDao.get("from TfdMemberDoctorSh t  where t.id = :id and t.auditType = :auditType", params);
+		if(t != null) {
+			FdMemberDoctorSh o = new FdMemberDoctorSh();
+			BeanUtils.copyProperties(t, o);
+			return o;
+		}
+
+		return null;
+	}
+
 	@Override
 	public void edit(FdMemberDoctorSh fdMemberDoctorSh) {
-		TfdMemberDoctorSh t = fdMemberDoctorShDao.get(TfdMemberDoctorSh.class, fdMemberDoctorSh.getId());
+		FdMemberDoctorSh t = get(fdMemberDoctorSh.getId(), fdMemberDoctorSh.getAuditType());
 		if (t != null) {
 			MyBeanUtils.copyProperties(fdMemberDoctorSh, t, new String[] { "id" , "addtime", "isdeleted","updatetime" },true);
 			fdMemberDoctorSh.setRealName(t.getRealName());
@@ -180,7 +196,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Override
 	public void addOrUpdateMemberDoctorSh(FdMemberDoctorSh sh) {
-		FdMemberDoctorSh o = get(sh.getId());
+		FdMemberDoctorSh o = get(sh.getId(), sh.getAuditType());
 		if(o == null) {
 			add(sh);
 		} else {
@@ -200,6 +216,8 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		FdMember member = fdMemberService.get(fdMemberDoctorSh.getId());
 		if("2".equals(fdMemberDoctorSh.getStatus())) {
 			member.setStatus(1);
+			member.setEmail(fdMemberDoctorSh.getEmail());
+			member.setHeadImage(fdMemberDoctorSh.getPics());
 			fdMemberService.edit(member);
 
 			FdCustomer customer = fdCustomerService.get(member.getId().longValue());
@@ -208,17 +226,34 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				customer.setUserId(member.getId().longValue());
 				customer.setRealName(fdMemberDoctorSh.getRealName());
 				customer.setPhone(member.getMobile());
+				customer.setBirthday(fdMemberDoctorSh.getBirthday());
+				customer.setSex(fdMemberDoctorSh.getSex());
 				fdCustomerService.add(customer);
 			} else {
 				customer.setRealName(fdMemberDoctorSh.getRealName());
 				customer.setPhone(member.getMobile());
+				customer.setBirthday(fdMemberDoctorSh.getBirthday());
+				customer.setSex(fdMemberDoctorSh.getSex());
 				fdCustomerService.edit(customer);
 			}
 
-			if(fdMemberDoctorService.get(member.getId()) == null) {
-				FdMemberDoctor doctor = new FdMemberDoctor();
+			FdMemberDoctor doctor = fdMemberDoctorService.get(member.getId());
+			if(doctor == null) {
+				doctor = new FdMemberDoctor();
 				doctor.setId(member.getId());
+				doctor.setHospital(fdMemberDoctorSh.getHospital());
+				doctor.setDepartmentName(fdMemberDoctorSh.getDepartmentName());
+				doctor.setLevel(fdMemberDoctorSh.getLevel());
+				doctor.setSpeciality(fdMemberDoctorSh.getSpeciality());
+				doctor.setIntroduce(fdMemberDoctorSh.getIntroduce());
 				fdMemberDoctorService.add(doctor);
+			} else {
+				doctor.setHospital(fdMemberDoctorSh.getHospital());
+				doctor.setDepartmentName(fdMemberDoctorSh.getDepartmentName());
+				doctor.setLevel(fdMemberDoctorSh.getLevel());
+				doctor.setSpeciality(fdMemberDoctorSh.getSpeciality());
+				doctor.setIntroduce(fdMemberDoctorSh.getIntroduce());
+				fdMemberDoctorService.edit(doctor);
 			}
 		} else {
 			member.setStatus(3);

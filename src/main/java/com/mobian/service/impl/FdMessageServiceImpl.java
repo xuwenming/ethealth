@@ -48,7 +48,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 	protected String whereHql(FdMessage fdMessage, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMessage != null) {
-			whereHql += " where t.status = 0 ";
+			whereHql += " where t.isdeleted = 0 ";
 			if (!F.empty(fdMessage.getTitle())) {
 				whereHql += " and t.title = :title";
 				params.put("title", fdMessage.getTitle());
@@ -102,6 +102,8 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 		TfdMessage t = new TfdMessage();
 		BeanUtils.copyProperties(fdMessage, t);
 		//t.setId(jb.absx.UUID.uuid());
+		if(F.empty(fdMessage.getStatus())) t.setStatus("ST01");
+		if(F.empty(fdMessage.getIsdeleted())) t.setIsdeleted(false);
 		fdMessageDao.save(t);
 	}
 
@@ -129,6 +131,13 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 		params.put("id", id);
 		fdMessageDao.executeHql("update TfdMessage t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMessageDao.delete(fdMessageDao.get(TfdMessage.class, id));
+	}
+
+	@Override
+	public void addAndPushMessage(FdMessage message) {
+		add(message);
+
+		// TODO 推送消息
 	}
 
 }
