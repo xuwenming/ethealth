@@ -1,24 +1,27 @@
 package com.mobian.service.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import com.alibaba.fastjson.JSON;
+import com.alipay.api.domain.AlipayTradeRefundModel;
+import com.alipay.api.request.AlipayTradeRefundRequest;
+import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.mobian.absx.F;
 import com.mobian.dao.FdPaymentBaseDaoI;
 import com.mobian.model.TfdPaymentBase;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
-
+import com.mobian.thirdpart.alipay.AlipayUtil;
+import com.mobian.thirdpart.wx.HttpUtil;
+import com.mobian.thirdpart.wx.PayCommonUtil;
+import com.mobian.thirdpart.wx.WeixinUtil;
+import com.mobian.thirdpart.wx.XMLUtil;
+import com.mobian.util.MyBeanUtils;
 import com.mobian.util.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.mobian.util.MyBeanUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> implements FdPaymentBaseServiceI {
@@ -175,7 +178,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 					fdMemberAppointmentService.edit(appointment);
 
 					userId = appointment.getUserId();
-					doctorId = appointment.getDoctorId();
+//					doctorId = appointment.getDoctorId(); 医生同意充值医生余额
 					refType = "BBT003";
 					refId = appointment.getId();
 				}
@@ -213,6 +216,72 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 			}
 
+		}
+	}
+
+	@Override
+	public void refund(FdPaymentBase paymentBase, String desc) {
+		try {
+			Integer userId = paymentBase.getUserId(); // 付款人
+			String refId = paymentBase.getRefId();
+			paymentBase = getByOrderNo(paymentBase.getOrderNo());
+			if(paymentBase != null) {
+				boolean flag = true;
+				String refund_no = Util.CreateNo("R"), refund_id = null;
+				if("wechat".equals(paymentBase.getType())) {
+					Map<String, Object> params = new HashMap<String, Object>();
+					params.put("total_fee", paymentBase.getPrice());
+					params.put("refund_fee", paymentBase.getPrice());
+					params.put("trade_no", paymentBase.getOrderNo());
+					params.put("refund_no", refund_no);
+					String requestXml = PayCommonUtil.requestRefundXML(params);
+					System.out.println("~~~~~~~~~~~~微信退款接口请求参数requestXml:" + requestXml);
+					String result = HttpUtil.httpsRequestSSL(WeixinUtil.REFUND_URL, requestXml);
+					System.out.println("~~~~~~~~~~~~微信退款接口返回结果result:" + result);
+					Map<String, String> resultMap = XMLUtil.doXMLParse(result);
+					if (resultMap == null || F.empty(resultMap.get("result_code")) || !resultMap.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
+						flag = false;
+					} else {
+						refund_id = resultMap.get("refund_id");
+					}
+				} else if("alipay".equals(paymentBase.getType())) {
+					AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+					AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+					model.setOutTradeNo(paymentBase.getOrderNo());
+					model.setRefundAmount(BigDecimal.valueOf(paymentBase.getPrice()).divide(new BigDecimal(100)).toString());
+					model.setOutRequestNo(refund_no);
+					request.setBizModel(model);
+					AlipayTradeRefundResponse response = AlipayUtil.alipayClient.sdkExecute(request);
+					System.out.println("~~~~~~~~~~支付宝退款结果response:" + JSON.toJSONString(response));
+					if(!response.isSuccess()) {
+						flag = false;
+					}
+
+				} else if("balance".equals(paymentBase.getType())) {
+					FdBalanceLog balanceLog = new FdBalanceLog();
+					balanceLog.setUserId(userId.longValue());
+					balanceLog.setRefType("BBT005");
+					balanceLog.setRefId(refId);
+					balanceLog.setAmount(BigDecimal.valueOf(paymentBase.getPrice()).divide(new BigDecimal(100)).floatValue());
+					balanceLog.setStatus(false);
+					balanceLog.setNote(desc);
+					fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+				}
+
+				if(flag) {
+					FdPaymentLog paymentLog = fdPaymentLogService.getByPaymentId(paymentBase.getId());
+					if(paymentLog != null) {
+						paymentLog.setRefundNo(refund_no);
+						paymentLog.setRefRefundNo(refund_id);
+						paymentLog.setRefundFee(paymentBase.getPrice().longValue());
+						paymentLog.setRefundDate(new Date());
+						fdPaymentLogService.edit(paymentLog);
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

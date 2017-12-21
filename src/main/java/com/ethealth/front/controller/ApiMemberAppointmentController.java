@@ -58,6 +58,12 @@ public class ApiMemberAppointmentController extends BaseController {
 	@Autowired
 	private FdPatientServiceI fdPatientService;
 
+	@Autowired
+	private FdBalanceLogServiceI fdBalanceLogService;
+
+	@Autowired
+	private FdPaymentBaseServiceI fdPaymentBaseService;
+
 	/**
 	 * 获取专家预约信息接口
 	 */
@@ -448,6 +454,24 @@ public class ApiMemberAppointmentController extends BaseController {
 					appointment.setConfirmTime(o.getAppointTime());
 				}
 				fdMemberAppointmentService.edit(appointment);
+
+				if("1".equals(o.getStatus()) && "3".equals(appointment.getAppointStatus())) {
+					// 拒绝 退款
+					FdPaymentBase paymentBase = new FdPaymentBase();
+					paymentBase.setRefId(appointment.getId() + "");
+					paymentBase.setUserId(o.getUserId());
+					paymentBase.setOrderNo(o.getAppointmentNo());
+					fdPaymentBaseService.refund(paymentBase, "预约拒绝");
+				} else if("1".equals(appointment.getAppointStatus())) {
+					// 医生确认余额到账
+					FdBalanceLog balanceLog = new FdBalanceLog();
+					balanceLog.setUserId(o.getDoctorId().longValue());
+					balanceLog.setRefType("BBT003");
+					balanceLog.setRefId(appointment.getId() + "");
+					balanceLog.setAmount(BigDecimal.valueOf(o.getAmount()).divide(new BigDecimal(100)).floatValue());
+					balanceLog.setStatus(false);
+					fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+				}
 
 				j.setSuccess(true);
 				j.setMsg("更新成功！");

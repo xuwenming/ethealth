@@ -54,4 +54,6 @@ public interface FdPaymentBaseServiceI {
 	FdPaymentBase getByOrderNo(String orderNo);
 
 	void addOrUpdate(FdPaymentBase payment);
+
+	void refund(FdPaymentBase paymentBase, String desc);
 }

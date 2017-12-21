@@ -165,9 +165,9 @@ public class PayCommonUtil {
 			// 商户订单号  必填
 			parameters.put("out_trade_no", params.get("trade_no").toString());
 			// 退款金额  必填（单位为分必须为整数）
-			parameters.put("refund_fee", (long)((double)params.get("amount")*100) + "");
+			parameters.put("refund_fee", params.get("refund_fee") + "");
 			// 总金额  必填（单位为分必须为整数）
-			parameters.put("total_fee", (long)((double)params.get("amount")*100) + "");
+			parameters.put("total_fee", params.get("total_fee") + "");
 
 			// 签名 必填
 			String sign = PayCommonUtil.createSign("UTF-8", parameters);
