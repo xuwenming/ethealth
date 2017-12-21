@@ -1,5 +1,6 @@
 package com.ethealth.front.controller;
 
+import com.mobian.absx.F;
 import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.listener.Application;
@@ -35,6 +36,10 @@ public class ApiFeedbackController extends BaseController {
 	public Json add(FdFeedback fdFeedback, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			if(F.empty(fdFeedback.getContent())) {
+				j.setMsg("反馈内容不能为空");
+				return j;
+			}
 			SessionInfo s = getSessionInfo(request);
 			fdFeedback.setCreateBy(Integer.valueOf(s.getId()));
 			fdFeedbackService.add(fdFeedback);

@@ -143,12 +143,13 @@ public class ApiMemberAppointmentController extends BaseController {
 					appointment.setDoctorId(doctorId);
 					appointment.setStatus("1");
 					appointment.setAppointStatus("0,1,2");
-					appointment.setConfirmTime(date);
+//					appointment.setConfirmTime(date);
 					appointment.setTime(dt.getTime());
 					ph = new PageHelper();
 					ph.setHiddenTotal(true);
 					List<FdMemberAppointment> appointments = fdMemberAppointmentService.dataGrid(appointment, ph).getRows();
 					int remainNum = dt.getNumber() - appointments.size();
+					if(remainNum <= 0) continue;
 					timeM.put("remainNum", remainNum < 0 ? 0 : remainNum);
 
 					times.add(timeM);

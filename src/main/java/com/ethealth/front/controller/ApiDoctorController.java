@@ -69,6 +69,7 @@ public class ApiDoctorController extends BaseController {
 
 			fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 
+			j.setObj(sh);
 			j.setSuccess(true);
 			j.setMsg("修改成功！");
 		} catch (ServiceException e) {

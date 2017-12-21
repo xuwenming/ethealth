@@ -406,6 +406,7 @@ public class ApiUserController extends BaseController {
 
             member.setHeadImage(uploadFile(HEAD_IMAGE, headImageFile));
             fdMemberService.editMember(member);
+            j.setObj(member);
             j.setSuccess(true);
             j.setMsg("修改成功！");
         } catch (ServiceException e) {

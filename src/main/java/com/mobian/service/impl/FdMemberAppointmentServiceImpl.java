@@ -60,8 +60,8 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 				params.put("doctorId", fdMemberAppointment.getDoctorId());
 			}		
 			if (!F.empty(fdMemberAppointment.getAppointTime())) {
-				whereHql += " and t.appointTime = :appointTime";
-				params.put("appointTime", fdMemberAppointment.getAppointTime());
+				whereHql += " and t.appointTime like :appointTime";
+				params.put("appointTime", fdMemberAppointment.getAppointTime() + "%");
 			}		
 			if (!F.empty(fdMemberAppointment.getSecondTime())) {
 				whereHql += " and t.secondTime = :secondTime";

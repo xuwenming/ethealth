@@ -87,8 +87,10 @@ public class ApiDoctorCloseTimeController extends BaseController {
 				j.setMsg("添加失败，停诊时间重复");
 				return j;
 			}
-			// TODO 查询、退款
-			fdDoctorCloseTimeService.add(closeTime);
+
+			fdDoctorCloseTimeService.addCloseTime(closeTime);
+
+
 
 			j.setSuccess(true);
 			j.setMsg("添加成功！");

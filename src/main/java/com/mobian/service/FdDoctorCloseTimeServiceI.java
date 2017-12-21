@@ -51,4 +51,5 @@ public interface FdDoctorCloseTimeServiceI {
 	 */
 	public void delete(Integer id);
 
+	void addCloseTime(FdDoctorCloseTime closeTime);
 }

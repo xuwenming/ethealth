@@ -1,16 +1,21 @@
 package com.mobian.service.impl;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdDoctorCloseTimeDaoI;
 import com.mobian.enums.EnumConstants;
 import com.mobian.model.TfdDoctorCloseTime;
-import com.mobian.pageModel.FdDoctorCloseTime;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdBalanceLogServiceI;
 import com.mobian.service.FdDoctorCloseTimeServiceI;
 
+import com.mobian.service.FdMemberAppointmentServiceI;
+import com.mobian.service.FdPaymentBaseServiceI;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +26,15 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 
 	@Autowired
 	private FdDoctorCloseTimeDaoI fdDoctorCloseTimeDao;
+
+	@Autowired
+	private FdMemberAppointmentServiceI fdMemberAppointmentService;
+
+	@Autowired
+	private FdPaymentBaseServiceI fdPaymentBaseService;
+
+	@Autowired
+	private FdBalanceLogServiceI fdBalanceLogService;
 
 	@Override
 	public DataGrid dataGrid(FdDoctorCloseTime fdDoctorCloseTime, PageHelper ph) {
@@ -114,6 +128,49 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 		params.put("id", id);
 		fdDoctorCloseTimeDao.executeHql("update TfdDoctorCloseTime t set t.status = 1 where t.id = :id",params);
 		//fdDoctorCloseTimeDao.delete(fdDoctorCloseTimeDao.get(TfdDoctorCloseTime.class, id));
+	}
+
+	@Override
+	public void addCloseTime(FdDoctorCloseTime closeTime) {
+		add(closeTime);
+
+		// 预约退款
+		FdMemberAppointment appointment = new FdMemberAppointment();
+		appointment.setDoctorId(closeTime.getDoctorId());
+		appointment.setStatus("1");
+		appointment.setAppointStatus("0,1");
+		appointment.setAppointTime(DateUtil.format(closeTime.getCloseDate(), Constants.DATE_FORMAT_YMD));
+		if(closeTime.getTime() != 0) appointment.setTime(closeTime.getTime());
+		PageHelper ph = new PageHelper();
+		ph.setHiddenTotal(true);
+		List<FdMemberAppointment> appointments = fdMemberAppointmentService.dataGrid(appointment, ph).getRows();
+		if(CollectionUtils.isNotEmpty(appointments)) {
+			for(FdMemberAppointment a : appointments) {
+
+				// 退款
+				FdPaymentBase paymentBase = new FdPaymentBase();
+				paymentBase.setRefId(a.getId() + "");
+				paymentBase.setUserId(a.getUserId());
+				paymentBase.setOrderNo(a.getAppointmentNo());
+				fdPaymentBaseService.refund(paymentBase, "医生停诊");
+
+				// 医生确认扣除医生余额
+				if("1".equals(a.getAppointStatus())) {
+					FdBalanceLog balanceLog = new FdBalanceLog();
+					balanceLog.setUserId(a.getDoctorId().longValue());
+					balanceLog.setRefType("BBT006");
+					balanceLog.setRefId(a.getId() + "");
+					balanceLog.setAmount(-BigDecimal.valueOf(a.getAmount()).divide(new BigDecimal(100)).floatValue());
+					balanceLog.setStatus(false);
+					fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+				}
+
+				// 修改预约状态
+				a.setAppointStatus("3");
+				a.setRefuseReason("医生停诊");
+				fdMemberAppointmentService.edit(a);
+			}
+		}
 	}
 
 }
