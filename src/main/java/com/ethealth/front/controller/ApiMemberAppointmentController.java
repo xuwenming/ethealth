@@ -143,7 +143,7 @@ public class ApiMemberAppointmentController extends BaseController {
 					appointment.setDoctorId(doctorId);
 					appointment.setStatus("1");
 					appointment.setAppointStatus("0,1,2");
-//					appointment.setConfirmTime(date);
+					appointment.setAppointTime(date);
 					appointment.setTime(dt.getTime());
 					ph = new PageHelper();
 					ph.setHiddenTotal(true);
