@@ -251,7 +251,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 					model.setRefundAmount(BigDecimal.valueOf(paymentBase.getPrice()).divide(new BigDecimal(100)).toString());
 					model.setOutRequestNo(refund_no);
 					request.setBizModel(model);
-					AlipayTradeRefundResponse response = AlipayUtil.alipayClient.sdkExecute(request);
+					AlipayTradeRefundResponse response = AlipayUtil.alipayClient.execute(request);
 					System.out.println("~~~~~~~~~~支付宝退款结果response:" + JSON.toJSONString(response));
 					if(!response.isSuccess()) {
 						flag = false;
