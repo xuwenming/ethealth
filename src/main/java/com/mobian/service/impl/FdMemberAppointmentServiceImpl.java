@@ -3,16 +3,17 @@ package com.mobian.service.impl;
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberAppointmentDaoI;
 import com.mobian.model.TfdMemberAppointment;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.FdMemberAppointment;
-import com.mobian.pageModel.PageHelper;
-import com.mobian.service.FdMemberAppointmentServiceI;
+import com.mobian.pageModel.*;
+import com.mobian.service.*;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.MyBeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,18 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 
 	@Autowired
 	private FdMemberAppointmentDaoI fdMemberAppointmentDao;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMessageServiceI fdMessageService;
+
+	@Autowired
+	private FdBalanceLogServiceI fdBalanceLogService;
+
+	@Autowired
+	private FdPaymentBaseServiceI fdPaymentBaseService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberAppointment fdMemberAppointment, PageHelper ph) {
@@ -188,6 +201,103 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			BeanUtils.copyProperties(t, o);
 		}
 		return o;
+	}
+
+	@Override
+	public void updatePaySuccess(FdMemberAppointment appointment) {
+		edit(appointment);
+
+		// 添加用户消息
+		FdMember user = fdMemberService.getDetail(appointment.getUserId());
+		FdMember doctor = fdMemberService.getDetail(appointment.getDoctorId());
+
+		FdMessage message = new FdMessage();
+		message.setTitle("加号提醒");
+		String content = "尊敬的医生您好，手机号" + user.getMobile() + "用户成功支付了您的加号服务!" +
+				"\n患者姓名：" + appointment.getAppointName() +
+				"\n预约时间：" + appointment.getAppointTime() +
+				"\n预约地点：" + appointment.getAppointAddress() +
+				"\n请您及时回复确认。";
+		message.setContent(content);
+		message.setUserId(appointment.getDoctorId());
+		message.setMtype("MT02");
+		message.setIsRead(false);
+		message.setAlias("2-" + doctor.getMobile());
+		fdMessageService.addAndPushMessage(message);
+
+		message = new FdMessage();
+		message.setTitle("预约支付成功");
+		content = "尊敬的用户您好，您已成功支付了" + doctor.getCustomer().getRealName() + "医生的预约服务！" +
+				"\n患者姓名：" + appointment.getAppointName() +
+				"\n预约时间：" + appointment.getAppointTime() +
+				"\n预约地点：" + appointment.getAppointAddress() +
+				"\n请耐心等待医生确认。";
+		message.setContent(content);
+		message.setUserId(appointment.getUserId());
+		message.setMtype("MT02");
+		message.setIsRead(false);
+		message.setAlias("0-" + user.getMobile());
+		fdMessageService.add(message);
+	}
+
+	@Override
+	public void editAppointment(FdMemberAppointment appointment) {
+		FdMemberAppointment o = get(appointment.getId());
+		if("1".equals(appointment.getAppointStatus())) {
+			appointment.setConfirmTime(o.getAppointTime());
+		}
+		edit(appointment);
+
+		if("1".equals(o.getStatus()) && "3".equals(appointment.getAppointStatus())) {
+			// 拒绝 退款
+			FdPaymentBase paymentBase = new FdPaymentBase();
+			paymentBase.setRefId(appointment.getId() + "");
+			paymentBase.setUserId(o.getUserId());
+			paymentBase.setOrderNo(o.getAppointmentNo());
+			fdPaymentBaseService.refund(paymentBase, "预约拒绝");
+
+			FdMember user = fdMemberService.getDetail(o.getUserId());
+			FdMember doctor = fdMemberService.getDetail(o.getDoctorId());
+			FdMessage message = new FdMessage();
+			message.setTitle("预约拒绝提醒");
+			String content = "尊敬的用户您好，" + doctor.getCustomer().getRealName() + "医生拒绝了您的预约！" +
+					"\n患者姓名：" + o.getAppointName() +
+					"\n预约时间：" + o.getAppointTime() +
+					"\n预约地点：" + o.getAppointAddress() +
+					"\n如有问题请及时联系客服，谢谢！";
+			message.setContent(content);
+			message.setUserId(o.getUserId());
+			message.setMtype("MT02");
+			message.setIsRead(false);
+			message.setAlias("0-" + user.getMobile());
+			fdMessageService.addAndPushMessage(message);
+
+		} else if("1".equals(appointment.getAppointStatus())) {
+			// 医生确认余额到账
+			FdBalanceLog balanceLog = new FdBalanceLog();
+			balanceLog.setUserId(o.getDoctorId().longValue());
+			balanceLog.setRefType("BBT003");
+			balanceLog.setRefId(appointment.getId() + "");
+			balanceLog.setAmount(BigDecimal.valueOf(o.getAmount()).divide(new BigDecimal(100)).floatValue());
+			balanceLog.setStatus(false);
+			fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+
+			FdMember user = fdMemberService.getDetail(o.getUserId());
+			FdMember doctor = fdMemberService.getDetail(o.getDoctorId());
+			FdMessage message = new FdMessage();
+			message.setTitle("预约确认提醒");
+			String content = "尊敬的用户您好，" + doctor.getCustomer().getRealName() + "医生确认了您的预约！" +
+					"\n患者姓名：" + o.getAppointName() +
+					"\n预约时间：" + o.getAppointTime() +
+					"\n预约地点：" + o.getAppointAddress() +
+					"\n请按照预约信息准时到达，超过时间约定本次预约将作废处理。如有问题请及时联系客服，谢谢！";
+			message.setContent(content);
+			message.setUserId(o.getUserId());
+			message.setMtype("MT02");
+			message.setIsRead(false);
+			message.setAlias("0-" + user.getMobile());
+			fdMessageService.addAndPushMessage(message);
+		}
 	}
 
 	@Override

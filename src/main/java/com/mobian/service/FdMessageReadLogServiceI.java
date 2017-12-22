@@ -51,4 +51,5 @@ public interface FdMessageReadLogServiceI {
 	 */
 	public void delete(Integer id);
 
+	FdMessageReadLog get(Integer messageId, Integer userId);
 }

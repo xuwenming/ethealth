@@ -8,11 +8,8 @@ import com.mobian.dao.FdDoctorCloseTimeDaoI;
 import com.mobian.enums.EnumConstants;
 import com.mobian.model.TfdDoctorCloseTime;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdBalanceLogServiceI;
-import com.mobian.service.FdDoctorCloseTimeServiceI;
+import com.mobian.service.*;
 
-import com.mobian.service.FdMemberAppointmentServiceI;
-import com.mobian.service.FdPaymentBaseServiceI;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,6 +32,12 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 
 	@Autowired
 	private FdBalanceLogServiceI fdBalanceLogService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMessageServiceI fdMessageService;
 
 	@Override
 	public DataGrid dataGrid(FdDoctorCloseTime fdDoctorCloseTime, PageHelper ph) {
@@ -145,6 +148,15 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 		ph.setHiddenTotal(true);
 		List<FdMemberAppointment> appointments = fdMemberAppointmentService.dataGrid(appointment, ph).getRows();
 		if(CollectionUtils.isNotEmpty(appointments)) {
+			Calendar c = Calendar.getInstance();
+			c.setTime(closeTime.getCloseDate());
+			int w = c.get(Calendar.DAY_OF_WEEK);
+			w = w == 1 ? 7 : w - 1;
+			String time = DateUtil.format(closeTime.getCloseDate(), Constants.DATE_FORMAT_YMD) + EnumConstants.WEEK.getCnName(w);
+			if(closeTime.getTime() == 0) time += "全天";
+			else if(closeTime.getTime() == 1) time += "上午";
+			else if(closeTime.getTime() == 2) time += "下午";
+			else if(closeTime.getTime() == 3) time += "夜班";
 			for(FdMemberAppointment a : appointments) {
 
 				// 退款
@@ -169,6 +181,19 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 				a.setAppointStatus("3");
 				a.setRefuseReason("医生停诊");
 				fdMemberAppointmentService.edit(a);
+
+				FdMember user = fdMemberService.getDetail(a.getUserId());
+				FdMember doctor = fdMemberService.getDetail(a.getDoctorId());
+				FdMessage message = new FdMessage();
+				message.setTitle("预约停诊提醒");
+
+				String content = "尊敬的用户您好，" + time + doctor.getCustomer().getRealName() + "医生发布了停诊，您的预约已被取消，支付钱款已原路退回，给您带来的不便深表歉意！";
+				message.setContent(content);
+				message.setUserId(a.getUserId());
+				message.setMtype("MT02");
+				message.setIsRead(false);
+				message.setAlias("0-" + user.getMobile());
+				fdMessageService.addAndPushMessage(message);
 			}
 		}
 	}

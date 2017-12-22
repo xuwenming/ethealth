@@ -7,6 +7,8 @@ import com.mobian.model.TfdMemberConsultationOrder;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
 import com.mobian.thirdpart.easemob.HuanxinUtil;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.MyBeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +34,9 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 
 	@Autowired
 	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMessageServiceI fdMessageService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
@@ -164,6 +169,9 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			fdMemberConsultationExpireService.edit(expire);
 		}
 
+
+		FdMember user = fdMemberService.getDetail(consultationOrder.getUserId());
+		FdMember doctor = fdMemberService.getDetail(consultationOrder.getDoctorId());
 		FdMemberConsultationFriend friend = fdMemberConsultationFriendService.getByUserIdAndDoctorId(consultationOrder.getUserId(), consultationOrder.getDoctorId());
 		if(friend == null) {
 			Random random = new Random();
@@ -177,9 +185,6 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			} else {
 				msg = "您好，请问有什么需要咨询的吗？";
 			}
-
-			FdMember user = fdMemberService.get(consultationOrder.getUserId());
-			FdMember doctor = fdMemberService.get(consultationOrder.getDoctorId());
 
 //			HuanxinUtil.addFriend(user.getIsAdmin() + "-" + user.getMobile(), doctor.getIsAdmin() + "-" + doctor.getMobile());
 
@@ -198,6 +203,24 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			fdMemberConsultationFriendService.edit(friend);
 		}
 
+		// 添加用户消息
+		FdMessage message = new FdMessage();
+		message.setTitle("咨询提醒");
+		message.setContent("尊敬的医生您好，手机号" + user.getMobile() + "用户成功支付了您的咨询服务，请注意查收咨询消息！");
+		message.setUserId(consultationOrder.getDoctorId());
+		message.setMtype("MT02");
+		message.setIsRead(false);
+		message.setAlias("2-" + doctor.getMobile());
+		fdMessageService.addAndPushMessage(message);
+
+		message = new FdMessage();
+		message.setTitle("咨询支付成功");
+		message.setContent("尊敬的用户您好，您已成功支付了" + doctor.getCustomer().getRealName() + "医生的咨询服务，咨询截止时间为：" + DateUtil.format(expire.getExpireDate(), Constants.DATE_FORMAT) + "，在此期间如有任何疑问都可咨询医生，感谢您的支持！");
+		message.setUserId(consultationOrder.getUserId());
+		message.setMtype("MT02");
+		message.setIsRead(false);
+		message.setAlias("0-" + user.getMobile());
+		fdMessageService.add(message);
 	}
 
 	@Override

@@ -12,11 +12,8 @@ import com.mobian.dao.FdMemberDoctorShDaoI;
 import com.mobian.exception.ServiceException;
 import com.mobian.model.TfdMemberDoctorSh;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdCustomerServiceI;
-import com.mobian.service.FdMemberDoctorServiceI;
-import com.mobian.service.FdMemberDoctorShServiceI;
+import com.mobian.service.*;
 
-import com.mobian.service.FdMemberServiceI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +33,9 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Autowired
 	private FdMemberDoctorServiceI fdMemberDoctorService;
+
+	@Autowired
+	private FdMessageServiceI fdMessageService;
 
 	@Override
 	public DataGrid dataGrid(FdMemberDoctorSh fdMemberDoctorSh, PageHelper ph) {
@@ -260,11 +260,41 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				doctor.setIntroduce(fdMemberDoctorSh.getIntroduce());
 				fdMemberDoctorService.edit(doctor);
 			}
+
+			if(fdMemberDoctorSh.getAuditType() == 1) {
+				FdMessage message = new FdMessage();
+				message.setTitle("注册审核通过");
+				message.setContent("尊敬的医生您好，您已经注册成功，可以开始使用客户端的全部功能。\n有任何疑问可通过客户端直接联系我们，谢谢！");
+				message.setUserId(member.getId());
+				message.setMtype("MT02");
+				message.setIsRead(false);
+				message.setAlias("2-" + member.getMobile());
+				fdMessageService.addAndPushMessage(message);
+			} else {
+				FdMessage message = new FdMessage();
+				message.setTitle("编辑审核通过");
+				message.setContent("尊敬的医生您好，您的个人信息修改审核通过。\n有任何疑问可通过客户端直接联系我们，谢谢！");
+				message.setUserId(member.getId());
+				message.setMtype("MT02");
+				message.setIsRead(false);
+				message.setAlias("2-" + member.getMobile());
+				fdMessageService.addAndPushMessage(message);
+			}
 		} else {
 			member.setStatus(3);
 			fdMemberService.edit(member);
-		}
 
+			if(fdMemberDoctorSh.getAuditType() == 2) {
+				FdMessage message = new FdMessage();
+				message.setTitle("编辑审核失败");
+				message.setContent("尊敬的医生您好，您的个人信息修改审核失败。\n有任何疑问可通过客户端直接联系我们，谢谢！");
+				message.setUserId(member.getId());
+				message.setMtype("MT02");
+				message.setIsRead(false);
+				message.setAlias("2-" + member.getMobile());
+				fdMessageService.addAndPushMessage(message);
+			}
+		}
 	}
 
 }

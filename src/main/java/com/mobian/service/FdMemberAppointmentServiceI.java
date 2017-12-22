@@ -54,4 +54,8 @@ public interface FdMemberAppointmentServiceI {
 	FdMemberAppointment get(FdMemberAppointment fdMemberAppointment);
 
 	FdMemberAppointment getByAppointmentNo(String appointmentNo);
+
+	void updatePaySuccess(FdMemberAppointment appointment);
+
+	void editAppointment(FdMemberAppointment appointment);
 }

@@ -453,7 +453,7 @@ public class ApiUserController extends BaseController {
         try{
             SessionInfo s = getSessionInfo(request);
             FdPatient patient = fdPatientService.get(Integer.valueOf(s.getId()));
-            j.setObj(patient != null ? patient : new FdPatient());
+            j.setObj(patient);
             j.setSuccess(true);
             j.setMsg("获取成功！");
         } catch (ServiceException e) {
@@ -486,7 +486,7 @@ public class ApiUserController extends BaseController {
             if(fdPatient == null) {
                 fdPatientService.add(patient);
             } else {
-                fdPatientService.edit(patient);
+//                fdPatientService.edit(patient);
             }
 
             j.setSuccess(true);

@@ -30,6 +30,9 @@ public class FdMessage implements java.io.Serializable {
 	private String endDateStr;
 	private String alias;
 
+	private Boolean isCustom; // 推送消息是否为自定义消息，true是
+	private String customType; // 自定义消息类型
+
 	public String getStatusZh() {
 		return Application.getString(status);
 	}
@@ -180,5 +183,21 @@ public class FdMessage implements java.io.Serializable {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+
+	public Boolean getIsCustom() {
+		return isCustom;
+	}
+
+	public void setIsCustom(Boolean isCustom) {
+		this.isCustom = isCustom;
+	}
+
+	public String getCustomType() {
+		return customType;
+	}
+
+	public void setCustomType(String customType) {
+		this.customType = customType;
 	}
 }

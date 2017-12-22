@@ -27,7 +27,7 @@ public class HttpPostUploadUtil {
 		String urlStr = "https://www.mobiang.com/ethealth/api/member/edit";
 		Map<String, String> textMap = new HashMap<String, String>();
 //		textMap.put("bsTitle", "testname");      //主题
-		textMap.put("tokenId", "56C338C8BF174A5D8D87E04DE16FB614"); //token值
+		textMap.put("tokenId", "AEE6B01AAD124F868F89AB54E46E8CE3"); //token值
 //		textMap.put("bsDescription", "我的地盘我做主");		//描述
 		Map<String, String> fileMap = new HashMap<String, String>();
 //		fileMap.put("movies", filepath); //视频文件

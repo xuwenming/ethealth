@@ -223,6 +223,7 @@
 						<td>
 							<select name="mtype" class="easyui-combobox"
 									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="">全部</option>
 								<option value="MT01">系统消息</option>
 								<option value="MT03">免费咨询</option>
 							</select>

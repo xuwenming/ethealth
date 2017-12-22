@@ -175,7 +175,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				FdMemberAppointment appointment = fdMemberAppointmentService.getByAppointmentNo(payment.getOrderNo());
 				if(appointment != null) {
 					appointment.setStatus("1");
-					fdMemberAppointmentService.edit(appointment);
+					fdMemberAppointmentService.updatePaySuccess(appointment);
 
 					userId = appointment.getUserId();
 //					doctorId = appointment.getDoctorId(); 医生同意充值医生余额

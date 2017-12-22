@@ -6,10 +6,7 @@ import com.mobian.concurrent.CacheKey;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdHospitalServiceI;
-import com.mobian.service.FdMemberDoctorLevelServiceI;
-import com.mobian.service.FdMemberDoctorShServiceI;
-import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +41,9 @@ public class FdMemberDoctorShController extends BaseController {
 
 	@Autowired
 	private FdHospitalServiceI fdHospitalService;
+
+	@Autowired
+	private FdHospitalDeptServiceI fdHospitalDeptService;
 
 
 	/**
@@ -110,6 +110,20 @@ public class FdMemberDoctorShController extends BaseController {
 						protected void set(FdMemberDoctorSh d, String v) {
 							if(!F.empty(v)) {
 								d.setHospitalName(v);
+							}
+						}
+					});
+				if(!F.empty(sh.getDepartment()))
+					completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdHospitalDept", sh.getDepartment() + ""), sh) {
+						@Override
+						public String call() throws Exception {
+							FdHospitalDept dept = fdHospitalDeptService.get(getD().getHospital());
+							return dept.getName();
+						}
+
+						protected void set(FdMemberDoctorSh d, String v) {
+							if(!F.empty(v)) {
+								d.setDepartmentName(v);
 							}
 						}
 					});

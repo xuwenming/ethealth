@@ -107,4 +107,16 @@ public class FdMessageReadLogServiceImpl extends BaseServiceImpl<FdMessageReadLo
 		//fdMessageReadLogDao.delete(fdMessageReadLogDao.get(TfdMessageReadLog.class, id));
 	}
 
+	@Override
+	public FdMessageReadLog get(Integer messageId, Integer userId) {
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("messageId", messageId);
+		params.put("userId", userId);
+		TfdMessageReadLog t = fdMessageReadLogDao.get("from TfdMessageReadLog t  where t.messageId = :messageId and t.userId = :userId", params);
+		if(t == null) return null;
+		FdMessageReadLog o = new FdMessageReadLog();
+		BeanUtils.copyProperties(t, o);
+		return o;
+	}
+
 }

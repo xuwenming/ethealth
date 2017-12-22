@@ -78,12 +78,16 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 				params.put("status", fdMessage.getStatus());
 			}		
 			if (!F.empty(fdMessage.getUserId())) {
-				whereHql += " and t.userId = :userId";
+				whereHql += " and (t.userId = :userId or t.userId is null)";
 				params.put("userId", fdMessage.getUserId());
-			}		
+			}
+			if(!F.empty(fdMessage.getConsumerType())) {
+				whereHql += " and (t.consumerType = :consumerType or t.consumerType = 0)";
+				params.put("consumerType", fdMessage.getConsumerType());
+			}
 			if (!F.empty(fdMessage.getMtype())) {
-				whereHql += " and t.mtype = :mtype";
-				params.put("mtype", fdMessage.getMtype());
+				whereHql += " and t.mtype in (:mtype)";
+				params.put("mtype", fdMessage.getMtype().split(","));
 			}		
 			if (!F.empty(fdMessage.getIsRead())) {
 				whereHql += " and t.isRead = :isRead";

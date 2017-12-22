@@ -57,6 +57,7 @@ public class FdMessageController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMessage fdMessage, PageHelper ph) {
+		if(F.empty(fdMessage.getMtype())) fdMessage.setMtype("MT01,MT03");
 		DataGrid dg = fdMessageService.dataGrid(fdMessage, ph);
 		List<FdMessage> list = dg.getRows();
 		if(CollectionUtils.isNotEmpty(list)) {
