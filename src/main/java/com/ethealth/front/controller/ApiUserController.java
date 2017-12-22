@@ -87,7 +87,7 @@ public class ApiUserController extends BaseController {
                     fdMemberService.edit(o);
                 }
 
-                String tokenId = tokenManage.buildToken(o.getId().toString(), o.getUsername(), null);
+                String tokenId = tokenManage.buildToken(o.getId().toString(), o.getMobile(), null);
                 o.setTokenId(tokenId);
                 o.setUsername(username);
                 j.setSuccess(true);
