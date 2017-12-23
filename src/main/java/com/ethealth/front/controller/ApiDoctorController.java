@@ -237,7 +237,7 @@ public class ApiDoctorController extends BaseController {
 	 */
 	@RequestMapping("/myPatients")
 	@ResponseBody
-	public Json myPatients(PageHelper ph, HttpServletRequest request) {
+	public Json myPatients(String name, PageHelper ph, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
@@ -245,7 +245,7 @@ public class ApiDoctorController extends BaseController {
 				ph.setRows(10);
 			}
 
-			j.setObj(fdMemberDoctorService.patientDataGrid(Integer.valueOf(s.getId()), ph));
+			j.setObj(fdMemberDoctorService.patientDataGrid(Integer.valueOf(s.getId()), name, ph));
 			j.setSuccess(true);
 			j.setMsg("获取成功！");
 		} catch (ServiceException e) {

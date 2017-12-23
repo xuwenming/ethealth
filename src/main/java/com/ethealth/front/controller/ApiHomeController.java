@@ -100,7 +100,7 @@ public class ApiHomeController extends BaseController {
 							d.setUserName(v);
 						}
 					});
-					completionService.submit(new Task<FdMemberConsultationFriend, String>(new CacheKey("fdCustomer", f.getUserId() + ""), f) {
+					completionService.submit(new Task<FdMemberConsultationFriend, String>(new CacheKey("fdMember", f.getUserId() + ""), f) {
 						@Override
 						public String call() throws Exception {
 							return fdMemberService.get(getD().getUserId()).getMobile();

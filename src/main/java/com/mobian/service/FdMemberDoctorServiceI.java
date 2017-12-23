@@ -63,5 +63,5 @@ public interface FdMemberDoctorServiceI {
 	 * @param ph
 	 * @return
 	 */
-	DataGrid patientDataGrid(Integer doctorId, PageHelper ph);
+	DataGrid patientDataGrid(Integer doctorId, String name, PageHelper ph);
 }

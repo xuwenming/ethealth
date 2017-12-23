@@ -100,7 +100,6 @@ public class ApiDoctorServiceController extends BaseController {
 	public Json doctorDataGrid(FdMemberDoctor doctor, PageHelper ph) {
 		Json j = new Json();
 		try{
-			ph = new PageHelper();
 			if(doctor.getIsBest() != null && doctor.getIsBest()) { // 著名专家
 				ph.setSort("sort");
 				ph.setOrder("desc");

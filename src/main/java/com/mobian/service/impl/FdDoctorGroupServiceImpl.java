@@ -117,6 +117,7 @@ public class FdDoctorGroupServiceImpl extends BaseServiceImpl<FdDoctorGroup> imp
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		TfdDoctorGroup t = fdDoctorGroupDao.get("from TfdDoctorGroup t  where t.id = :id", params);
+		if(t == null) return null;
 		FdDoctorGroup o = new FdDoctorGroup();
 		BeanUtils.copyProperties(t, o);
 		return o;

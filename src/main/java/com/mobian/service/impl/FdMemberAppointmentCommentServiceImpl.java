@@ -166,7 +166,7 @@ public class FdMemberAppointmentCommentServiceImpl extends BaseServiceImpl<FdMem
 		if(CollectionUtils.isNotEmpty(list)) {
 			CompletionService completionService = CompletionFactory.initCompletion();
 			for(FdMemberAppointmentComment o : list) {
-
+				o.setIsAdmin(comment.getIsAdmin());
 				completionService.submit(new Task<FdMemberAppointmentComment, String>(new CacheKey("fdCustomer", o.getUserId() + ""), o) {
 					@Override
 					public String call() throws Exception {

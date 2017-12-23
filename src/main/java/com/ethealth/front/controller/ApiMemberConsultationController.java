@@ -315,17 +315,35 @@ public class ApiMemberConsultationController extends BaseController {
 			SessionInfo s = getSessionInfo(request);
 			Map<String, Object> obj = new HashMap<String, Object>();
 
-			// 获取咨询有效期
-			FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
-			if(expire != null) {
-				if(expire.getExpireDate().after(new Date())) {
+			FdMemberDoctor doctor = fdMemberDoctorService.get(doctorId);
+			obj.put("acceptConsultation", doctor.getAcceptConsultation());
+
+			if(doctor.getAcceptConsultation()) {
+				FdMessage message = new FdMessage();
+				message.setMtype("MT03");
+				message.setStartDate(DateUtil.parse(DateUtil.format(new Date(), Constants.DATE_FORMAT_YMD), Constants.DATE_FORMAT_YMD));
+				message.setEndDate(message.getStartDate());
+				PageHelper ph = new PageHelper();
+				ph.setHiddenTotal(true);
+				List<FdMessage> messages = fdMessageService.dataGrid(message, ph).getRows();
+				if(CollectionUtils.isNotEmpty(messages)) {
 					obj.put("isConsultation", true);
-					obj.put("expire", expire);
+					obj.put("isFree", true);
 				} else {
-					obj.put("isConsultation", false);
+					obj.put("isFree", false);
+					// 获取咨询有效期
+					FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(Integer.valueOf(s.getId()), doctorId);
+					if(expire != null) {
+						if(expire.getExpireDate().after(new Date())) {
+							obj.put("isConsultation", true);
+							obj.put("expire", expire);
+						} else {
+							obj.put("isConsultation", false);
+						}
+					} else {
+						obj.put("isConsultation", false);
+					}
 				}
-			} else {
-				obj.put("isConsultation", false);
 			}
 
 			j.setObj(obj);
