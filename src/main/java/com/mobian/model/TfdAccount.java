@@ -26,7 +26,7 @@ public class TfdAccount implements java.io.Serializable{
 	public static final String ALIAS_BANK_ACCOUNT = "开户名";
 	public static final String ALIAS_BANK_PHONE = "开户预留手机号";
 	public static final String ALIAS_BANK_ID_NO = "开户身份证号";
-	public static final String ALIAS_BANK_NAME = "开户行名称";
+	public static final String ALIAS_BANK_NAME = "开户行支行";
 	public static final String ALIAS_BANK_CARD = "银行卡号";
 	public static final String ALIAS_ALIPAY = "支付宝账号";
 	
@@ -44,6 +44,7 @@ public class TfdAccount implements java.io.Serializable{
 	//@Length(max=18)
 	private java.lang.String bankIdNo;
 	//@Length(max=36)
+	private java.lang.String bankCode;
 	private java.lang.String bankName;
 	//@Length(max=36)
 	private java.lang.String bankCard;
@@ -95,7 +96,16 @@ public class TfdAccount implements java.io.Serializable{
 	public void setBankIdNo(java.lang.String bankIdNo) {
 		this.bankIdNo = bankIdNo;
 	}
-	
+
+	@Column(name = "bank_code", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
 	@Column(name = "bank_name", unique = false, nullable = true, insertable = true, updatable = true, length = 36)
 	public java.lang.String getBankName() {
 		return this.bankName;

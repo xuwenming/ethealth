@@ -1,5 +1,7 @@
 package com.mobian.pageModel;
 
+import com.mobian.listener.Application;
+
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -11,11 +13,14 @@ public class FdAccount implements java.io.Serializable {
 	private java.lang.String bankAccount;	
 	private java.lang.String bankPhone;	
 	private java.lang.String bankIdNo;	
-	private java.lang.String bankName;	
-	private java.lang.String bankCard;	
+	private java.lang.String bankCode;
+	private java.lang.String bankName;
+	private java.lang.String bankCard;
 	private java.lang.String alipay;	
 
-	
+	public String getBankCodeZh() {
+		return Application.getString(bankCode);
+	}
 
 	public void setUserId(java.lang.Long value) {
 		this.userId = value;
@@ -50,7 +55,15 @@ public class FdAccount implements java.io.Serializable {
 	public void setBankName(java.lang.String bankName) {
 		this.bankName = bankName;
 	}
-	
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
 	public java.lang.String getBankName() {
 		return this.bankName;
 	}
