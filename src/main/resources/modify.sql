@@ -143,15 +143,16 @@ CREATE TABLE `fd_doctor_close_time` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='停诊发布记录表';
 
 CREATE TABLE `fd_account` (
-  `user_id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL COMMENT '用户ID',
   `bank_account` varchar(18) DEFAULT NULL COMMENT '开户名',
   `bank_phone` varchar(18) DEFAULT NULL COMMENT '开户预留手机号',
   `bank_id_no` varchar(18) DEFAULT NULL COMMENT '开户身份证号',
+  `bank_code` varchar(10) DEFAULT NULL COMMENT '银行编号',
   `bank_name` varchar(36) DEFAULT NULL COMMENT '开户行名称',
   `bank_card` varchar(36) DEFAULT NULL COMMENT '银行卡号',
   `alipay` varchar(100) DEFAULT NULL COMMENT '支付宝账号',
   PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='用户账号信息表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 PACK_KEYS=1 ROW_FORMAT=DYNAMIC COMMENT='用户账号信息表';
 
 CREATE TABLE `fd_cash_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
