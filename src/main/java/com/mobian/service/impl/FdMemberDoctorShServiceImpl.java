@@ -206,10 +206,12 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			edit(sh);
 		}
 
-		FdMember member = new FdMember();
-		member.setId(sh.getId());
-		member.setStatus(2);
-		fdMemberService.edit(member);
+		if(sh.getAuditType() == 1) {
+			FdMember member = new FdMember();
+			member.setId(sh.getId());
+			member.setStatus(2);
+			fdMemberService.edit(member);
+		}
 	}
 
 	@Override
