@@ -23,6 +23,11 @@
 		$.canView = true;
 	</script>
 </c:if>
+<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMessageController/editAndPushMessage')}">
+	<script type="text/javascript">
+		$.canPush = true;
+	</script>
+</c:if>
 <script type="text/javascript">
 	var dataGrid;
 	$(function() {
@@ -75,6 +80,22 @@
 				field : 'statusZh',
 				title : '状态',
 				width : 50
+				}, {
+				field : 'consumerType',
+				title : '推送对象',
+				width : 50,
+				formatter : function (value, row, index) {
+					if(value == 0) return '不限';
+					else if(value == 1) return '患者端';
+					else if(value == 2) return '医生端';
+				}
+				}, {
+				field : 'isPushed',
+				title : '是否推送',
+				width : 50,
+				formatter : function (value, row, index) {
+					return value ? '已推送' : '未推送';
+				}
 			}, {
 				field : 'action',
 				title : '操作',
@@ -91,6 +112,10 @@
 					str += '&nbsp;';
 					if ($.canView) {
 						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
+					}
+					str += '&nbsp;';
+					if ($.canPush) {
+						str += '<a onclick="pushFun(\'' + row.id + '\')">推送</a>';
 					}
 					return str;
 				}
@@ -117,6 +142,30 @@
 					text : '数据处理中，请稍后....'
 				});
 				$.post('${pageContext.request.contextPath}/fdMessageController/delete', {
+					id : id
+				}, function(result) {
+					if (result.success) {
+						parent.$.messager.alert('提示', result.msg, 'info');
+						dataGrid.datagrid('reload');
+					}
+					parent.$.messager.progress('close');
+				}, 'JSON');
+			}
+		});
+	}
+
+	function pushFun(id) {
+		if (id == undefined) {
+			var rows = dataGrid.datagrid('getSelections');
+			id = rows[0].id;
+		}
+		parent.$.messager.confirm('询问', '您是否要推送当前消息？', function(b) {
+			if (b) {
+				parent.$.messager.progress({
+					title : '提示',
+					text : '数据处理中，请稍后....'
+				});
+				$.post('${pageContext.request.contextPath}/fdMessageController/editAndPushMessage', {
 					id : id
 				}, function(result) {
 					if (result.success) {

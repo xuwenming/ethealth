@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.jpush.api.push.PushResult;
+import com.alibaba.fastjson.JSON;
 import com.mobian.absx.F;
 import com.mobian.dao.FdMessageDaoI;
 import com.mobian.model.TfdMessage;
 import com.mobian.pageModel.FdMessage;
 import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
+import com.mobian.pageModel.PushMessage;
 import com.mobian.service.FdMessageServiceI;
 
+import com.mobian.thirdpart.jpush.JPushUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,6 +121,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 		if(F.empty(fdMessage.getStatus())) t.setStatus("ST01");
 		if(F.empty(fdMessage.getIsdeleted())) t.setIsdeleted(false);
 		fdMessageDao.save(t);
+		fdMessage.setId(t.getId());
 	}
 
 	@Override
@@ -149,7 +154,98 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 	public void addAndPushMessage(FdMessage message) {
 		add(message);
 
-		// TODO 推送消息
+		// 推送消息
+		PushMessage pushMessage = message.getPushMessage();
+		pushMessage.setId(message.getId());
+		if(pushMessage != null) {
+			PushResult pushResult = null;
+			int consumerType = F.empty(message.getConsumerType()) ? 0 : message.getConsumerType();
+			if(consumerType == 0) { // 推送对象不限
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 0);
+					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 2);
+				}
+
+			} else if(consumerType == 1) { // 只推送患者
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.PATIENT_TAG, JSON.toJSONString(pushMessage), 0);
+				}
+
+			} else if(consumerType == 2) { // 只推送医生
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.DOCTOR_TAG, JSON.toJSONString(pushMessage), 2);
+				}
+			}
+
+			if(pushResult != null) {
+				message.setIsPushed(true);
+				edit(message);
+			}
+		}
+	}
+
+	@Override
+	public void editAndPushMessage(FdMessage message) {
+		message = get(message.getId());
+
+		String type = "";
+		if("MT01".equals(message.getMtype())) {
+			type = "M302";
+		} else if("MT03".equals(message.getMtype())) {
+			type = "M301";
+		}
+		// 推送消息
+		PushMessage pushMessage = new PushMessage(type, message.getContent());
+		pushMessage.setId(message.getId());
+		if(pushMessage != null) {
+			PushResult pushResult = null;
+			int consumerType = F.empty(message.getConsumerType()) ? 0 : message.getConsumerType();
+			if(consumerType == 0) { // 推送对象不限
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 0);
+					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 2);
+				}
+
+			} else if(consumerType == 1) { // 只推送患者
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.PATIENT_TAG, JSON.toJSONString(pushMessage), 0);
+				}
+
+			} else if(consumerType == 2) { // 只推送医生
+				String alias = message.getAlias();
+				if(!F.empty(alias)) {
+					int isAdmin = Integer.valueOf(alias.substring(0, 1));
+					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+				} else {
+					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.DOCTOR_TAG, JSON.toJSONString(pushMessage), 2);
+				}
+			}
+
+			if(pushResult != null) {
+				message.setIsPushed(true);
+				edit(message);
+			}
+		}
 	}
 
 }

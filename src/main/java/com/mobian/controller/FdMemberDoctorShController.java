@@ -202,8 +202,11 @@ public class FdMemberDoctorShController extends BaseController {
 		FdMemberDoctorSh fdMemberDoctorSh = fdMemberDoctorShService.get(id);
 		FdMember member = fdMemberService.get(id);
 		fdMemberDoctorSh.setMobile(member.getUsername());
-		FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(fdMemberDoctorSh.getLevel());
-		fdMemberDoctorSh.setLevelName(level.getName());
+		if(!F.empty(fdMemberDoctorSh.getLevel())) {
+			FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(fdMemberDoctorSh.getLevel());
+			if(level != null) fdMemberDoctorSh.setLevelName(level.getName());
+		}
+
 		request.setAttribute("fdMemberDoctorSh", fdMemberDoctorSh);
 		return "/fdmemberdoctorsh/fdMemberDoctorShEdit";
 	}

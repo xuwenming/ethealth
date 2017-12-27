@@ -1,5 +1,6 @@
 package com.ethealth.front.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.mobian.absx.F;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
@@ -9,6 +10,7 @@ import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
+import com.mobian.thirdpart.jpush.JPushUtil;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
 import com.mobian.util.Util;
@@ -52,6 +54,9 @@ public class ApiMemberConsultationController extends BaseController {
 
 	@Autowired
 	private FdMessageServiceI fdMessageService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
 
 	/**
 	 * 获取专家咨询信息接口
@@ -281,14 +286,45 @@ public class ApiMemberConsultationController extends BaseController {
 				consultationFriend.setLastTime(new Date());
 				consultationFriend.setStatus("0");
 				FdMemberConsultationFriend friend = fdMemberConsultationFriendService.getByUserIdAndDoctorId(userId, doctorId);
+				boolean isPush = true;
 				if(friend == null) {
 					fdMemberConsultationFriendService.add(consultationFriend);
 				} else {
+					if(new Date().getTime() - friend.getLastTime().getTime() <= 5*60*1000) {
+						isPush = false;
+					}
 					consultationFriend.setId(friend.getId());
 					fdMemberConsultationFriendService.edit(consultationFriend);
 				}
 
-				// TODO 广播消息 刷新首页的就诊动态
+				// 广播消息 刷新首页的就诊动态
+				if(isPush) {
+					CompletionService completionService = CompletionFactory.initCompletion();
+					completionService.submit(new Task<FdMemberConsultationFriend, Boolean>(friend) {
+						@Override
+						public Boolean call() throws Exception {
+							FdMember doctor = fdMemberService.getDetail(getD().getDoctorId());
+							FdMember patient = fdMemberService.getDetail(getD().getUserId());
+							String patientName = "";
+							if(!F.empty(patient.getCustomer().getRealName())) {
+								patientName = patient.getCustomer().getRealName().substring(0, 1) + "**";
+							} else {
+								patientName = patient.getCustomer().getPhone().substring(0, 3) + "****" + patient.getCustomer().getPhone().substring(patient.getCustomer().getPhone().length() - 4);
+							}
+							Map<String, Object> msg = new HashMap<String, Object>();
+							msg.put("mtype", "M202");
+							msg.put("doctorHeadimage", doctor.getPicUrl());
+							msg.put("doctorMobile", doctor.getMobile());
+							msg.put("hospitalName", doctor.getMemberDoctor().getHospitalName());
+							msg.put("patientMobile", patient.getMobile());
+							msg.put("patientName", patientName);
+							msg.put("senderType", getD().getSenderType());
+							JPushUtil.pushMyMessageToAll(JSON.toJSONString(msg), 0);
+							return true;
+						}
+					});
+				}
+
 				j.setSuccess(true);
 				j.setMsg("更新成功！");
 			}

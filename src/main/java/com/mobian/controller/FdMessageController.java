@@ -115,7 +115,8 @@ public class FdMessageController extends BaseController {
 		if(!F.empty(fdMessage.getEndDateStr())) {
 			fdMessage.setEndDate(DateUtil.parse(fdMessage.getEndDateStr(), Constants.DATE_FORMAT_YMD));
 		}
-		fdMessageService.add(fdMessage);
+
+		fdMessageService.addAndPushMessage(fdMessage);
 		j.setSuccess(true);
 		j.setMsg("添加成功！");		
 		return j;
@@ -168,6 +169,22 @@ public class FdMessageController extends BaseController {
 		fdMessageService.edit(fdMessage);
 		j.setSuccess(true);
 		j.setMsg("编辑成功！");		
+		return j;
+	}
+
+	/**
+	 * 推送消息
+	 *
+	 * @param fdMessage
+	 * @return
+	 */
+	@RequestMapping("/editAndPushMessage")
+	@ResponseBody
+	public Json editAndPushMessage(FdMessage fdMessage) {
+		Json j = new Json();
+		fdMessageService.editAndPushMessage(fdMessage);
+		j.setSuccess(true);
+		j.setMsg(fdMessage.getIsPushed() != null && fdMessage.getIsPushed() ? "推送成功！" : "推送失败！");
 		return j;
 	}
 

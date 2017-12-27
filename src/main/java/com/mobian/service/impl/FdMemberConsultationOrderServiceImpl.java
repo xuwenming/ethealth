@@ -211,6 +211,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 		message.setMtype("MT02");
 		message.setIsRead(false);
 		message.setAlias("2-" + doctor.getMobile());
+		message.setPushMessage(new PushMessage("M201", "手机号" + user.getMobile() + "用户成功支付了您的咨询服务!"));
 		fdMessageService.addAndPushMessage(message);
 
 		message = new FdMessage();

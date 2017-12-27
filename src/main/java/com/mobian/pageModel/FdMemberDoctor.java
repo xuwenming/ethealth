@@ -34,6 +34,7 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String levelName;
 	private String picUrl;
 	private String mobile;
+	private String email;
 	private FdCustomer customer;
 	private Boolean isBest; // 是否著名
 	private String key; // 关键字查询
@@ -264,5 +265,13 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

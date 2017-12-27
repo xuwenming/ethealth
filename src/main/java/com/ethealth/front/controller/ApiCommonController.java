@@ -6,10 +6,7 @@ import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
-import com.mobian.service.BugServiceI;
-import com.mobian.service.FdMedicinePracticeServiceI;
-import com.mobian.service.FdMedicineScienceServiceI;
-import com.mobian.service.FdMemberDoctorLevelServiceI;
+import com.mobian.service.*;
 import com.mobian.service.impl.RedisUserServiceImpl;
 import com.mobian.thirdpart.wx.SignUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
@@ -61,6 +58,9 @@ public class ApiCommonController extends BaseController {
 
 	@Autowired
 	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
+
+	@Autowired
+	private FdDoctorOpinionServiceI fdDoctorOpinionService;
 	
 	/**
 	 * 生成html
@@ -216,12 +216,48 @@ public class ApiCommonController extends BaseController {
 	 * @param
 	 * @param
 	 * @return
-	 * eg: http://www.e-diving.com.cn/api/apiCommon/share?businessId=4fa21103-c7cb-495c-a35d-691c73d32f37&businessType=BT06
+	 * eg: http://localhost:8083/api/apiCommon/share?id=379&type=BT01
 	 */
 	@RequestMapping("/share")
-	public String share(String businessId,String businessType,HttpServletRequest request) {
+	public String share(Integer id,String type,HttpServletRequest request) {
+		String title = "";
+		String author = "医家盟";
+		String content = "";
+		Date date = null;
+		Calendar c = Calendar.getInstance();
+		if("BT01".equals(type)) {
+			FdMedicinePractice t = fdMedicinePracticeService.get(id);
+			content = t.getContent();
+			content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
+			title = t.getTitle();
+			c.setTimeInMillis(t.getCreateTime());
+			date = c.getTime();
+		} else if("BT02".equals(type)) {
+			FdMedicineScience t = fdMedicineScienceService.get(id);
+			content = t.getContent();
+			content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
+			title = t.getTitle();
+			c.setTimeInMillis(t.getCreateTime());
+			date = c.getTime();
+		} else if("BT03".equals(type)) {
+			FdDoctorOpinion t = fdDoctorOpinionService.getDetail(id);
+			if(!F.empty(t.getFileToImgs())) {
+				String[] imgs = t.getFileToImgs().split(",");
+				for(String img : imgs) {
+					content += "<img src=\""+img+"\" />";
+				}
+			}
+			title = t.getTitle();
+			c.setTimeInMillis(t.getCreateTime());
+			date = c.getTime();
+			author = t.getUserName();
+		}
 
-		return "/diveshare/diveshare";
+		request.setAttribute("title", title);
+		request.setAttribute("content", content);
+		request.setAttribute("date", date);
+		request.setAttribute("author", author);
+		return "/appshare/share";
 	}
 	
 	/**

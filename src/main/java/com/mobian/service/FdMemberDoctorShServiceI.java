@@ -37,6 +37,8 @@ public interface FdMemberDoctorShServiceI {
 	 */
 	public FdMemberDoctorSh get(Integer id);
 
+	public FdMemberDoctorSh get(Integer id, Integer auditType);
+
 	/**
 	 * 修改FdMemberDoctorSh
 	 * 

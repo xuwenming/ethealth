@@ -62,10 +62,40 @@ public class ApiDoctorController extends BaseController {
 			sh.setStatus("1"); // 审核中
 			sh.setAuditType(2); // 修改审核
 
+			FdMemberDoctor doctor = fdMemberDoctorService.getDetail(sh.getId());
+			if(F.empty(sh.getRealName())) {
+				sh.setRealName(doctor.getCustomer().getRealName());
+			}
+			if(F.empty(sh.getSex())) {
+				sh.setSex(doctor.getCustomer().getSex());
+			}
 			if(!F.empty(sh.getBirthdayStr()))
 				sh.setBirthday(DateUtil.parse(sh.getBirthdayStr(), Constants.DATE_FORMAT_YMD).getTime());
+			else
+				sh.setBirthday(doctor.getCustomer().getBirthday());
+			if(F.empty(sh.getEmail())) {
+				sh.setEmail(doctor.getEmail());
+			}
+			if(F.empty(sh.getHospital())) {
+				sh.setHospital(doctor.getHospital());
+			}
+			if(F.empty(sh.getDepartment())) {
+				sh.setDepartment(doctor.getDepartment());
+			}
+			if(F.empty(sh.getLevel())) {
+				sh.setLevel(doctor.getLevel());
+			}
+			if(F.empty(sh.getIntroduce())) {
+				sh.setIntroduce(doctor.getIntroduce());
+			}
+			if(F.empty(sh.getSpeciality())) {
+				sh.setSpeciality(doctor.getSpeciality());
+			}
 
-			sh.setPics(uploadFile(HEAD_IMAGE, headImageFile));
+			if(headImageFile != null)
+				sh.setPics(uploadFile(HEAD_IMAGE, headImageFile));
+			else
+				sh.setPics(doctor.getPicUrl());
 
 			fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 

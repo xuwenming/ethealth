@@ -92,6 +92,7 @@
 						<value>/api/member/login</value><!-- 用户登录 -->
 						<value>/api/member/register</value><!-- 注册 -->
 						<value>/api/apiCommon/error</value><!-- token过期错误返回 -->
+						<value>/api/apiCommon/share</value><!-- 统一分享 -->
 
 						<value>/api/member/addDoctorInfo</value><!-- 医生注册第2步 -->
 						<value>/api/apiCommon/getLevels</value><!-- 获取职称列表 -->

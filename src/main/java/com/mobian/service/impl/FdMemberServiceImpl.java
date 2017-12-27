@@ -200,7 +200,6 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			message.setMtype("MT02");
 			message.setIsRead(false);
 			message.setAlias("0-" + member.getMobile());
-			fdMessageService.addAndPushMessage(message);
 		}
 
 //		if(member.getIsAdmin() == 2) {
@@ -392,29 +391,54 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		FdMemberDoctor doctor = fdMemberDoctorService.get(member.getId());
 
 		if(doctor != null) {
-			if(!F.empty(doctor.getHospital())) {
-				FdHospital hospital = fdHospitalService.get(doctor.getHospital());
-				doctor.setHospitalName(hospital.getHospitalName());
-			}
-			if(!F.empty(doctor.getLevel())) {
-				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
-				doctor.setLevelName(level.getName());
-			}
+			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId(), 2);
+			if(sh != null && "1".equals(sh.getStatus())) { // 待审核
+				member.setStatus(2);
+				if(!F.empty(sh.getHospital())) {
+					FdHospital hospital = fdHospitalService.get(sh.getHospital());
+					doctor.setHospital(sh.getHospital());
+					doctor.setHospitalName(hospital.getHospitalName());
+				}
+				if(!F.empty(sh.getLevel())) {
+					FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(sh.getLevel());
+					doctor.setLevel(sh.getLevel());
+					doctor.setLevelName(level.getName());
+				}
 
-			if(F.empty(doctor.getDepartmentName())) {
-				if(!F.empty(doctor.getDepartment())) {
-					FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+				if(!F.empty(sh.getDepartment())) {
+					FdHospitalDept dept = fdHospitalDeptService.get(sh.getDepartment());
+					doctor.setDepartment(sh.getDepartment());
 					doctor.setDepartmentName(dept.getName());
+				}
+
+				if(!F.empty(sh.getRealName())) member.getCustomer().setRealName(sh.getRealName());
+				if(!F.empty(sh.getSex())) member.getCustomer().setSex(sh.getSex());
+				if(!F.empty(sh.getBirthday())) member.getCustomer().setBirthday(sh.getBirthday());
+				if(!F.empty(sh.getEmail())) member.setEmail(sh.getEmail());
+				if(!F.empty(sh.getSpeciality())) doctor.setSpeciality(sh.getSpeciality());
+				if(!F.empty(sh.getIntroduce())) doctor.setIntroduce(sh.getIntroduce());
+				if(!F.empty(sh.getPics())) member.setPicUrl(sh.getPics());
+
+			} else {
+				if(!F.empty(doctor.getHospital())) {
+					FdHospital hospital = fdHospitalService.get(doctor.getHospital());
+					doctor.setHospitalName(hospital.getHospitalName());
+				}
+				if(!F.empty(doctor.getLevel())) {
+					FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
+					doctor.setLevelName(level.getName());
+				}
+
+				if(F.empty(doctor.getDepartmentName())) {
+					if(!F.empty(doctor.getDepartment())) {
+						FdHospitalDept dept = fdHospitalDeptService.get(doctor.getDepartment());
+						doctor.setDepartmentName(dept.getName());
+					}
 				}
 			}
 
 			member.setMemberDoctor(doctor);
 
-//			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
-//			if(sh != null && "2".equals(sh.getStatus())) {
-//				if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
-//				if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
-//			}
 		}
 
 	}

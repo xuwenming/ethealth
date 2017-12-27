@@ -223,6 +223,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 		message.setMtype("MT02");
 		message.setIsRead(false);
 		message.setAlias("2-" + doctor.getMobile());
+		message.setPushMessage(new PushMessage("M101", "手机号" + user.getMobile() + "用户成功支付了您的加号服务!，预约时间：" + appointment.getAppointTime()));
 		fdMessageService.addAndPushMessage(message);
 
 		message = new FdMessage();
@@ -270,6 +271,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			message.setMtype("MT02");
 			message.setIsRead(false);
 			message.setAlias("0-" + user.getMobile());
+			message.setPushMessage(new PushMessage("M103", doctor.getCustomer().getRealName() + "医生拒绝了您的预约，预约时间：" + o.getAppointTime()));
 			fdMessageService.addAndPushMessage(message);
 
 		} else if("1".equals(appointment.getAppointStatus())) {
@@ -296,6 +298,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			message.setMtype("MT02");
 			message.setIsRead(false);
 			message.setAlias("0-" + user.getMobile());
+			message.setPushMessage(new PushMessage("M102", doctor.getCustomer().getRealName() + "医生确认了您的预约，预约时间：" + o.getAppointTime()));
 			fdMessageService.addAndPushMessage(message);
 		}
 	}

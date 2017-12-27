@@ -94,6 +94,7 @@ public class FdMemberDoctorLevelServiceImpl extends BaseServiceImpl<FdMemberDoct
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		TfdMemberDoctorLevel t = fdMemberDoctorLevelDao.get("from TfdMemberDoctorLevel t  where t.id = :id", params);
+		if(t == null) return null;
 		FdMemberDoctorLevel o = new FdMemberDoctorLevel();
 		BeanUtils.copyProperties(t, o);
 		return o;

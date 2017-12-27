@@ -71,6 +71,7 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	private java.util.Date endDate;
 
 	private Integer consumerType;
+	private Boolean isPushed;
 	//columns END
 
 
@@ -227,6 +228,16 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 	public void setConsumerType(Integer consumerType) {
 		this.consumerType = consumerType;
 	}
+
+	@Column(name = "is_pushed", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
+	public Boolean getIsPushed() {
+		return isPushed;
+	}
+
+	public void setIsPushed(Boolean isPushed) {
+		this.isPushed = isPushed;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

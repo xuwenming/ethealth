@@ -25,13 +25,15 @@ public class FdMessage implements java.io.Serializable {
 	private Date startDate;
 	private Date endDate;
 	private Integer consumerType;
+	private Boolean isPushed;
 
 	private String startDateStr;
 	private String endDateStr;
 	private String alias;
 
 	private Boolean isCustom; // 推送消息是否为自定义消息，true是
-	private String customType; // 自定义消息类型
+
+	private PushMessage pushMessage;
 
 	public String getStatusZh() {
 		return Application.getString(status);
@@ -193,11 +195,19 @@ public class FdMessage implements java.io.Serializable {
 		this.isCustom = isCustom;
 	}
 
-	public String getCustomType() {
-		return customType;
+	public PushMessage getPushMessage() {
+		return pushMessage;
 	}
 
-	public void setCustomType(String customType) {
-		this.customType = customType;
+	public void setPushMessage(PushMessage pushMessage) {
+		this.pushMessage = pushMessage;
+	}
+
+	public Boolean getIsPushed() {
+		return isPushed;
+	}
+
+	public void setIsPushed(Boolean isPushed) {
+		this.isPushed = isPushed;
 	}
 }

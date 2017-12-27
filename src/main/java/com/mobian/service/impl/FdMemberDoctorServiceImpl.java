@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.*;
 
 @Service
@@ -325,6 +326,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		}
 		doctor.setPicUrl(picUrl);
 		doctor.setMobile(member.getMobile());
+		doctor.setEmail(member.getEmail());
 
 		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
 
@@ -347,12 +349,6 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			}
 		}
 
-//		FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId());
-//		if(sh != null && "2".equals(sh.getStatus())) {
-//			if(F.empty(doctor.getHospitalName())) doctor.setHospitalName(sh.getHospitalName());
-//			if(F.empty(doctor.getDepartmentName())) doctor.setDepartmentName(sh.getDepartmentName());
-//		}
-
 		return doctor;
 	}
 
@@ -371,8 +367,8 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 				+ " (select a.user_id, a.create_time, a.appoint_name realName from fd_member_appointment a where a.status = 1 and a.doctor_id = :doctorId "
 				+ " UNION "
 				+ " select c.user_id, c.create_time, u.real_name realName from fd_member_consultation_friend c left join fd_customer u on u.user_id = c.user_id where c.status = 0 and c.doctor_id = :doctorId) t "
-				+ where + " order by t.create_time desc ";
-		List<Map> l = fdMemberDoctorDao.findBySql2Map(sql, params, ph.getPage(), ph.getRows());
+				+ where;
+		List<Map> l = fdMemberDoctorDao.findBySql2Map(sql + " order by t.create_time desc ", params, ph.getPage(), ph.getRows());
 		if(CollectionUtils.isNotEmpty(l)) {
 			CompletionService completionService = CompletionFactory.initCompletion();
 			for(Map m : l) {
@@ -390,6 +386,9 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			}
 			completionService.sync();
 			dg.setRows(ol);
+
+			BigInteger count = fdMemberDoctorDao.countBySql("select count(DISTINCT t.user_id) " + sql.substring(sql.indexOf("from")), params);
+			dg.setTotal(count == null ? 0 : count.longValue());
 		}
 		return dg;
 	}

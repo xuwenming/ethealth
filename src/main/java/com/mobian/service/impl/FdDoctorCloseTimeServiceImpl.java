@@ -187,12 +187,13 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 				FdMessage message = new FdMessage();
 				message.setTitle("预约停诊提醒");
 
-				String content = "尊敬的用户您好，" + time + doctor.getCustomer().getRealName() + "医生发布了停诊，您的预约已被取消，支付钱款已原路退回，给您带来的不便深表歉意！";
+				String content = "尊敬的用户您好，" + doctor.getCustomer().getRealName() + "医生与" + time + "发布了停诊，您的预约已被取消，支付钱款已原路退回，给您带来的不便深表歉意！";
 				message.setContent(content);
 				message.setUserId(a.getUserId());
 				message.setMtype("MT02");
 				message.setIsRead(false);
 				message.setAlias("0-" + user.getMobile());
+				message.setPushMessage(new PushMessage("M104", doctor.getCustomer().getRealName() + "医生与" + time + "发布了停诊，您的预约已被取消"));
 				fdMessageService.addAndPushMessage(message);
 			}
 		}
