@@ -319,7 +319,7 @@ public class ApiMemberConsultationController extends BaseController {
 							msg.put("patientMobile", patient.getMobile());
 							msg.put("patientName", patientName);
 							msg.put("senderType", getD().getSenderType() + "");
-							JPushUtil.pushMyMessageToAll(null, msg, 0);
+							JPushUtil.pushMyMessageToAll("", msg, 0);
 							return true;
 						}
 					});
