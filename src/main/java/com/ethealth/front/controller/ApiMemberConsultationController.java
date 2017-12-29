@@ -311,15 +311,15 @@ public class ApiMemberConsultationController extends BaseController {
 							} else {
 								patientName = patient.getCustomer().getPhone().substring(0, 3) + "****" + patient.getCustomer().getPhone().substring(patient.getCustomer().getPhone().length() - 4);
 							}
-							Map<String, Object> msg = new HashMap<String, Object>();
+							Map<String, String> msg = new HashMap<String, String>();
 							msg.put("mtype", "M202");
 							msg.put("doctorHeadimage", doctor.getPicUrl());
 							msg.put("doctorMobile", doctor.getMobile());
 							msg.put("hospitalName", doctor.getMemberDoctor().getHospitalName());
 							msg.put("patientMobile", patient.getMobile());
 							msg.put("patientName", patientName);
-							msg.put("senderType", getD().getSenderType());
-							JPushUtil.pushMyMessageToAll(JSON.toJSONString(msg), 0);
+							msg.put("senderType", getD().getSenderType() + "");
+							JPushUtil.pushMyMessageToAll(null, msg, 0);
 							return true;
 						}
 					});

@@ -164,28 +164,28 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 0);
-					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 2);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 0);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 
 			} else if(consumerType == 1) { // 只推送患者
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.PATIENT_TAG, JSON.toJSONString(pushMessage), 0);
+					pushResult = JPushUtil.pushMessageToTag(JPushUtil.PATIENT_TAG, pushMessage.getContent(), pushMessage.getExtras(), 0);
 				}
 
 			} else if(consumerType == 2) { // 只推送医生
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.DOCTOR_TAG, JSON.toJSONString(pushMessage), 2);
+					pushResult = JPushUtil.pushMessageToTag(JPushUtil.DOCTOR_TAG, pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 			}
 
@@ -216,28 +216,28 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 0);
-					pushResult = JPushUtil.pushMessageToAll(JSON.toJSONString(pushMessage), 2);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 0);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 
 			} else if(consumerType == 1) { // 只推送患者
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.PATIENT_TAG, JSON.toJSONString(pushMessage), 0);
+					pushResult = JPushUtil.pushMessageToTag(JPushUtil.PATIENT_TAG, pushMessage.getContent(), pushMessage.getExtras(), 0);
 				}
 
 			} else if(consumerType == 2) { // 只推送医生
 				String alias = message.getAlias();
 				if(!F.empty(alias)) {
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
-					pushResult = JPushUtil.pushMessageToAlias("all", alias, JSON.toJSONString(pushMessage), isAdmin);
+					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag("all", JPushUtil.DOCTOR_TAG, JSON.toJSONString(pushMessage), 2);
+					pushResult = JPushUtil.pushMessageToTag(JPushUtil.DOCTOR_TAG, pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 			}
 
