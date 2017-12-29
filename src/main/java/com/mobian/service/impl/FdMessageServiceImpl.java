@@ -197,7 +197,8 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 	}
 
 	@Override
-	public void editAndPushMessage(FdMessage message) {
+	public boolean editAndPushMessage(FdMessage message) {
+		boolean flag = false;
 		message = get(message.getId());
 
 		String type = "";
@@ -244,8 +245,11 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 			if(pushResult != null) {
 				message.setIsPushed(true);
 				edit(message);
+				flag = true;
 			}
 		}
+
+		return flag;
 	}
 
 	@Override

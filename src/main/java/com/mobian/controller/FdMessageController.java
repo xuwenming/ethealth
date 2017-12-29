@@ -182,9 +182,9 @@ public class FdMessageController extends BaseController {
 	@ResponseBody
 	public Json editAndPushMessage(FdMessage fdMessage) {
 		Json j = new Json();
-		fdMessageService.editAndPushMessage(fdMessage);
+		boolean flag = fdMessageService.editAndPushMessage(fdMessage);
 		j.setSuccess(true);
-		j.setMsg(fdMessage.getIsPushed() != null && fdMessage.getIsPushed() ? "推送成功！" : "推送失败！");
+		j.setMsg(flag ? "推送成功！" : "推送失败！");
 		return j;
 	}
 

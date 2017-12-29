@@ -53,7 +53,7 @@ public interface FdMessageServiceI {
 
 	void addAndPushMessage(FdMessage message);
 
-	void editAndPushMessage(FdMessage fdMessage);
+	boolean editAndPushMessage(FdMessage fdMessage);
 
 	int getUnreadMsgCount(Integer userId, Integer isAdmin);
 }
