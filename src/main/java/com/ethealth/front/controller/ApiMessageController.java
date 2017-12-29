@@ -65,6 +65,7 @@ public class ApiMessageController extends BaseController {
             } else if(member.getIsAdmin() == 2){
                 fdMessage.setConsumerType(2);
             }
+            fdMessage.setStatus("ST01");
             DataGrid dg = fdMessageService.dataGrid(fdMessage, ph);
             List<FdMessage> list = dg.getRows();
             if(CollectionUtils.isNotEmpty(list)) {

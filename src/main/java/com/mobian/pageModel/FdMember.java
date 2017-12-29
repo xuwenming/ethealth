@@ -47,6 +47,7 @@ public class FdMember implements java.io.Serializable {
 	private java.lang.String introduce;
 
 	private String statusArr;
+	private int unreadMsgCount;
 
 
 	public void setId(java.lang.Integer value) {
@@ -324,5 +325,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setPatient(FdPatient patient) {
 		this.patient = patient;
+	}
+
+	public int getUnreadMsgCount() {
+		return unreadMsgCount;
+	}
+
+	public void setUnreadMsgCount(int unreadMsgCount) {
+		this.unreadMsgCount = unreadMsgCount;
 	}
 }

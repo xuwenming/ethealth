@@ -213,6 +213,10 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	public FdMember getDetail(Integer id) {
 		FdMember member = get(id);
 		fillSimpleDoctorInfo(member);
+
+		// 获取未读消息数量
+		int count = fdMessageService.getUnreadMsgCount(member.getId(), member.getIsAdmin());
+		member.setUnreadMsgCount(count);
 		return member;
 	}
 

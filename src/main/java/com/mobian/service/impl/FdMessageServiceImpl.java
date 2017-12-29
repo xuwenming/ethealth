@@ -248,4 +248,16 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 		}
 	}
 
+	@Override
+	public int getUnreadMsgCount(Integer userId, Integer isAdmin) {
+		String hql = "select count(*) from TfdMessage t where t.isdeleted = 0 and t.isRead = 0 "
+				+ " and (t.userId = :userId or t.userId is null) and (t.consumerType = :consumerType or t.consumerType = 0)"
+				+ " and not EXISTS (select 1 from TfdMessageReadLog log where log.messageId = t.id)";
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("userId", userId);
+		params.put("consumerType", (isAdmin == null || isAdmin == 0) ? 1 : 2);
+		Long count = fdMessageDao.count(hql, params);
+		return count == null ? 0 : count.intValue();
+	}
+
 }
