@@ -192,7 +192,7 @@ public class FdDoctorCloseTimeServiceImpl extends BaseServiceImpl<FdDoctorCloseT
 				message.setUserId(a.getUserId());
 				message.setMtype("MT02");
 				message.setIsRead(false);
-				message.setAlias("0-" + user.getMobile());
+				message.setAlias("0_" + user.getMobile());
 				message.setPushMessage(new PushMessage("M104", doctor.getCustomer().getRealName() + "医生与" + time + "发布了停诊，您的预约已被取消"));
 				fdMessageService.addAndPushMessage(message);
 			}

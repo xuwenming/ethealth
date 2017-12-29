@@ -210,7 +210,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 		message.setUserId(consultationOrder.getDoctorId());
 		message.setMtype("MT02");
 		message.setIsRead(false);
-		message.setAlias("2-" + doctor.getMobile());
+		message.setAlias("2_" + doctor.getMobile());
 		message.setPushMessage(new PushMessage("M201", "手机号" + user.getMobile() + "用户成功支付了您的咨询服务!"));
 		fdMessageService.addAndPushMessage(message);
 
@@ -220,7 +220,7 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 		message.setUserId(consultationOrder.getUserId());
 		message.setMtype("MT02");
 		message.setIsRead(false);
-		message.setAlias("0-" + user.getMobile());
+		message.setAlias("0_" + user.getMobile());
 		fdMessageService.add(message);
 	}
 

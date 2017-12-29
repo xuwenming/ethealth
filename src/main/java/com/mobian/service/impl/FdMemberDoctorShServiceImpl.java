@@ -270,7 +270,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setUserId(member.getId());
 				message.setMtype("MT02");
 				message.setIsRead(false);
-				message.setAlias("2-" + member.getMobile());
+				message.setAlias("2_" + member.getMobile());
 				message.setPushMessage(new PushMessage("M001", "尊敬的医生您好，恭喜您在医家盟注册医生账号审核通过！", 2));
 				fdMessageService.addAndPushMessage(message);
 			} else {
@@ -280,7 +280,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setUserId(member.getId());
 				message.setMtype("MT02");
 				message.setIsRead(false);
-				message.setAlias("2-" + member.getMobile());
+				message.setAlias("2_" + member.getMobile());
 				message.setPushMessage(new PushMessage("M001", "尊敬的医生您好，恭喜您在医家盟修改医生信息审核通过！", 2));
 				fdMessageService.addAndPushMessage(message);
 			}
@@ -295,7 +295,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setUserId(member.getId());
 				message.setMtype("MT02");
 				message.setIsRead(false);
-				message.setAlias("2-" + member.getMobile());
+				message.setAlias("2_" + member.getMobile());
 				message.setPushMessage(new PushMessage("M001", "尊敬的医生您好，您在医家盟修改医生信息审核失败，非常抱歉！", 0));
 				fdMessageService.addAndPushMessage(message);
 			}
