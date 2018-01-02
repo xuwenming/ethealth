@@ -251,6 +251,8 @@ public class ApiCommonController extends BaseController {
 			c.setTimeInMillis(t.getCreateTime());
 			date = c.getTime();
 			author = t.getUserName();
+		} else if("BT04".equals(type)) {
+			return "/appshare/download";
 		}
 
 		request.setAttribute("title", title);

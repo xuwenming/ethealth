@@ -113,7 +113,7 @@ dd,dl,dt{ margin:0 ; padding:0;}
 
 	<script>
 		function tryOpenApp() {
-			location.href= 'https://www.jjcbw.com/Web/AppDownload/yyb.html';
+			location.href= '${pageContext.request.contextPath}/appshare/download.jsp';
 		}
 	</script>
 </body>
