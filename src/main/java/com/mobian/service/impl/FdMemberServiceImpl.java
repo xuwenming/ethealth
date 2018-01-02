@@ -123,7 +123,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 				whereHql += " and t.status = :status";
 				params.put("status", fdMember.getStatus());
 			}		
-			if (!F.empty(fdMember.getIsAdmin())) {
+			if (fdMember.getIsAdmin() != null) {
 				whereHql += " and t.isAdmin = :isAdmin";
 				params.put("isAdmin", fdMember.getIsAdmin());
 			}		
@@ -365,7 +365,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 				params.put("password", MD5Util.encryptPassword(fdMember.getPassword()));
 			}
 
-			if (!F.empty(fdMember.getIsAdmin())) {
+			if (fdMember.getIsAdmin() != null) {
 				whereHql += " and t.isAdmin = :isAdmin";
 				params.put("isAdmin", fdMember.getIsAdmin());
 			}
