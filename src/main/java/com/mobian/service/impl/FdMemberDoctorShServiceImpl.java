@@ -249,14 +249,14 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				doctor = new FdMemberDoctor();
 				doctor.setId(member.getId());
 				doctor.setHospital(fdMemberDoctorSh.getHospital());
-				doctor.setDepartmentName(fdMemberDoctorSh.getDepartmentName());
+				doctor.setDepartment(fdMemberDoctorSh.getDepartment());
 				doctor.setLevel(fdMemberDoctorSh.getLevel());
 				doctor.setSpeciality(fdMemberDoctorSh.getSpeciality());
 				doctor.setIntroduce(fdMemberDoctorSh.getIntroduce());
 				fdMemberDoctorService.add(doctor);
 			} else {
 				doctor.setHospital(fdMemberDoctorSh.getHospital());
-				doctor.setDepartmentName(fdMemberDoctorSh.getDepartmentName());
+				doctor.setDepartment(fdMemberDoctorSh.getDepartment());
 				doctor.setLevel(fdMemberDoctorSh.getLevel());
 				doctor.setSpeciality(fdMemberDoctorSh.getSpeciality());
 				doctor.setIntroduce(fdMemberDoctorSh.getIntroduce());

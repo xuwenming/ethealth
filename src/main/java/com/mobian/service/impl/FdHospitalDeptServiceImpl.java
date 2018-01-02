@@ -94,6 +94,7 @@ public class FdHospitalDeptServiceImpl extends BaseServiceImpl<FdHospitalDept> i
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
 		TfdHospitalDept t = fdHospitalDeptDao.get("from TfdHospitalDept t  where t.id = :id", params);
+		if(t == null) return null;
 		FdHospitalDept o = new FdHospitalDept();
 		BeanUtils.copyProperties(t, o);
 		return o;
