@@ -1,27 +1,11 @@
 package com.mobian.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import com.mobian.comparator.NameComparator;
 import com.mobian.comparator.SizeComparator;
 import com.mobian.comparator.TypeComparator;
+import com.mobian.thirdpart.oss.OSSUtil;
 import com.mobian.util.ConfigUtil;
-
+import com.mobian.util.ImageUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
@@ -36,11 +20,19 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 /**
  * 文件控制器
- * 
+ *
  * @author John
- * 
+ *
  */
 @Controller
 @RequestMapping("/fileController")
@@ -48,7 +40,7 @@ public class FileController extends BaseController {
 
 	/**
 	 * 浏览器服务器附件
-	 * 
+	 *
 	 * @param response
 	 * @param request
 	 * @param session
@@ -181,7 +173,7 @@ public class FileController extends BaseController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param response
 	 * @param request
 	 * @param session
@@ -194,10 +186,11 @@ public class FileController extends BaseController {
 		m.put("error", 1);
 		m.put("message", "上传失败！");
 		// 文件保存目录路径
-		String savePath = session.getServletContext().getRealPath("/") + "attached/";
+		String realPath = session.getServletContext().getRealPath("/");
+		String savePath = "attached/";
 
 		// 文件保存目录URL
-		String saveUrl = request.getContextPath() + "/attached/";
+//		String saveUrl = request.getContextPath() + "/attached/";
 
 		// 定义允许上传的文件扩展名
 		HashMap<String, String> extMap = new HashMap<String, String>();
@@ -215,17 +208,17 @@ public class FileController extends BaseController {
 		}
 
 		// 检查目录
-		File uploadDir = new File(savePath);
-		if (!uploadDir.isDirectory()) {
-			uploadDir.mkdirs();
-		}
+//		File uploadDir = new File(savePath);
+//		if (!uploadDir.isDirectory()) {
+//			uploadDir.mkdirs();
+//		}
 
 		// 检查目录写权限
-		if (!uploadDir.canWrite()) {
-			m.put("error", 1);
-			m.put("message", "上传目录没有写权限！");
-			return m;
-		}
+//		if (!uploadDir.canWrite()) {
+//			m.put("error", 1);
+//			m.put("message", "上传目录没有写权限！");
+//			return m;
+//		}
 
 		String dirName = request.getParameter("dir");
 		if (dirName == null) {
@@ -239,22 +232,22 @@ public class FileController extends BaseController {
 
 		// 创建文件夹
 		savePath += dirName + "/";
-		saveUrl += dirName + "/";
-		File saveDirFile = new File(savePath);
-		if (!saveDirFile.exists()) {
-			saveDirFile.mkdirs();
-		}
+//		saveUrl += dirName + "/";
+//		File saveDirFile = new File(savePath);
+//		if (!saveDirFile.exists()) {
+//			saveDirFile.mkdirs();
+//		}
 		SimpleDateFormat yearDf = new SimpleDateFormat("yyyy");
 		SimpleDateFormat monthDf = new SimpleDateFormat("MM");
 		SimpleDateFormat dateDf = new SimpleDateFormat("dd");
 		Date date = new Date();
 		String ymd = yearDf.format(date) + "/" + monthDf.format(date) + "/" + dateDf.format(date) + "/";
 		savePath += ymd;
-		saveUrl += ymd;
-		File dirFile = new File(savePath);
-		if (!dirFile.exists()) {
-			dirFile.mkdirs();
-		}
+//		saveUrl += ymd;
+//		File dirFile = new File(savePath);
+//		if (!dirFile.exists()) {
+//			dirFile.mkdirs();
+//		}
 
 		if (ServletFileUpload.isMultipartContent(request)) {// 判断表单是否存在enctype="multipart/form-data"
 			FileItemFactory factory = new DiskFileItemFactory();
@@ -279,10 +272,13 @@ public class FileController extends BaseController {
 							return m;
 						}
 
-						String newFileName = UUID.randomUUID().toString() + "." + fileExt;
+						String newFileName = com.mobian.absx.UUID.uuid() + "." + fileExt;
+						String result = null;
 						try {
-							File uploadedFile = new File(savePath, newFileName);
-							item.write(uploadedFile);
+							result = OSSUtil.putInputStream(OSSUtil.bucketName, item.getInputStream(), savePath + newFileName);
+//							result = ImageUtils.pressImage(result, realPath);
+							//File uploadedFile = new File(savePath, newFileName);
+							//item.write(uploadedFile);
 						} catch (Exception e) {
 							m.put("error", 1);
 							m.put("message", "上传文件失败！");
@@ -290,7 +286,7 @@ public class FileController extends BaseController {
 						}
 
 						m.put("error", 0);
-						m.put("url", saveUrl + newFileName);
+						m.put("url", result);
 					}
 				}
 			} catch (FileUploadException e) {
@@ -301,18 +297,18 @@ public class FileController extends BaseController {
 		return m;
 	}
 
-	@RequestMapping("download")    
-    public ResponseEntity<byte[]> download(String filePath, HttpServletRequest request) throws IOException {  
-    	String realPath = request.getSession().getServletContext().getRealPath("/");  
-        File file=new File(realPath + filePath);  
-        HttpHeaders headers = new HttpHeaders();    
-        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
-        fileName=new String(fileName.getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题  
-        headers.setContentDispositionFormData("attachment", fileName);  
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); 
+	@RequestMapping("download")
+	public ResponseEntity<byte[]> download(String filePath, HttpServletRequest request) throws IOException {
+		String realPath = request.getSession().getServletContext().getRealPath("/");
+		File file=new File(realPath + filePath);
+		HttpHeaders headers = new HttpHeaders();
+		String fileName = filePath.substring(filePath.lastIndexOf("/") + 1);
+		fileName=new String(fileName.getBytes("UTF-8"),"iso-8859-1");//为了解决中文名称乱码问题
+		headers.setContentDispositionFormData("attachment", fileName);
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 //        headers.setContentType(MediaType.parseMediaType("application/vnd.android.package-archive")); 
-        return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),    
-                                          headers, HttpStatus.CREATED);    
-    }   
-    
+		return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),
+				headers, HttpStatus.CREATED);
+	}
+
 }

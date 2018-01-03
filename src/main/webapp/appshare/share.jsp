@@ -23,7 +23,7 @@ a img { border: none; }
 dd,dl,dt{ margin:0 ; padding:0;}
 
 .content{ padding:5px 15px; margin:0 auto;}
-.content h1{ display:block; line-height:1.8em; font-size:20px; color:#4c4c4c; font-weight:bold; text-align:left;}
+.content h1{ display:block; line-height:1.8em; font-size:28px; color:#4c4c4c; font-weight:bold; text-align:left;}
 .content h2{ display:block; font-size:12px; color:#999999; text-align:left;}
 .content h2 span{ margin-right:4%;}
 .content h2 a{ color:#1354b5;}

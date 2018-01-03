@@ -188,12 +188,15 @@ CREATE TABLE `fd_message` (
   `isdeleted` tinyint(1) DEFAULT '0' COMMENT '是否删除1:是 0:否',
   `status` varchar(4) DEFAULT 'ST01' COMMENT '业务状态{ST}',
   `user_id` int(10) DEFAULT NULL COMMENT '用户id',
+  `btype` varchar(6) DEFAULT NULL COMMENT '消息业务类型',
   `mtype` varchar(6) DEFAULT NULL COMMENT '消息类型{MT}',
   `is_read` tinyint(1) DEFAULT '0' COMMENT '是否已读1:是 0:否',
   `url` varchar(100) DEFAULT NULL COMMENT '正文链接',
   `start_date` date DEFAULT NULL COMMENT '开始时间',
   `end_date` date DEFAULT NULL COMMENT '结束时间',
   `consumer_type` int(1) DEFAULT '0' COMMENT '消费方类型0不限 1患者方 2医生方',
+  `is_pushed` tinyint(4) DEFAULT '0' COMMENT '是否已推送0未推送 1已推送',
+  `push_content` varchar(300) DEFAULT NULL COMMENT '推送正文',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='消息表';
 

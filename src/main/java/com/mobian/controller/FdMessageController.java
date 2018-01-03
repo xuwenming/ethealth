@@ -16,6 +16,7 @@ import com.mobian.service.FdMessageServiceI;
 import com.mobian.util.ConfigUtil;
 import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
+import com.mobian.util.ImageUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -115,8 +116,12 @@ public class FdMessageController extends BaseController {
 		if(!F.empty(fdMessage.getEndDateStr())) {
 			fdMessage.setEndDate(DateUtil.parse(fdMessage.getEndDateStr(), Constants.DATE_FORMAT_YMD));
 		}
+		if(!F.empty(fdMessage.getContent())) {
+			String realPath = session.getServletContext().getRealPath("/");
+			fdMessage.setContent(ImageUtils.replaceHtmlTag(fdMessage.getContent(), "img", "src", "src=\"", "\"", realPath));
+		}
 
-		fdMessageService.addAndPushMessage(fdMessage);
+		fdMessageService.add(fdMessage);
 		j.setSuccess(true);
 		j.setMsg("添加成功！");		
 		return j;
@@ -158,13 +163,17 @@ public class FdMessageController extends BaseController {
 	 */
 	@RequestMapping("/edit")
 	@ResponseBody
-	public Json edit(FdMessage fdMessage) {
+	public Json edit(FdMessage fdMessage, HttpSession session) {
 		Json j = new Json();
 		if(!F.empty(fdMessage.getStartDateStr())) {
 			fdMessage.setStartDate(DateUtil.parse(fdMessage.getStartDateStr(), Constants.DATE_FORMAT_YMD));
 		}
 		if(!F.empty(fdMessage.getEndDateStr())) {
 			fdMessage.setEndDate(DateUtil.parse(fdMessage.getEndDateStr(), Constants.DATE_FORMAT_YMD));
+		}
+		if(!F.empty(fdMessage.getContent())) {
+			String realPath = session.getServletContext().getRealPath("/");
+			fdMessage.setContent(ImageUtils.replaceHtmlTag(fdMessage.getContent(), "img", "src", "src=\"", "\"", realPath));
 		}
 		fdMessageService.edit(fdMessage);
 		j.setSuccess(true);

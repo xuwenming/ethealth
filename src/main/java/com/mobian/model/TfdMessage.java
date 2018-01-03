@@ -72,6 +72,7 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 
 	private Integer consumerType;
 	private Boolean isPushed;
+	private String pushContent;
 	//columns END
 
 
@@ -236,6 +237,15 @@ public class TfdMessage implements java.io.Serializable,IEntity{
 
 	public void setIsPushed(Boolean isPushed) {
 		this.isPushed = isPushed;
+	}
+
+	@Column(name = "push_content", unique = false, nullable = true, insertable = true, updatable = true, length = 300)
+	public String getPushContent() {
+		return pushContent;
+	}
+
+	public void setPushContent(String pushContent) {
+		this.pushContent = pushContent;
 	}
 
 	/*

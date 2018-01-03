@@ -82,7 +82,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 				params.put("status", fdMessage.getStatus());
 			}		
 			if (!F.empty(fdMessage.getUserId())) {
-				whereHql += " and (t.userId = :userId or t.userId is null)";
+				whereHql += " and (t.userId = :userId or (t.userId is null and t.isPushed = 1))";
 				params.put("userId", fdMessage.getUserId());
 			}
 			if(!F.empty(fdMessage.getConsumerType())) {
@@ -208,7 +208,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 			type = "M301";
 		}
 		// 推送消息
-		PushMessage pushMessage = new PushMessage(type, message.getContent());
+		PushMessage pushMessage = new PushMessage(type, message.getPushContent());
 		pushMessage.setId(message.getId());
 		if(pushMessage != null) {
 			PushResult pushResult = null;
@@ -254,8 +254,8 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 
 	@Override
 	public int getUnreadMsgCount(Integer userId, Integer isAdmin) {
-		String hql = "select count(*) from TfdMessage t where t.isdeleted = 0 and t.isRead = 0 "
-				+ " and (t.userId = :userId or t.userId is null) and (t.consumerType = :consumerType or t.consumerType = 0)"
+		String hql = "select count(*) from TfdMessage t where t.isdeleted = 0 and t.isRead = 0 and t.status = 'ST01' "
+				+ " and (t.userId = :userId or (t.userId is null and t.isPushed = 1)) and (t.consumerType = :consumerType or t.consumerType = 0)"
 				+ " and not EXISTS (select 1 from TfdMessageReadLog log where log.messageId = t.id)";
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("userId", userId);

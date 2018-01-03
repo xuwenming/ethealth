@@ -13,6 +13,7 @@ import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.FdMessageReadLogServiceI;
 import com.mobian.service.FdMessageServiceI;
 import com.mobian.service.impl.CompletionFactory;
+import com.mobian.util.ImageUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -72,6 +75,7 @@ public class ApiMessageController extends BaseController {
                 CompletionService completionService = CompletionFactory.initCompletion();
                 final Integer userId = Integer.valueOf(s.getId());
                 for(FdMessage message : list) {
+                    if(F.empty(message.getPushContent())) message.setPushContent(message.getContent());
                     if(!"MT02".equals(message.getMtype())) {
                         completionService.submit(new Task<FdMessage, Boolean>(message) {
                             @Override
@@ -108,11 +112,12 @@ public class ApiMessageController extends BaseController {
      */
     @RequestMapping("/detail")
     @ResponseBody
-    public Json detail(Integer id, HttpServletRequest request) {
+    public Json detail(Integer id, HttpServletRequest request, HttpServletResponse response) {
         Json j = new Json();
         try{
             SessionInfo s = getSessionInfo(request);
             FdMessage message = fdMessageService.get(id);
+            if(F.empty(message.getPushContent())) message.setPushContent(message.getContent());
             if("MT02".equals(message.getMtype())) {
                 if(!message.getIsRead()) {
                     message.setIsRead(true);
@@ -127,6 +132,27 @@ public class ApiMessageController extends BaseController {
 
                     fdMessageReadLogService.add(log);
                 }
+
+                response.setContentType("text/html");
+                response.setCharacterEncoding("UTF-8");
+                String content = message.getContent();
+                content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
+
+                PrintWriter out = response.getWriter();
+                out.write("<html><head>");
+                out.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\">");
+                out.write("<style type=\"text/css\">");
+//                out.write("body {font-family:\"微软雅黑\";font-size:12px; background-color:#f8f7f5;}");
+                out.write("ul,ol,li{padding:0; margin:0;}");
+                out.write("img{border:0; line-height:0; width: 100%;}");
+                out.write("ol,ul {list-style:none;}");
+                out.write("a { color: #000; text-decoration: none; outline: none;}");
+                out.write("a img { border: none; }");
+                out.write("</style></head><body>");
+                out.write(content);
+                out.write("</body></html>");
+
+                return null;
             }
             j.setObj(message);
             j.setSuccess(true);

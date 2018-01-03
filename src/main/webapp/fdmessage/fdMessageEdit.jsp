@@ -91,7 +91,13 @@
 					</td>
 				</tr>
 				<tr>
-					<th valign="top"><%=TfdMessage.ALIAS_CONTENT%></th>
+					<th>推送正文</th>
+					<td colspan="3">
+						<textarea style="width: 510px;height: 60px;" name="pushContent">${fdMessage.pushContent}</textarea>
+					</td>
+				</tr>
+				<tr>
+					<th valign="top">消息详情</th>
 					<td colspan="3">
 						<textarea name="content" id="content" style="height:180px;visibility:hidden;">${fdMessage.content}</textarea>
 					</td>

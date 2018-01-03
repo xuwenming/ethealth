@@ -26,6 +26,7 @@ public class FdMessage implements java.io.Serializable {
 	private Date endDate;
 	private Integer consumerType;
 	private Boolean isPushed;
+	private String pushContent;
 
 	private String startDateStr;
 	private String endDateStr;
@@ -209,5 +210,13 @@ public class FdMessage implements java.io.Serializable {
 
 	public void setIsPushed(Boolean isPushed) {
 		this.isPushed = isPushed;
+	}
+
+	public String getPushContent() {
+		return pushContent;
+	}
+
+	public void setPushContent(String pushContent) {
+		this.pushContent = pushContent;
 	}
 }
