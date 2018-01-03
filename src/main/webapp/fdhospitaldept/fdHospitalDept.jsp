@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'createTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -49,49 +49,45 @@
 				width : 150,
 				hidden : true
 				}, {
-				field : 'hospitalId',
-				title : '<%=TfdHospitalDept.ALIAS_HOSPITAL_ID%>',
-				width : 50		
-				}, {
 				field : 'name',
 				title : '<%=TfdHospitalDept.ALIAS_NAME%>',
-				width : 50		
+				width : 50
 				}, {
-				field : 'createBy',
-				title : '<%=TfdHospitalDept.ALIAS_CREATE_BY%>',
-				width : 50		
+				field : 'icon',
+				title : '图标',
+				width : 50,
+				formatter : function(value, row, index) {
+					var str = "";
+					if(value){
+						str = "<img style=\"height: 60px;width: 80px;\" src=\""+value+"\" />";
+					}
+					return str;
+				}
 				}, {
 				field : 'createTime',
 				title : '<%=TfdHospitalDept.ALIAS_CREATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'updateBy',
-				title : '<%=TfdHospitalDept.ALIAS_UPDATE_BY%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdHospitalDept.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdHospitalDept.ALIAS_STATUS%>',
-				width : 50		
+				width : 50,
+				formatter : function (value, row, index) {
+					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
+				}
 			}, {
 				field : 'action',
 				title : '操作',
-				width : 100,
+				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
 					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
+						<!--str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');-->
+						str += '<a onclick="editFun(\'' + row.id + '\')">编辑</a>';
 					}
 					str += '&nbsp;';
 					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
+						str += '<a onclick="deleteFun(\'' + row.id + '\')">删除</a>';
+						<%--str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');--%>
 					}
 					str += '&nbsp;';
 					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
+						//str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
 					}
 					return str;
 				}
@@ -137,8 +133,8 @@
 		}
 		parent.$.modalDialog({
 			title : '编辑数据',
-			width : 780,
-			height : 500,
+			width : 550,
+			height : 350,
 			href : '${pageContext.request.contextPath}/fdHospitalDeptController/editPage?id=' + id,
 			buttons : [ {
 				text : '编辑',
@@ -167,8 +163,8 @@
 	function addFun() {
 		parent.$.modalDialog({
 			title : '添加数据',
-			width : 780,
-			height : 500,
+			width : 550,
+			height : 350,
 			href : '${pageContext.request.contextPath}/fdHospitalDeptController/addPage',
 			buttons : [ {
 				text : '添加',
@@ -208,41 +204,16 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
 						<tr>	
-							<th><%=TfdHospitalDept.ALIAS_HOSPITAL_ID%></th>	
+
+							<th width="70px;"><%=TfdHospitalDept.ALIAS_NAME%></th>
 							<td>
-											<input type="text" name="hospitalId" maxlength="10" class="span2"/>
+								<input type="text" name="name" maxlength="100" class="span2"/>
 							</td>
-							<th><%=TfdHospitalDept.ALIAS_NAME%></th>	
-							<td>
-											<input type="text" name="name" maxlength="100" class="span2"/>
-							</td>
-							<th><%=TfdHospitalDept.ALIAS_CREATE_BY%></th>	
-							<td>
-											<input type="text" name="createBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdHospitalDept.ALIAS_CREATE_TIME%></th>	
-							<td>
-											<input type="text" name="createTime" maxlength="19" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdHospitalDept.ALIAS_UPDATE_BY%></th>	
-							<td>
-											<input type="text" name="updateBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdHospitalDept.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdHospitalDept.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="2" class="span2"/>
-							</td>
-						</tr>	
+						</tr>
 				</table>
 			</form>
 		</div>
@@ -254,7 +225,7 @@
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdHospitalDeptController/addPage')}">
 			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdHospitalDeptController/download')}">
 			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">

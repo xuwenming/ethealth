@@ -133,26 +133,26 @@ public class ApiMessageController extends BaseController {
                     fdMessageReadLogService.add(log);
                 }
 
-                response.setContentType("text/html");
-                response.setCharacterEncoding("UTF-8");
-                String content = message.getContent();
-                content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
-
-                PrintWriter out = response.getWriter();
-                out.write("<html><head>");
-                out.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\">");
-                out.write("<style type=\"text/css\">");
-//                out.write("body {font-family:\"微软雅黑\";font-size:12px; background-color:#f8f7f5;}");
-                out.write("ul,ol,li{padding:0; margin:0;}");
-                out.write("img{border:0; line-height:0; width: 100%;}");
-                out.write("ol,ul {list-style:none;}");
-                out.write("a { color: #000; text-decoration: none; outline: none;}");
-                out.write("a img { border: none; }");
-                out.write("</style></head><body>");
-                out.write(content);
-                out.write("</body></html>");
-
-                return null;
+//                response.setContentType("text/html");
+//                response.setCharacterEncoding("UTF-8");
+//                String content = message.getContent();
+//                content = ImageUtils.replaceHtmlTag(content, "img", "src", "src=\"", "\"", null);
+//
+//                PrintWriter out = response.getWriter();
+//                out.write("<html><head>");
+//                out.write("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\">");
+//                out.write("<style type=\"text/css\">");
+////                out.write("body {font-family:\"微软雅黑\";font-size:12px; background-color:#f8f7f5;}");
+//                out.write("ul,ol,li{padding:0; margin:0;}");
+//                out.write("img{border:0; line-height:0; width: 100%;}");
+//                out.write("ol,ul {list-style:none;}");
+//                out.write("a { color: #000; text-decoration: none; outline: none;}");
+//                out.write("a img { border: none; }");
+//                out.write("</style></head><body>");
+//                out.write(content);
+//                out.write("</body></html>");
+//
+//                return null;
             }
             j.setObj(message);
             j.setSuccess(true);

@@ -54,8 +54,8 @@ public class FdHospitalDeptServiceImpl extends BaseServiceImpl<FdHospitalDept> i
 				params.put("hospitalId", fdHospitalDept.getHospitalId());
 			}		
 			if (!F.empty(fdHospitalDept.getName())) {
-				whereHql += " and t.name = :name";
-				params.put("name", fdHospitalDept.getName());
+				whereHql += " and t.name like :name";
+				params.put("name", "%" + fdHospitalDept.getName() + "%");
 			}		
 			if (!F.empty(fdHospitalDept.getCreateBy())) {
 				whereHql += " and t.createBy = :createBy";
@@ -112,7 +112,7 @@ public class FdHospitalDeptServiceImpl extends BaseServiceImpl<FdHospitalDept> i
 	public void delete(Integer id) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
-		fdHospitalDeptDao.executeHql("update TfdHospitalDept t set t.isdeleted = 1 where t.id = :id",params);
+		fdHospitalDeptDao.executeHql("update TfdHospitalDept t set t.status = 1 where t.id = :id",params);
 		//fdHospitalDeptDao.delete(fdHospitalDeptDao.get(TfdHospitalDept.class, id));
 	}
 

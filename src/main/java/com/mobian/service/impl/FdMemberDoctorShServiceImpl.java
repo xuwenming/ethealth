@@ -145,6 +145,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 		TfdMemberDoctorSh t = new TfdMemberDoctorSh();
 		BeanUtils.copyProperties(fdMemberDoctorSh, t);
 		t.setCreateTime(new Date());
+		t.setUpdateTime(t.getCreateTime());
 		//t.setId(jb.absx.UUID.uuid());
 		fdMemberDoctorShDao.save(t);
 	}
@@ -180,6 +181,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Override
 	public void edit(FdMemberDoctorSh fdMemberDoctorSh) {
+		fdMemberDoctorSh.setUpdateTime(new Date());
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", fdMemberDoctorSh.getId());
 		params.put("auditType", fdMemberDoctorSh.getAuditType());

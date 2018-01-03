@@ -50,22 +50,17 @@
 			<input type="hidden" name="id"/>
 			<table class="table table-hover table-condensed">
 				<tr>
-					<th><%=TfdMessage.ALIAS_MTYPE%></th>
-					<td>
+					<th width="10%"><%=TfdMessage.ALIAS_MTYPE%></th>
+					<td width="40%">
 						<select name="mtype" class="easyui-combobox"
 								data-options="width:140,height:29,editable:false,panelHeight:'auto'">
 							<option value="MT01">系统消息</option>
 							<option value="MT03">免费咨询</option>
 						</select>
 					</td>
-					<th>消费方类型</th>
-					<td>
-						<select name="consumerType" class="easyui-combobox"
-								data-options="width:140,height:29,editable:false,panelHeight:'auto'">
-							<option value="0">不限</option>
-							<option value="1">患者端</option>
-							<option value="2">医生端</option>
-						</select>
+					<th width="10%">状态</th>
+					<td width="40%">
+						<jb:select dataType="ST" name="status" value="ST01"></jb:select>
 					</td>
 				</tr>
 				<tr>
@@ -75,13 +70,6 @@
 					</td>
 				</tr>
 				<tr>
-					<th>状态</th>
-					<td colspan="3">
-						<jb:select dataType="ST" name="status" value="ST01"></jb:select>
-					</td>
-				</tr>
-
-				<tr>
 					<th>开始日期</th>
 					<td>
 						<input type="text" class="span2" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" id="startDateStr" name="startDateStr"/>
@@ -89,6 +77,17 @@
 					<th>结束日期</th>
 					<td>
 						<input type="text" class="span2" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" id="endDateStr" name="endDateStr"/>
+					</td>
+				</tr>
+				<tr>
+					<th>推送对象</th>
+					<td colspan="3">
+						<select name="consumerType" class="easyui-combobox"
+								data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+							<option value="0">不限</option>
+							<option value="1">患者端</option>
+							<option value="2">医生端</option>
+						</select>
 					</td>
 				</tr>
 				<tr>

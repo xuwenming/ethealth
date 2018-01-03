@@ -56,7 +56,13 @@
 				}, {
 				field : 'title',
 				title : '<%=TfdMessage.ALIAS_TITLE%>',
-				width : 50		
+				width : 100,
+				formatter : function (value, row, index) {
+					if ($.canView) {
+						return '<a onclick="viewFun(\'' + row.id + '\')">'+value+'</a>';
+					}
+					return value
+				}
 				}, {
 				field : 'mtypeZh',
 				title : '<%=TfdMessage.ALIAS_MTYPE%>',
@@ -64,7 +70,7 @@
 				}, {
 				field : 'createTime',
 				title : '发布时间',
-				width : 50,
+				width : 80,
 				formatter : function (value, row, index) {
 					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
 				}
@@ -79,7 +85,11 @@
 				}, {
 				field : 'statusZh',
 				title : '状态',
-				width : 50
+				width : 50,
+				formatter : function (value, row, index) {
+					if(row.status == 'ST01') return '<font color="#4cd964;">' + row.statusZh + '</font>';
+					else return '<font color="#f6383a;">' + row.statusZh + '</font>';
+				}
 				}, {
 				field : 'consumerType',
 				title : '推送对象',
@@ -94,28 +104,27 @@
 				title : '是否推送',
 				width : 50,
 				formatter : function (value, row, index) {
-					return value ? '已推送' : '未推送';
+					if(value) return '<font color="#4cd964;">已推送</font>';
+					else return '<font color="#f6383a;">未推送</font>';
 				}
 			}, {
 				field : 'action',
 				title : '操作',
-				width : 100,
+				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
 					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
+						<%--str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');--%>
+						str += '<a onclick="editFun(\'' + row.id + '\')">编辑</a>';
 					}
 					str += '&nbsp;';
 					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
-					}
-					str += '&nbsp;';
-					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
+						<!--str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');-->
+						str += '<a onclick="deleteFun(\'' + row.id + '\')">删除</a>';
 					}
 					str += '&nbsp;';
 					if ($.canPush) {
-						str += '<a onclick="pushFun(\'' + row.id + '\')">推送</a>';
+						str += '<a onclick="pushFun(\'' + row.id + '\','+row.isPushed+')">推送</a>';
 					}
 					return str;
 				}
@@ -154,12 +163,18 @@
 		});
 	}
 
-	function pushFun(id) {
+	function pushFun(id, isPushed) {
 		if (id == undefined) {
 			var rows = dataGrid.datagrid('getSelections');
 			id = rows[0].id;
 		}
-		parent.$.messager.confirm('询问', '您是否要推送当前消息？', function(b) {
+
+		var msg = '您是否要推送当前消息？';
+		if(isPushed) {
+			msg = '该条消息已经推送过，是否继续推送？';
+		}
+
+		parent.$.messager.confirm('询问', msg, function(b) {
 			if (b) {
 				parent.$.messager.progress({
 					title : '提示',
@@ -275,6 +290,15 @@
 								<option value="">全部</option>
 								<option value="MT01">系统消息</option>
 								<option value="MT03">免费咨询</option>
+							</select>
+						</td>
+						<th>是否推送</th>
+						<td>
+							<select name="isPushed" class="easyui-combobox"
+									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="">全部</option>
+								<option value="1">已推送</option>
+								<option value="0">未推送</option>
 							</select>
 						</td>
 					</tr>

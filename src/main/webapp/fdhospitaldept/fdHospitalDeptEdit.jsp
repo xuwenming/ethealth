@@ -57,7 +57,7 @@
 			<input type="hidden" name="id" value = "${fdHospitalDept.id}"/>
 			<table class="table table-hover table-condensed">
 				<tr>
-					<th><%=TfdHospitalDept.ALIAS_NAME%></th>
+					<th width="12%"><%=TfdHospitalDept.ALIAS_NAME%></th>
 					<td colspan="3">
 						<input class="span2" name="name" type="text" value="${fdHospitalDept.name}"/>
 					</td>

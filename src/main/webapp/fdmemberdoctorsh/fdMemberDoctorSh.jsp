@@ -84,9 +84,9 @@
 				width : 40,
 				formatter : function(value, row, index) {
 					var str;
-					if(row.status == 1) str = '审核中';
-					else if(row.status == 2) str =  '审核通过';
-					else str =  '审核拒绝';
+					if(row.status == 1) str = '待审核';
+					else if(row.status == 2) str = '<font color="#4cd964;">审核通过</font>';
+					else str =  '<font color="#f6383a;">审核拒绝</font>';
 
 					return str;
 				}
@@ -255,6 +255,25 @@
 						<th><%=TfdMemberDoctorSh.ALIAS_REAL_NAME%></th>
 						<td>
 							<input type="text" name="realName" maxlength="100" class="span2"/>
+						</td>
+						<th>审核类型</th>
+						<td>
+							<select name="auditType" class="easyui-combobox"
+									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="">全部</option>
+								<option value="1">注册</option>
+								<option value="2">编辑</option>
+							</select>
+						</td>
+						<th>审核状态</th>
+						<td>
+							<select name="status" class="easyui-combobox"
+									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="">全部</option>
+								<option value="1">待审核</option>
+								<option value="2">审核通过</option>
+								<option value="0">审核拒绝</option>
+							</select>
 						</td>
 					</tr>
 

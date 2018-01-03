@@ -17,7 +17,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "fd_hospital_dept")
 @DynamicInsert(true)
 @DynamicUpdate(true)
-public class TfdHospitalDept implements java.io.Serializable{
+public class TfdHospitalDept implements java.io.Serializable,IEntity{
 	private static final long serialVersionUID = 5454155825314635342L;
 	
 	//alias

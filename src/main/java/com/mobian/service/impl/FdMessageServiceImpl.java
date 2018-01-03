@@ -96,7 +96,11 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 			if (!F.empty(fdMessage.getIsRead())) {
 				whereHql += " and t.isRead = :isRead";
 				params.put("isRead", fdMessage.getIsRead());
-			}		
+			}
+			if (!F.empty(fdMessage.getIsPushed())) {
+				whereHql += " and t.isPushed = :isPushed";
+				params.put("isPushed", fdMessage.getIsPushed());
+			}
 			if (!F.empty(fdMessage.getUrl())) {
 				whereHql += " and t.url = :url";
 				params.put("url", fdMessage.getUrl());
