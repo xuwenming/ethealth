@@ -17,6 +17,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "fd_member_doctor_sh")
 @DynamicInsert(true)
 @DynamicUpdate(true)
+@IdClass(value=TfdMemberDoctorShId.class)
 public class TfdMemberDoctorSh implements java.io.Serializable{
 	private static final long serialVersionUID = 5454155825314635342L;
 	
@@ -112,6 +113,16 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 	@Column(name = "id", unique = true, nullable = false, length = 10)
 	public java.lang.Integer getId() {
 		return this.id;
+	}
+
+	@Id
+	@Column(name = "audit_type", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Integer getAuditType() {
+		return auditType;
+	}
+
+	public void setAuditType(Integer auditType) {
+		this.auditType = auditType;
 	}
 	
 	@Column(name = "level", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
@@ -305,11 +316,6 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 		this.departmentName = departmentName;
 	}
 
-	@Column(name = "audit_type", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
-	public Integer getAuditType() {
-		return auditType;
-	}
-
 	@Column(name = "email", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
 	public String getEmail() {
 		return email;
@@ -319,9 +325,6 @@ public class TfdMemberDoctorSh implements java.io.Serializable{
 		this.email = email;
 	}
 
-	public void setAuditType(Integer auditType) {
-		this.auditType = auditType;
-	}
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

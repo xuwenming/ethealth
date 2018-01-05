@@ -1,26 +1,24 @@
 package com.mobian.controller;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.mobian.pageModel.Colum;
-import com.mobian.pageModel.FdMemberAppointment;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.PageHelper;
+import com.alibaba.fastjson.JSON;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
+import com.mobian.pageModel.*;
 import com.mobian.service.FdMemberAppointmentServiceI;
-
+import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.impl.CompletionFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.alibaba.fastjson.JSON;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * FdMemberAppointment管理控制器
@@ -34,6 +32,9 @@ public class FdMemberAppointmentController extends BaseController {
 
 	@Autowired
 	private FdMemberAppointmentServiceI fdMemberAppointmentService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
 
 
 	/**
@@ -55,7 +56,41 @@ public class FdMemberAppointmentController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberAppointment fdMemberAppointment, PageHelper ph) {
-		return fdMemberAppointmentService.dataGrid(fdMemberAppointment, ph);
+		DataGrid dg = fdMemberAppointmentService.dataGrid(fdMemberAppointment, ph);
+		List<FdMemberAppointment> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberAppointment order : list) {
+				completionService.submit(new Task<FdMemberAppointment, FdMember>(new CacheKey("fdMember", order.getUserId() + ""), order) {
+					@Override
+					public FdMember call() throws Exception {
+						return fdMemberService.getSimple(getD().getUserId());
+					}
+
+					protected void set(FdMemberAppointment d, FdMember v) {
+						if(v != null) {
+							d.setUserName(v.getCustomer().getRealName());
+							d.setUserMobile(v.getMobile());
+						}
+					}
+				});
+				completionService.submit(new Task<FdMemberAppointment, FdMember>(new CacheKey("fdMember", order.getDoctorId() + ""), order) {
+					@Override
+					public FdMember call() throws Exception {
+						return fdMemberService.getSimple(getD().getDoctorId());
+					}
+
+					protected void set(FdMemberAppointment d, FdMember v) {
+						if(v != null) {
+							d.setDoctorName(v.getCustomer().getRealName());
+							d.setDoctorMobile(v.getMobile());
+						}
+					}
+				});
+			}
+			completionService.sync();
+		}
+		return dg;
 	}
 	/**
 	 * 获取FdMemberAppointment数据表格excel

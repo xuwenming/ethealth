@@ -76,7 +76,7 @@
 					<th>排序</th>
 					<td><input name="seq" value="100" class="easyui-numberspinner"
 						style="width: 140px; height: 29px;" required="required"
-						data-options="editable:false,min:100"></td>
+						data-options="editable:true"></td>
 					<th>上级资源</th>
 					<td><select id="pid" name="pid"
 						style="width: 140px; height: 29px;"></select><img

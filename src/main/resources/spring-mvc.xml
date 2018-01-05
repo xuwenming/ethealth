@@ -57,11 +57,8 @@
 					<list>
 						<value>/initController/init</value><!-- 初始化数据库 -->
 						<value>/resourceController/tree</value><!-- 首页左侧功能菜单 -->
-						<value>/basedataController/goodsQuery</value>
-						<value>/diveRegionController/selectQuery</value>
-						<value>/mbItemController/selectQuery</value>
-						<value>/mbWarehouseController/selectQuery</value>
-						<value>/mbShopController/selectQuery</value>
+						<value>/fdMemberController/selectQuery</value>
+
 						<value>/userController/reg</value><!-- 用户注册 -->
 						<value>/userController/login</value><!-- 用户登录 -->
 						<value>/userController/getPublicKey</value><!-- 用户登录 -->

@@ -18,6 +18,13 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 	private java.lang.String status;
 	private java.lang.Long amount;
 
+	private String userName;
+	private String userMobile;
+	private String doctorName;
+	private String doctorMobile;
+	private Date expireDate;
+
+
 	public void setId(java.lang.Integer value) {
 		this.id = value;
 	}
@@ -92,5 +99,43 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 		this.amount = amount;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
 
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public Date getExpireDate() {
+		return expireDate;
+	}
+
+	public void setExpireDate(Date expireDate) {
+		this.expireDate = expireDate;
+	}
+
+	public String getUserMobile() {
+		return userMobile;
+	}
+
+	public void setUserMobile(String userMobile) {
+		this.userMobile = userMobile;
+	}
+
+	public String getDoctorMobile() {
+		return doctorMobile;
+	}
+
+	public void setDoctorMobile(String doctorMobile) {
+		this.doctorMobile = doctorMobile;
+	}
 }

@@ -327,6 +327,9 @@ public class ApiMemberAppointmentController extends BaseController {
 			ph.setOrder("desc");
 		}
 
+		int showWx = Integer.valueOf(Application.getString("SV600", "0"));
+		appointment.setIsShowWx(showWx == 0 ? false : true);
+
 		DataGrid dg = fdMemberAppointmentService.dataGrid(appointment, ph);
 		List<FdMemberAppointment> list = dg.getRows();
 		if(CollectionUtils.isNotEmpty(list)) {

@@ -32,6 +32,7 @@ public class SelectTagGrid extends TagSupport {
     private boolean multiple;
     private String onselect;
     private boolean required;
+    private String params;
 
     public String getDataType() {
         return dataType;
@@ -49,10 +50,17 @@ public class SelectTagGrid extends TagSupport {
         this.value = value;
     }
 
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
+    }
+
     @Override
     public int doStartTag() throws JspException {
         JspWriter out = pageContext.getOut();
-        DiveRegionServiceI diveRegionService = Application.getBean(DiveRegionServiceI.class);
         try {
             String _disabled = "false";
             if (!F.empty(disabled)) {
@@ -133,13 +141,14 @@ public class SelectTagGrid extends TagSupport {
 
     private Map getData() {
         Map<String, Object> data = new HashMap<String, Object>();
-//        data.put("id", value);
-//        if ("itemId".equals(dataType)) {
-//            MbItemServiceI mbItemService = Application.getBean(MbItemServiceI.class);
-//            MbItem mbItem = mbItemService.getFromCache(Integer.parseInt(value));
-//            data.put("text", mbItem.getName());
-//            data.put("parentName", mbItem.getCategoryName());
-//        } else if ("shopId".equals(dataType)) {
+        data.put("id", value);
+        if ("userId".equals(dataType)) {
+            FdMemberServiceI fdMemberService = Application.getBean(FdMemberServiceI.class);
+            FdMember member = fdMemberService.getSimple(Integer.parseInt(value));
+            data.put("text", member.getMobile());
+            data.put("parentName", member.getCustomer().getRealName());
+        }
+// else if ("shopId".equals(dataType)) {
 //            MbShopServiceI mbShopService = Application.getBean(MbShopServiceI.class);
 //            MbShop mbShop = mbShopService.getFromCache(Integer.parseInt(value));
 //            if (mbShop != null) {
@@ -194,57 +203,21 @@ public class SelectTagGrid extends TagSupport {
 
     private String getURI() {
         String path = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
-        String url;
-        if ("itemId".equals(dataType)) {
-            url = path + "/mbItemController/selectQuery";
-        } else if ("shopId".equals(dataType)) {
-            url = path + "/mbShopController/selectQuery";
-        } else if ("warehouseId".equals(dataType)) {
-            url = path + "/mbWarehouseController/selectQuery";
-        } else if ("supplierId".equals(dataType)) {
-            url = path + "/mbSupplierController/selectQuery";
-        } else if ("mbUserId".equals(dataType)) {
-            url = path + "/mbUserController/selectQuery";
-        } else if ("couponsId".equals(dataType)) {
-            url = path + "/mbCouponsController/selectQuery";
-        } else {
-            url = path + "/diveRegionController/selectQuery";
+        String url = "";
+        if ("userId".equals(dataType)) {
+            url = path + "/fdMemberController/selectQuery";
+            if(!F.empty(params)) url += "?params=" + params.replace("{", "%7b").replace("}", "%7d").replaceAll("\"", "%22");
         }
         return url;
     }
 
     private String getHeader() {
         StringBuffer sb = new StringBuffer();
-        if ("itemId".equals(dataType)) {
-            sb.append("		columns: [[");
-            sb.append("{field:'id',title:'ID',width:30},");
-            sb.append("{field:'code',title:'编码',width:100},");
-            sb.append("{field:'text',title:'名称',width:150},");
-            sb.append("{field:'parentName',title:'分类',width:50}");
-            sb.append("]]");
-        } else if ("shopId".equals(dataType)) {
+        if ("userId".equals(dataType)) {
             sb.append("		columns: [[");
             sb.append("{field:'id',title:'ID',width:100},");
-            sb.append("{field:'text',title:'名称',width:180},");
-            sb.append("{field:'parentName',title:'区县',width:180}");
-            sb.append("]]");
-        } else if ("warehouseId".equals(dataType)) {
-            sb.append("		columns: [[");
-            sb.append("{field:'id',title:'ID',width:100},");
-            sb.append("{field:'text',title:'名称',width:180},");
-            sb.append("{field:'parentName',title:'区县',width:180}");
-            sb.append("]]");
-        } else if ("supplierId".equals(dataType)) {
-            sb.append("		columns: [[");
-            sb.append("{field:'id',title:'ID',width:100},");
-            sb.append("{field:'text',title:'名称',width:180},");
-            sb.append("{field:'parentName',title:'区县',width:180}");
-            sb.append("]]");
-        } else if ("mbUserId".equals(dataType)) {
-            sb.append("		columns: [[");
-            sb.append("{field:'id',title:'ID',width:100},");
-            sb.append("{field:'text',title:'用户名',width:180},");
-            sb.append("{field:'parentName',title:'昵称',width:180}");
+            sb.append("{field:'text',title:'手机号',width:180},");
+            sb.append("{field:'parentName',title:'姓名',width:180}");
             sb.append("]]");
         } else if ("couponsId".equals(dataType)) {
             sb.append("		columns: [[");

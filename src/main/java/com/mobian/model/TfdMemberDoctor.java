@@ -58,7 +58,7 @@ public class TfdMemberDoctor implements java.io.Serializable{
 	private java.util.Date createTime;
 	private java.lang.Integer updateBy;
 	private java.util.Date updateTime;
-	private java.lang.Integer sort;
+	private java.lang.Integer seq;
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
@@ -200,12 +200,12 @@ public class TfdMemberDoctor implements java.io.Serializable{
 	}
 
 	@Column(name = "sort", unique = true, nullable = false, length = 10)
-	public Integer getSort() {
-		return sort;
+	public Integer getSeq() {
+		return seq;
 	}
 
-	public void setSort(Integer sort) {
-		this.sort = sort;
+	public void setSeq(Integer seq) {
+		this.seq = seq;
 	}
 
 	@Column(name = "group_id", unique = false, nullable = true, insertable = true, updatable = true, length = 10)

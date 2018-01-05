@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'createTime',
+			sortName : 'updateTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -44,6 +44,11 @@
 			rownumbers : true,
 			singleSelect : true,
 			columns : [ [ {
+				field : 'updateTime',
+				title : '提交时间',
+				width : 80,
+				sortable: true
+				}, {
 				field : 'id',
 				title : '医生id',
 				width : 40
@@ -52,13 +57,13 @@
 				title : '手机号',
 				width : 50
 				}, {
-				field : 'levelName',
-				title : '<%=TfdMemberDoctorSh.ALIAS_LEVEL%>',
-				width : 50		
-				}, {
 				field : 'realName',
 				title : '<%=TfdMemberDoctorSh.ALIAS_REAL_NAME%>',
 				width : 50
+				}, {
+				field : 'levelName',
+				title : '<%=TfdMemberDoctorSh.ALIAS_LEVEL%>',
+				width : 50		
 				}, {
 				field : 'hospitalName',
 				title : '医院全称',
@@ -73,8 +78,8 @@
 				width : 40,
 				formatter : function(value, row, index) {
 					var str;
-					if(row.auditType == 1) str = '注册';
-					else str =  '编辑';
+					if(row.auditType == 1) str = '<font color="#4cd964;">注册</font>';
+					else str =  '<font color="#f6383a;">编辑</font>';
 
 					return str;
 				}
@@ -101,7 +106,7 @@
 				formatter : function(value, row, index) {
 					var str = '';
 					if ($.canEdit) {
-						str += '<a onclick="editFun(\'' + row.id + '\')">审核</a>';
+						str += '<a onclick="editFun(\'' + row.id + '\',\'' + row.auditType + '\')">审核</a>';
 					}
 					str += '&nbsp;';
 					if ($.canDelete) {
@@ -148,16 +153,17 @@
 		});
 	}
 
-	function editFun(id) {
+	function editFun(id, auditType) {
 		if (id == undefined) {
 			var rows = dataGrid.datagrid('getSelections');
 			id = rows[0].id;
+			auditType = rows[0].auditType;
 		}
 		parent.$.modalDialog({
 			title : '审核',
 			width : 780,
 			height : 500,
-			href : '${pageContext.request.contextPath}/fdMemberDoctorShController/editPage?id=' + id,
+			href : '${pageContext.request.contextPath}/fdMemberDoctorShController/editPage?id=' + id + '&auditType=' + auditType,
 			buttons : [ {
 				text : '通过',
 				handler : function() {

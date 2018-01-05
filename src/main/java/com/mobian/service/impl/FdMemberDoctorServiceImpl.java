@@ -144,7 +144,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		TfdMemberDoctor t = new TfdMemberDoctor();
 		BeanUtils.copyProperties(fdMemberDoctor, t);
 		//t.setId(jb.absx.UUID.uuid());
-		if(F.empty(fdMemberDoctor.getSort())) t.setSort(0);
+		if(F.empty(fdMemberDoctor.getSeq())) t.setSeq(0);
 		t.setCreateTime(new Date());
 		t.setUpdateTime(t.getCreateTime());
 		fdMemberDoctorDao.save(t);

@@ -198,13 +198,22 @@ public class FdMemberDoctorShController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping("/editPage")
-	public String editPage(HttpServletRequest request, Integer id) {
-		FdMemberDoctorSh fdMemberDoctorSh = fdMemberDoctorShService.get(id);
+	public String editPage(HttpServletRequest request, Integer id, Integer auditType) {
+		FdMemberDoctorSh fdMemberDoctorSh = fdMemberDoctorShService.get(id, auditType);
 		FdMember member = fdMemberService.get(id);
 		fdMemberDoctorSh.setMobile(member.getUsername());
 		if(!F.empty(fdMemberDoctorSh.getLevel())) {
 			FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(fdMemberDoctorSh.getLevel());
 			if(level != null) fdMemberDoctorSh.setLevelName(level.getName());
+		}
+		if(!F.empty(fdMemberDoctorSh.getHospital())) {
+			FdHospital hospital = fdHospitalService.get(fdMemberDoctorSh.getHospital());
+			fdMemberDoctorSh.setHospitalName(hospital.getHospitalName());
+		}
+
+		if(!F.empty(fdMemberDoctorSh.getDepartment())) {
+			FdHospitalDept dept = fdHospitalDeptService.get(fdMemberDoctorSh.getDepartment());
+			fdMemberDoctorSh.setDepartmentName(dept.getName());
 		}
 
 		request.setAttribute("fdMemberDoctorSh", fdMemberDoctorSh);

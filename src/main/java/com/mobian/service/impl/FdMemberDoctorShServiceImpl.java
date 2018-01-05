@@ -181,7 +181,8 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 
 	@Override
 	public void edit(FdMemberDoctorSh fdMemberDoctorSh) {
-		fdMemberDoctorSh.setUpdateTime(new Date());
+		if(fdMemberDoctorSh.getStatus() == null || "1".equals(fdMemberDoctorSh.getStatus()))
+			fdMemberDoctorSh.setUpdateTime(new Date());
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", fdMemberDoctorSh.getId());
 		params.put("auditType", fdMemberDoctorSh.getAuditType());
@@ -273,7 +274,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setMtype("MT02");
 				message.setIsRead(false);
 				message.setAlias("2_" + member.getMobile());
-				message.setPushMessage(new PushMessage("M001", "尊敬的医生您好，恭喜您在医家盟注册医生账号审核通过！", 2));
+				message.setPushMessage(new PushMessage("M001", "尊敬的" + fdMemberDoctorSh.getRealName() + "医生您好，恭喜您在医家盟注册医生账号审核通过！", 2));
 				fdMessageService.addAndPushMessage(message);
 			} else {
 				FdMessage message = new FdMessage();
@@ -283,7 +284,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setMtype("MT02");
 				message.setIsRead(false);
 				message.setAlias("2_" + member.getMobile());
-				message.setPushMessage(new PushMessage("M001", "尊敬的医生您好，恭喜您在医家盟修改医生信息审核通过！", 2));
+				message.setPushMessage(new PushMessage("M001", "尊敬的" + fdMemberDoctorSh.getRealName() + "医生您好，恭喜您在医家盟修改医生信息审核通过！", 2));
 				fdMessageService.addAndPushMessage(message);
 			}
 		} else {

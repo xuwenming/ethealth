@@ -2,19 +2,23 @@ package com.mobian.controller;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mobian.pageModel.Colum;
-import com.mobian.pageModel.FdMemberConsultationOrder;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdMemberConsultationExpireServiceI;
 import com.mobian.service.FdMemberConsultationOrderServiceI;
 
+import com.mobian.service.FdMemberServiceI;
+import com.mobian.service.impl.CompletionFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +39,12 @@ public class FdMemberConsultationOrderController extends BaseController {
 	@Autowired
 	private FdMemberConsultationOrderServiceI fdMemberConsultationOrderService;
 
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMemberConsultationExpireServiceI fdMemberConsultationExpireService;
+
 
 	/**
 	 * 跳转到FdMemberConsultationOrder管理页面
@@ -49,13 +59,61 @@ public class FdMemberConsultationOrderController extends BaseController {
 	/**
 	 * 获取FdMemberConsultationOrder数据表格
 	 * 
-	 * @param user
+	 * @param
 	 * @return
 	 */
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
-		return fdMemberConsultationOrderService.dataGrid(fdMemberConsultationOrder, ph);
+		DataGrid dg = fdMemberConsultationOrderService.dataGrid(fdMemberConsultationOrder, ph);
+		List<FdMemberConsultationOrder> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMemberConsultationOrder order : list) {
+				completionService.submit(new Task<FdMemberConsultationOrder, FdMember>(new CacheKey("fdMember", order.getUserId() + ""), order) {
+					@Override
+					public FdMember call() throws Exception {
+						return fdMemberService.getSimple(getD().getUserId());
+					}
+
+					protected void set(FdMemberConsultationOrder d, FdMember v) {
+						if(v != null) {
+							d.setUserName(v.getCustomer().getRealName());
+							d.setUserMobile(v.getMobile());
+						}
+					}
+				});
+				completionService.submit(new Task<FdMemberConsultationOrder, FdMember>(new CacheKey("fdMember", order.getDoctorId() + ""), order) {
+					@Override
+					public FdMember call() throws Exception {
+						return fdMemberService.getSimple(getD().getDoctorId());
+					}
+
+					protected void set(FdMemberConsultationOrder d, FdMember v) {
+						if(v != null) {
+							d.setDoctorName(v.getCustomer().getRealName());
+							d.setDoctorMobile(v.getMobile());
+						}
+					}
+				});
+
+				completionService.submit(new Task<FdMemberConsultationOrder, FdMemberConsultationExpire>(order) {
+					@Override
+					public FdMemberConsultationExpire call() throws Exception {
+						FdMemberConsultationExpire expire = fdMemberConsultationExpireService.getByUserIdAndDoctorId(getD().getUserId(), getD().getDoctorId());
+						return expire;
+					}
+
+					protected void set(FdMemberConsultationOrder d, FdMemberConsultationExpire v) {
+						if(v != null) {
+							d.setExpireDate(v.getExpireDate());
+						}
+					}
+				});
+			}
+			completionService.sync();
+		}
+		return dg;
 	}
 	/**
 	 * 获取FdMemberConsultationOrder数据表格excel

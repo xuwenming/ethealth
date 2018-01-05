@@ -1,5 +1,10 @@
 package com.mobian.pageModel;
 
+import com.mobian.absx.F;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
+
+import java.util.Calendar;
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -230,6 +235,12 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 	}
 
 	public String getBirthdayStr() {
+		if(!F.empty(birthday)) {
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(birthday);
+			return DateUtil.format(c.getTime(), Constants.DATE_FORMAT_YMD);
+		}
+
 		return birthdayStr;
 	}
 

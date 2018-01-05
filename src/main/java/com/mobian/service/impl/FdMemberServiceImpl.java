@@ -158,7 +158,12 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			if (!F.empty(fdMember.getVipEndTime())) {
 				whereHql += " and t.vipEndTime = :vipEndTime";
 				params.put("vipEndTime", fdMember.getVipEndTime());
-			}		
+			}
+
+			if(!F.empty(fdMember.getQ())) {
+				whereHql += " and (t.mobile like :q or exists (select 1 from TfdCustomer c where c.userId = t.id and c.realName like :q))";
+				params.put("q", "%" + fdMember.getQ() + "%");
+			}
 		}	
 		return whereHql;
 	}
@@ -217,6 +222,13 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		// 获取未读消息数量
 		int count = fdMessageService.getUnreadMsgCount(member.getId(), member.getIsAdmin());
 		member.setUnreadMsgCount(count);
+		return member;
+	}
+
+	@Override
+	public FdMember getSimple(Integer id) {
+		FdMember member = get(id);
+		member.setCustomer(fdCustomerService.get(member.getId().longValue()));
 		return member;
 	}
 

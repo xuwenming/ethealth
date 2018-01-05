@@ -2,6 +2,7 @@ package com.mobian.pageModel;
 
 import com.mobian.absx.F;
 import com.mobian.enums.EnumConstants;
+import com.mobian.listener.Application;
 
 import java.util.Date;
 
@@ -45,9 +46,20 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private FdMemberAppointmentComment comment;
 	private String query;
 
+	private String userName;
+	private String userMobile;
+	private String doctorName;
+	private String doctorMobile;
+
+	private Boolean isShowWx; // 是否显示来自微信公众号
+
 	public String getTimeZh() {
 		if(F.empty(time)) return null;
 		return EnumConstants.TIME.getCnName(time);
+	}
+
+	public String getSourseZh() {
+		return Application.getString(sourse);
 	}
 
 	public void setId(java.lang.Integer value) {
@@ -284,5 +296,45 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setQuery(String query) {
 		this.query = query;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getUserMobile() {
+		return userMobile;
+	}
+
+	public void setUserMobile(String userMobile) {
+		this.userMobile = userMobile;
+	}
+
+	public String getDoctorName() {
+		return doctorName;
+	}
+
+	public void setDoctorName(String doctorName) {
+		this.doctorName = doctorName;
+	}
+
+	public String getDoctorMobile() {
+		return doctorMobile;
+	}
+
+	public void setDoctorMobile(String doctorMobile) {
+		this.doctorMobile = doctorMobile;
+	}
+
+	public Boolean getIsShowWx() {
+		return isShowWx;
+	}
+
+	public void setIsShowWx(Boolean isShowWx) {
+		this.isShowWx = isShowWx;
 	}
 }

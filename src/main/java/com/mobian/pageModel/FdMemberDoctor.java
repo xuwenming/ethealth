@@ -24,7 +24,7 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private Date createTime;			
 	private java.lang.Integer updateBy;	
 	private Date updateTime;
-	private java.lang.Integer sort;
+	private java.lang.Integer seq;
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
@@ -54,12 +54,12 @@ public class FdMemberDoctor implements java.io.Serializable {
 		this.id = id;
 	}
 
-	public Integer getSort() {
-		return sort;
+	public Integer getSeq() {
+		return seq;
 	}
 
-	public void setSort(Integer sort) {
-		this.sort = sort;
+	public void setSeq(Integer seq) {
+		this.seq = seq;
 	}
 
 	public void setLevel(java.lang.Integer level) {

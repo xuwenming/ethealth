@@ -73,7 +73,7 @@ public class ApiDoctorServiceController extends BaseController {
 
 			// 著名专家
 			ph = new PageHelper();
-			ph.setSort("sort");
+			ph.setSort("seq");
 			ph.setOrder("desc");
 			ph.setHiddenTotal(true);
 			ph.setPage(1);

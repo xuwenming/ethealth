@@ -48,6 +48,7 @@ public class FdMember implements java.io.Serializable {
 
 	private String statusArr;
 	private int unreadMsgCount;
+	private String q;
 
 
 	public void setId(java.lang.Integer value) {
@@ -333,5 +334,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setUnreadMsgCount(int unreadMsgCount) {
 		this.unreadMsgCount = unreadMsgCount;
+	}
+
+	public String getQ() {
+		return q;
+	}
+
+	public void setQ(String q) {
+		this.q = q;
 	}
 }

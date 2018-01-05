@@ -268,18 +268,47 @@ public class ApiMemberConsultationController extends BaseController {
 	 */
 	@RequestMapping("/updateNewestConsultation")
 	@ResponseBody
-	public Json updateNewestConsultation(FdMemberConsultationFriend consultationFriend, HttpServletRequest request) {
+	public Json updateNewestConsultation(FdMemberConsultationFriend consultationFriend, String hxAccount, HttpServletRequest request) {
 		Json j = new Json();
 		try{
+			if(consultationFriend.getReceiverId() == null && F.empty(hxAccount)) {
+				j.setMsg("接收方账号信息有误");
+				return j;
+			}
 			SessionInfo s = getSessionInfo(request);
 			if(!F.empty(s.getId())) {
 				Integer userId = 0, doctorId = 0;
 				if(consultationFriend.getSenderType() == 1) { // 患者发来的消息
 					userId = Integer.valueOf(s.getId());
 					doctorId = consultationFriend.getReceiverId();
+					if(doctorId == null) {
+						String[] account = hxAccount.split("-");
+						if(Integer.valueOf(account[0]) == 0) {
+							j.setMsg("接收方账号信息有误");
+							return j;
+						}
+						FdMember member = new FdMember();
+						member.setIsAdmin(Integer.valueOf(account[0]));
+						member.setUsername(account[1]);
+						member = fdMemberService.get(member);
+						doctorId = member.getId();
+					}
 				} else { // 医生发来的消息
 					doctorId = Integer.valueOf(s.getId());
 					userId = consultationFriend.getReceiverId();
+
+					if(userId == null) {
+						String[] account = hxAccount.split("-");
+						if(Integer.valueOf(account[0]) == 2) {
+							j.setMsg("接收方账号信息有误");
+							return j;
+						}
+						FdMember member = new FdMember();
+						member.setIsAdmin(Integer.valueOf(account[0]));
+						member.setUsername(account[1]);
+						member = fdMemberService.get(member);
+						userId = member.getId();
+					}
 				}
 				consultationFriend.setUserId(userId);
 				consultationFriend.setDoctorId(doctorId);
@@ -290,9 +319,13 @@ public class ApiMemberConsultationController extends BaseController {
 				if(friend == null) {
 					fdMemberConsultationFriendService.add(consultationFriend);
 				} else {
-					if(new Date().getTime() - friend.getLastTime().getTime() <= 5*60*1000) {
-						isPush = false;
+					int m = Integer.valueOf(Application.getString("SV700", "5"));
+					if(m != -1) {
+						if(m == 0 || new Date().getTime() - friend.getLastTime().getTime() <= m*60*1000) {
+							isPush = false;
+						}
 					}
+
 					consultationFriend.setId(friend.getId());
 					fdMemberConsultationFriendService.edit(consultationFriend);
 				}
@@ -314,6 +347,7 @@ public class ApiMemberConsultationController extends BaseController {
 							Map<String, String> msg = new HashMap<String, String>();
 							msg.put("mtype", "M202");
 							msg.put("doctorHeadimage", doctor.getPicUrl());
+							msg.put("doctorName", doctor.getCustomer().getRealName());
 							msg.put("doctorMobile", doctor.getMobile());
 							msg.put("hospitalName", doctor.getMemberDoctor().getHospitalName());
 							msg.put("patientMobile", patient.getMobile());

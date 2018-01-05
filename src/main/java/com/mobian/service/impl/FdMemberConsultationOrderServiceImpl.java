@@ -70,8 +70,8 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 				params.put("doctorId", fdMemberConsultationOrder.getDoctorId());
 			}		
 			if (!F.empty(fdMemberConsultationOrder.getOrderNo())) {
-				whereHql += " and t.orderNo = :orderNo";
-				params.put("orderNo", fdMemberConsultationOrder.getOrderNo());
+				whereHql += " and t.orderNo like :orderNo";
+				params.put("orderNo", "%" + fdMemberConsultationOrder.getOrderNo() + "%");
 			}		
 			if (!F.empty(fdMemberConsultationOrder.getCreateBy())) {
 				whereHql += " and t.createBy = :createBy";

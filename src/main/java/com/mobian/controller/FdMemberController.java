@@ -2,19 +2,23 @@ package com.mobian.controller;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mobian.pageModel.Colum;
-import com.mobian.pageModel.FdMember;
-import com.mobian.pageModel.DataGrid;
-import com.mobian.pageModel.Json;
-import com.mobian.pageModel.PageHelper;
+import com.mobian.absx.F;
+import com.mobian.concurrent.CacheKey;
+import com.mobian.concurrent.CompletionService;
+import com.mobian.concurrent.Task;
+import com.mobian.pageModel.*;
+import com.mobian.service.FdCustomerServiceI;
 import com.mobian.service.FdMemberServiceI;
 
+import com.mobian.service.impl.CompletionFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +38,9 @@ public class FdMemberController extends BaseController {
 
 	@Autowired
 	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdCustomerServiceI fdCustomerService;
 
 
 	/**
@@ -158,6 +165,57 @@ public class FdMemberController extends BaseController {
 		j.setMsg("删除成功！");
 		j.setSuccess(true);
 		return j;
+	}
+
+	/**
+	 * 根据userName查询mbUser返回List Tree
+	 * @param q
+	 * @return
+	 */
+	@RequestMapping("/selectQuery")
+	@ResponseBody
+	public List<Tree> selectQuery(String q, HttpServletRequest request){
+		String paramsJson = request.getParameter("params");
+		FdMember member = new FdMember();
+		List<Tree> lt =new ArrayList<Tree>();
+		if(!F.empty(q)){
+			if(!F.empty(paramsJson)) {
+				member = JSON.parseObject(paramsJson, FdMember.class);
+			}
+			member.setQ(q);
+		}else {
+			return lt;
+		}
+		PageHelper ph = new PageHelper();
+		ph.setHiddenTotal(true);
+		ph.setPage(100);
+		DataGrid dg = fdMemberService.dataGrid(member,ph);
+		List<FdMember> rows = dg.getRows();
+		if(!CollectionUtils.isEmpty(rows)){
+			CompletionService completionService = CompletionFactory.initCompletion();
+			for(FdMember d : rows){
+				Tree tree = new Tree();
+				tree.setId(d.getId()+"");
+				tree.setText(d.getMobile());
+//				tree.setParentName(d.getMobile());
+				lt.add(tree);
+				completionService.submit(new Task<Tree, String>(new CacheKey("fdCustomer", tree.getId()), tree) {
+					@Override
+					public String call() throws Exception {
+						FdCustomer customer = fdCustomerService.get(Long.valueOf(getD().getId()));
+						return customer == null ? null : customer.getRealName();
+					}
+
+					protected void set(Tree d, String v) {
+						if(v != null) {
+							d.setParentName(v);
+						}
+					}
+				});
+			}
+			completionService.sync();
+		}
+		return lt;
 	}
 
 }
