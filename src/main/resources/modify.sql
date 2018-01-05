@@ -222,4 +222,7 @@ CREATE TABLE `fd_patient` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='患者信息表';
 
+ALTER TABLE fd_customer MODIFY `real_name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+ALTER TABLE fd_feedback MODIFY `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '正文';
+
 

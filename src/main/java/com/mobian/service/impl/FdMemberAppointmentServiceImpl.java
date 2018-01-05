@@ -115,7 +115,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			if (!F.empty(fdMemberAppointment.getStatus())) {
 				whereHql += " and t.status = :status";
 				params.put("status", fdMemberAppointment.getStatus());
-				if(fdMemberAppointment.getIsShowWx() == null && !fdMemberAppointment.getIsShowWx()) {
+				if(fdMemberAppointment.getIsShowWx() == null || !fdMemberAppointment.getIsShowWx()) {
 					whereHql += " and t.sourse = 'AS02' ";
 				}
 			} else {
