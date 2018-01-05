@@ -350,6 +350,7 @@ public class ApiMemberConsultationController extends BaseController {
 							msg.put("doctorName", doctor.getCustomer().getRealName());
 							msg.put("doctorMobile", doctor.getMobile());
 							msg.put("hospitalName", doctor.getMemberDoctor().getHospitalName());
+							msg.put("departmentName", doctor.getMemberDoctor().getDepartmentName());
 							msg.put("patientMobile", patient.getMobile());
 							msg.put("patientName", patientName);
 							msg.put("senderType", getD().getSenderType() + "");
