@@ -305,6 +305,8 @@ public class ApiDoctorController extends BaseController {
 			appointment.setDoctorId(Integer.valueOf(s.getId()));
 			appointment.setUserId(userId);
 			appointment.setStatus("1");
+			int showWx = Integer.valueOf(Application.getString("SV600", "0"));
+			appointment.setIsShowWx(showWx == 0 ? false : true);
 			PageHelper ph = new PageHelper();
 			ph.setSort("createTime");
 			ph.setOrder("desc");

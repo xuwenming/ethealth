@@ -380,11 +380,24 @@ public class ApiMemberConsultationController extends BaseController {
 	 */
 	@RequestMapping("/getExpire")
 	@ResponseBody
-	public Json getExpire(Integer doctorId, HttpServletRequest request) {
+	public Json getExpire(Integer doctorId, String hxAccount, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
 			Map<String, Object> obj = new HashMap<String, Object>();
+
+			if(doctorId == null) {
+				String[] account = hxAccount.split("-");
+				if(Integer.valueOf(account[0]) != 2) {
+					j.setMsg("账号信息有误");
+					return j;
+				}
+				FdMember member = new FdMember();
+				member.setIsAdmin(Integer.valueOf(account[0]));
+				member.setUsername(account[1]);
+				member = fdMemberService.get(member);
+				doctorId = member.getId();
+			}
 
 			FdMemberDoctor doctor = fdMemberDoctorService.get(doctorId);
 			obj.put("acceptConsultation", doctor.getAcceptConsultation());

@@ -6,6 +6,7 @@ import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
 import com.mobian.dao.BaseDaoI;
 import com.mobian.dao.FdMemberDoctorDaoI;
+import com.mobian.listener.Application;
 import com.mobian.model.TfdMemberDoctor;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
@@ -363,8 +364,13 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			where = " where t.realName like :realName ";
 			params.put("realName", "%" + name + "%");
 		}
+		int showWx = Integer.valueOf(Application.getString("SV600", "0"));
+		String ow = "";
+		if(showWx == 0) {
+			ow = " where a.sourse = 'AS02' ";
+		}
 		String sql = "select DISTINCT t.user_id userId from "
-				+ " (select a.user_id, a.create_time, a.appoint_name realName from fd_member_appointment a where a.status = 1 and a.doctor_id = :doctorId "
+				+ " (select a.user_id, a.create_time, a.appoint_name realName from fd_member_appointment a where a.status = 1 and a.doctor_id = :doctorId " + ow
 				+ " UNION "
 				+ " select c.user_id, c.create_time, u.real_name realName from fd_member_consultation_friend c left join fd_customer u on u.user_id = c.user_id where c.status = 0 and c.doctor_id = :doctorId) t "
 				+ where;
