@@ -367,7 +367,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		int showWx = Integer.valueOf(Application.getString("SV600", "0"));
 		String ow = "";
 		if(showWx == 0) {
-			ow = " where a.sourse = 'AS02' ";
+			ow = " and a.sourse = 'AS02' ";
 		}
 		String sql = "select DISTINCT t.user_id userId from "
 				+ " (select a.user_id, a.create_time, a.appoint_name realName from fd_member_appointment a where a.status = 1 and a.doctor_id = :doctorId " + ow
