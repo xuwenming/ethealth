@@ -131,6 +131,19 @@ CREATE TABLE `fd_member_consultation_friend` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='咨询好友表';
 
+CREATE TABLE `fd_member_consultation_log` (
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	`mtype` varchar(18) DEFAULT NULL COMMENT '消息类型：text、image、audio',
+  `from_user_id` int(10) DEFAULT NULL COMMENT '发送人',
+  `to_user_id` int(10) DEFAULT NULL COMMENT '接收人',
+  `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
+  `update_time` bigint(20) DEFAULT NULL COMMENT '更新时间',
+  `status` varchar(2) DEFAULT '0' COMMENT '是否删除 0 否 1 是',
+	`content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '聊天记录',
+	`sender_type` int(1) DEFAULT NULL COMMENT '发送方类型1患者 2医生',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='咨询聊天记录表';
+
 CREATE TABLE `fd_doctor_close_time` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `doctor_id` int(10) DEFAULT NULL COMMENT '医生id',

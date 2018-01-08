@@ -53,6 +53,9 @@ public class ApiMemberConsultationController extends BaseController {
 	private FdMemberConsultationFriendServiceI fdMemberConsultationFriendService;
 
 	@Autowired
+	private FdMemberConsultationLogServiceI fdMemberConsultationLogService;
+
+	@Autowired
 	private FdMessageServiceI fdMessageService;
 
 	@Autowired
@@ -268,7 +271,7 @@ public class ApiMemberConsultationController extends BaseController {
 	 */
 	@RequestMapping("/updateNewestConsultation")
 	@ResponseBody
-	public Json updateNewestConsultation(FdMemberConsultationFriend consultationFriend, String hxAccount, HttpServletRequest request) {
+	public Json updateNewestConsultation(FdMemberConsultationFriend consultationFriend, String mtype, String hxAccount, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			if(consultationFriend.getReceiverId() == null && F.empty(hxAccount)) {
@@ -276,6 +279,7 @@ public class ApiMemberConsultationController extends BaseController {
 				return j;
 			}
 			SessionInfo s = getSessionInfo(request);
+			FdMemberConsultationLog log = new FdMemberConsultationLog();
 			if(!F.empty(s.getId())) {
 				Integer userId = 0, doctorId = 0;
 				if(consultationFriend.getSenderType() == 1) { // 患者发来的消息
@@ -293,6 +297,9 @@ public class ApiMemberConsultationController extends BaseController {
 						member = fdMemberService.get(member);
 						doctorId = member.getId();
 					}
+
+					log.setFromUserId(userId);
+					log.setToUserId(doctorId);
 				} else { // 医生发来的消息
 					doctorId = Integer.valueOf(s.getId());
 					userId = consultationFriend.getReceiverId();
@@ -309,6 +316,9 @@ public class ApiMemberConsultationController extends BaseController {
 						member = fdMemberService.get(member);
 						userId = member.getId();
 					}
+
+					log.setFromUserId(doctorId);
+					log.setToUserId(userId);
 				}
 				consultationFriend.setUserId(userId);
 				consultationFriend.setDoctorId(doctorId);
@@ -329,6 +339,11 @@ public class ApiMemberConsultationController extends BaseController {
 					consultationFriend.setId(friend.getId());
 					fdMemberConsultationFriendService.edit(consultationFriend);
 				}
+
+				log.setMtype(mtype);
+				log.setSenderType(consultationFriend.getSenderType());
+				log.setContent(consultationFriend.getLastContent());
+				fdMemberConsultationLogService.add(log);
 
 				// 广播消息 刷新首页的就诊动态
 				if(isPush) {
