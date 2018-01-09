@@ -336,7 +336,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("groupId", groupId);
 		params.put("isAdmin", 2);
-		List<TfdMember> l = fdMemberDao.find(" from TfdMember t where t.status = 1 and t.isAdmin = :isAdmin and t.groupId = :groupId ", params);
+		List<TfdMember> l = fdMemberDao.find(" select t from TfdMember t, TfdMemberDoctor d where t.status = 1 and t.id = d.id and t.isAdmin = :isAdmin and d.groupId = :groupId ", params);
 		if (l != null && l.size() > 0) {
 			for (TfdMember t : l) {
 				FdMember o = new FdMember();
