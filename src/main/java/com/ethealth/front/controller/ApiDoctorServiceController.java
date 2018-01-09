@@ -83,6 +83,8 @@ public class ApiDoctorServiceController extends BaseController {
 						bestDoctorGroups.add(g);
 					}
 				}
+				if(bestDoctorGroups.size() == 0)
+					bestDoctorGroups.add(doctorGroups.get(0));
 			}
 			obj.put("bestDoctorGroups", bestDoctorGroups);
 
