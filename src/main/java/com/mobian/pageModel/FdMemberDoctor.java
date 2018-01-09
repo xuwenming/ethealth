@@ -25,6 +25,7 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private java.lang.Integer updateBy;	
 	private Date updateTime;
 	private java.lang.Integer seq;
+	private Boolean isBest;
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
@@ -36,11 +37,13 @@ public class FdMemberDoctor implements java.io.Serializable {
 	private String mobile;
 	private String email;
 	private FdCustomer customer;
-	private Boolean isBest; // 是否著名
+
 	private String key; // 关键字查询
 	private String groupName; // 团队名称
 	private boolean isLeader; // 是否领导
 	private List<String> doctorTimes;
+	private String status;
+	private String username;
 
 	public String getEducationName() {
 		return Application.getString(this.education);
@@ -273,5 +276,21 @@ public class FdMemberDoctor implements java.io.Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }

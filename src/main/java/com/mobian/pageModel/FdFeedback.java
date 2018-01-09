@@ -16,7 +16,7 @@ public class FdFeedback implements java.io.Serializable {
 	private java.lang.Long updateTime;	
 	private java.lang.String status;	
 
-	
+	private String createByName;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -77,4 +77,11 @@ public class FdFeedback implements java.io.Serializable {
 		return this.status;
 	}
 
+	public String getCreateByName() {
+		return createByName;
+	}
+
+	public void setCreateByName(String createByName) {
+		this.createByName = createByName;
+	}
 }

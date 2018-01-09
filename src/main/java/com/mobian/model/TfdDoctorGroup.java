@@ -64,6 +64,9 @@ public class TfdDoctorGroup implements java.io.Serializable{
 	private java.lang.String status;
 	//
 	private java.lang.Integer leader;
+
+	private java.lang.Integer seq;
+	private Boolean isBest;
 	//columns END
 
 
@@ -183,8 +186,25 @@ public class TfdDoctorGroup implements java.io.Serializable{
 	public void setLeader(java.lang.Integer leader) {
 		this.leader = leader;
 	}
-	
-	
+
+	@Column(name = "seq", unique = true, nullable = true, insertable = true, updatable = true, length = 10)
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+
+	@Column(name = "is_best", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Boolean getIsBest() {
+		return isBest;
+	}
+
+	public void setIsBest(Boolean isBest) {
+		this.isBest = isBest;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

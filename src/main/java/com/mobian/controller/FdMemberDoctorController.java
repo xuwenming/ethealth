@@ -55,7 +55,11 @@ public class FdMemberDoctorController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberDoctor fdMemberDoctor, PageHelper ph) {
-		return fdMemberDoctorService.dataGrid(fdMemberDoctor, ph);
+		if("seq".equals(ph.getSort())) {
+			ph.setSort("isBest desc, t.seq");
+		}
+		fdMemberDoctor.setStatus("1,2,3");
+		return fdMemberDoctorService.dataGridMoreComplex(fdMemberDoctor, ph);
 	}
 	/**
 	 * 获取FdMemberDoctor数据表格excel

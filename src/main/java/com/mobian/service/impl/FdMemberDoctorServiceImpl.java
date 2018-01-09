@@ -83,7 +83,16 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 	protected String whereHql(FdMemberDoctor fdMemberDoctor, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdMemberDoctor != null) {
-			whereHql += " where t.id = m.id and t.id = c.userId and t.hospital = h.id and t.department = d.id and m.status = 1 ";
+			whereHql += " where t.id = m.id and t.id = c.userId and t.hospital = h.id and t.department = d.id ";
+			if(F.empty(fdMemberDoctor.getStatus())) {
+				whereHql += " and m.status = 1 ";
+			} else {
+				whereHql += " and m.status in (1,2,3) ";
+			}
+			if (fdMemberDoctor.getIsBest() != null) {
+				whereHql += " and t.isBest = :isBest";
+				params.put("isBest", fdMemberDoctor.getIsBest());
+			}
 			if (!F.empty(fdMemberDoctor.getLevel())) {
 				whereHql += " and t.level = :level";
 				params.put("level", fdMemberDoctor.getLevel());
@@ -131,6 +140,14 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			if (!F.empty(fdMemberDoctor.getGroupId())) {
 				whereHql += " and t.groupId = :groupId";
 				params.put("groupId", fdMemberDoctor.getGroupId());
+			}
+			if(!F.empty(fdMemberDoctor.getUsername())) {
+				whereHql += " and c.realName like :realName";
+				params.put("realName", "%" + fdMemberDoctor.getUsername() + "%");
+			}
+			if(!F.empty(fdMemberDoctor.getMobile())) {
+				whereHql += " and m.mobile like :mobile";
+				params.put("mobile", "%" + fdMemberDoctor.getMobile() + "%");
 			}
 			if(!F.empty(fdMemberDoctor.getKey())) {
 				whereHql += " and (t.speciality like :key or c.realName like :key or h.hospitalName like :key or d.name like :key) ";
@@ -199,22 +216,25 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 			final CompletionService completionService = CompletionFactory.initCompletion();
 			for(FdMemberDoctor o : ol) {
 				// 设置头像
-				completionService.submit(new Task<FdMemberDoctor, String>(o) {
+				completionService.submit(new Task<FdMemberDoctor, FdMember>(o) {
 					@Override
-					public String call() throws Exception {
+					public FdMember call() throws Exception {
 						FdMember member = fdMemberService.get(getD().getId());
 						String picUrl = member.getHeadImage();
 						if(F.empty(picUrl)) {
 							FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
 							if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
 						}
-
-						return picUrl;
+						member.setPicUrl(picUrl);
+						return member;
 					}
 
-					protected void set(FdMemberDoctor d, String v) {
-						if(!F.empty(v)) {
-							d.setPicUrl(v);
+					protected void set(FdMemberDoctor d, FdMember v) {
+						if(v != null) {
+							d.setPicUrl(v.getPicUrl());
+							d.setStatus(v.getStatus() + "");
+							d.setMobile(v.getMobile());
+							d.setUsername(v.getUsername());
 						}
 					}
 				});
@@ -301,6 +321,20 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 //
 //									}
 //								});
+						}
+					});
+
+					// 设置团队
+					completionService.submit(new Task<FdMemberDoctor, String>(new CacheKey("fdDoctorGroup", o.getGroupId() + ""), o) {
+						@Override
+						public String call() throws Exception {
+							FdDoctorGroup group = fdDoctorGroupService.get(getD().getGroupId());
+							return group == null ? null : group.getGroupName();
+						}
+
+						protected void set(FdMemberDoctor d, String v) {
+							if(!F.empty(v))
+								d.setGroupName(v);
 						}
 					});
 

@@ -19,7 +19,9 @@ public class FdDoctorGroup implements java.io.Serializable {
 	private java.lang.Integer updateBy;	
 	private java.lang.Long updateTime;	
 	private java.lang.String status;	
-	private java.lang.Integer leader;	
+	private java.lang.Integer leader;
+	private java.lang.Integer seq;
+	private Boolean isBest;
 
 	private String picUrl;
 	private List<FdMember> members;
@@ -125,5 +127,21 @@ public class FdDoctorGroup implements java.io.Serializable {
 
 	public void setMembers(List<FdMember> members) {
 		this.members = members;
+	}
+
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+
+	public Boolean getIsBest() {
+		return isBest;
+	}
+
+	public void setIsBest(Boolean isBest) {
+		this.isBest = isBest;
 	}
 }

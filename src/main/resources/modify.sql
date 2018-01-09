@@ -42,6 +42,13 @@ ALTER TABLE `fd_member_doctor`
   ADD COLUMN `accept_appointment`  tinyint NULL DEFAULT 1 COMMENT '是否接受预约1是 0否',
   ADD COLUMN `accept_consultation`  tinyint NULL DEFAULT 1 COMMENT '是否接受咨询1是 0否',
   ADD COLUMN `department_name`  varchar(100) NULL COMMENT '科室名称';
+ALTER TABLE `fd_member_doctor`
+  ADD COLUMN `is_best`  tinyint NULL DEFAULT 0 COMMENT '是否著名专家1是 0否' AFTER `sort`;
+
+
+ALTER TABLE `fd_doctor_group`
+  ADD COLUMN `is_best`  tinyint NULL DEFAULT 0 COMMENT '是否优秀团队1是 0否',
+  ADD COLUMN `seq`  int NULL DEFAULT 0 COMMENT '排序（越小越靠前）';
 
 
 CREATE TABLE `fd_feedback` (

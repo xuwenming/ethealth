@@ -59,6 +59,7 @@ public class TfdMemberDoctor implements java.io.Serializable{
 	private java.lang.Integer updateBy;
 	private java.util.Date updateTime;
 	private java.lang.Integer seq;
+	private Boolean isBest;
 	private java.lang.Integer groupId;
 	private Boolean acceptAppointment;
 	private Boolean acceptConsultation;
@@ -242,6 +243,15 @@ public class TfdMemberDoctor implements java.io.Serializable{
 
 	public void setDepartmentName(String departmentName) {
 		this.departmentName = departmentName;
+	}
+
+	@Column(name = "is_best", unique = false, nullable = true, insertable = true, updatable = true, length = 1)
+	public Boolean getIsBest() {
+		return isBest;
+	}
+
+	public void setIsBest(Boolean isBest) {
+		this.isBest = isBest;
 	}
 
 	/*

@@ -62,7 +62,7 @@ public class FdMemberController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMember fdMember, PageHelper ph) {
-		return fdMemberService.dataGrid(fdMember, ph);
+		return fdMemberService.dataGridComplex(fdMember, ph);
 	}
 	/**
 	 * 获取FdMember数据表格excel
@@ -118,7 +118,7 @@ public class FdMemberController extends BaseController {
 	 */
 	@RequestMapping("/view")
 	public String view(HttpServletRequest request, Integer id) {
-		FdMember fdMember = fdMemberService.get(id);
+		FdMember fdMember = fdMemberService.getDetail(id);
 		request.setAttribute("fdMember", fdMember);
 		return "/fdmember/fdMemberView";
 	}

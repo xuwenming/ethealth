@@ -56,11 +56,13 @@ public class FdMemberAppointmentController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberAppointment fdMemberAppointment, PageHelper ph) {
+		fdMemberAppointment.setIsShowWx(true);
 		DataGrid dg = fdMemberAppointmentService.dataGrid(fdMemberAppointment, ph);
 		List<FdMemberAppointment> list = dg.getRows();
 		if(CollectionUtils.isNotEmpty(list)) {
 			CompletionService completionService = CompletionFactory.initCompletion();
 			for(FdMemberAppointment order : list) {
+				if(order.getAmount() == null) order.setAmount(0L);
 				completionService.submit(new Task<FdMemberAppointment, FdMember>(new CacheKey("fdMember", order.getUserId() + ""), order) {
 					@Override
 					public FdMember call() throws Exception {

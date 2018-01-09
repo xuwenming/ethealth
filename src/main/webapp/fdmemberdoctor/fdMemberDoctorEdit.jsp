@@ -35,77 +35,35 @@
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
 		<form id="form" method="post">
+			<input type="hidden" name="id" value = "${fdMemberDoctor.id}"/>
 			<table class="table table-hover table-condensed">
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_LEVEL%></th>	
-					<td>
-											<input class="span2" name="level" type="text" value="${fdMemberDoctor.level}"/>
+				<tr>
+					<th width="12%">所属团队</th>
+					<td width="33%">
+						<jb:selectSql dataType="SQL001" name="groupId" value="${fdMemberDoctor.groupId}"></jb:selectSql>
+					</td>
+					<th width="10%">学历</th>
+					<td width="45%">
+						<jb:select dataType="ED" name="education" value="${fdMemberDoctor.education}"></jb:select>
 					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_HOSPITAL%></th>	
+				</tr>
+				<tr>
+					<th>著名专家</th>
 					<td>
-											<input class="span2" name="hospital" type="text" value="${fdMemberDoctor.hospital}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_DEPARTMENT%></th>	
+						<select name="isBest" class="easyui-combobox"
+								data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+							<option value="1" <c:if test="${fdMemberDoctor.isBest}">selected</c:if>>是</option>
+							<option value="0" <c:if test="${!fdMemberDoctor.isBest}">selected</c:if>>否</option>
+						</select>
+					</td>
+					<th>排序</th>
 					<td>
-											<input class="span2" name="department" type="text" value="${fdMemberDoctor.department}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_EDUCATION%></th>	
-					<td>
-											<input class="span2" name="education" type="text" value="${fdMemberDoctor.education}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_CONSULTING_HOUR%></th>	
-					<td>
-											<input class="span2" name="consultingHour" type="text" value="${fdMemberDoctor.consultingHour}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_SPECIAL_HOUR%></th>	
-					<td>
-											<input class="span2" name="specialHour" type="text" value="${fdMemberDoctor.specialHour}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_SPECIALITY%></th>	
-					<td>
-											<input class="span2" name="speciality" type="text" value="${fdMemberDoctor.speciality}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_INTRODUCE%></th>	
-					<td>
-											<input class="span2" name="introduce" type="text" value="${fdMemberDoctor.introduce}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_PICS%></th>	
-					<td>
-											<input class="span2" name="pics" type="text" value="${fdMemberDoctor.pics}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_CREATE_BY%></th>	
-					<td>
-											<input class="span2" name="createBy" type="text" value="${fdMemberDoctor.createBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_CREATE_TIME%></th>	
-					<td>
-					<input class="span2" name="createTime" type="text" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctor.FORMAT_CREATE_TIME%>'})"   maxlength="0" value="${fdMemberDoctor.createTime}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_UPDATE_BY%></th>	
-					<td>
-											<input class="span2" name="updateBy" type="text" value="${fdMemberDoctor.updateBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctor.ALIAS_UPDATE_TIME%></th>	
-					<td>
-					<input class="span2" name="updateTime" type="text" onclick="WdatePicker({dateFmt:'<%=TfdMemberDoctor.FORMAT_UPDATE_TIME%>'})"   maxlength="0" value="${fdMemberDoctor.updateTime}"/>
-					</td>							
-					<th><%=TfdMemberDoctor.ALIAS_GROUP_ID%></th>	
-					<td>
-											<input class="span2" name="groupId" type="text" value="${fdMemberDoctor.groupId}"/>
-					</td>							
-			</tr>	
+						<input name="seq" value="${fdMemberDoctor.seq}"
+							   class="easyui-numberspinner" style="width: 140px; height: 29px;"
+							   required="required" data-options="editable:true" />
+						<font color="red">*数值越小越靠前</font>
+					</td>
+				</tr>
 			</table>				
 		</form>
 	</div>

@@ -27,7 +27,7 @@
 	var dataGrid;
 	$(function() {
 		dataGrid = $('#dataGrid').datagrid({
-			url : '${pageContext.request.contextPath}/fdMemberController/dataGrid',
+			url : '${pageContext.request.contextPath}/fdMemberController/dataGrid?isAdmin=0',
 			fit : true,
 			fitColumns : true,
 			border : false,
@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'regTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -45,118 +45,53 @@
 			singleSelect : true,
 			columns : [ [ {
 				field : 'id',
-				title : '编号',
-				width : 150,
-				hidden : true
+				title : '用户ID',
+				width : 30,
+				formatter : function (value, row, index) {
+					if ($.canView) {
+						return '<a onclick="viewFun(\'' + row.id + '\')">'+value+'</a>';
+					}
+					return value
+				}
 				}, {
 				field : 'username',
 				title : '<%=TfdMember.ALIAS_USERNAME%>',
 				width : 50		
 				}, {
-				field : 'password',
-				title : '<%=TfdMember.ALIAS_PASSWORD%>',
-				width : 50		
-				}, {
-				field : 'score',
-				title : '<%=TfdMember.ALIAS_SCORE%>',
-				width : 50		
-				}, {
-				field : 'email',
-				title : '<%=TfdMember.ALIAS_EMAIL%>',
-				width : 50		
-				}, {
-				field : 'login',
-				title : '<%=TfdMember.ALIAS_LOGIN%>',
-				width : 50		
+				field : 'realName',
+				title : '姓名/昵称',
+				width : 50,
+				formatter:function(value,row){
+					return row.customer.realName || row.customer.nickName;
+				}
 				}, {
 				field : 'mobile',
 				title : '<%=TfdMember.ALIAS_MOBILE%>',
-				width : 50		
+				width : 50
 				}, {
-				field : 'regTime',
-				title : '<%=TfdMember.ALIAS_REG_TIME%>',
-				width : 50		
-				}, {
-				field : 'regIp',
-				title : '<%=TfdMember.ALIAS_REG_IP%>',
-				width : 50		
-				}, {
-				field : 'lastLoginTime',
-				title : '<%=TfdMember.ALIAS_LAST_LOGIN_TIME%>',
-				width : 50		
-				}, {
-				field : 'lastLoginIp',
-				title : '<%=TfdMember.ALIAS_LAST_LOGIN_IP%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdMember.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdMember.ALIAS_STATUS%>',
-				width : 50		
-				}, {
-				field : 'isAdmin',
-				title : '<%=TfdMember.ALIAS_IS_ADMIN%>',
-				width : 50		
-				}, {
-				field : 'groupid',
-				title : '<%=TfdMember.ALIAS_GROUPID%>',
-				width : 50		
-				}, {
-				field : 'amount',
-				title : '<%=TfdMember.ALIAS_AMOUNT%>',
-				width : 50		
-				}, {
-				field : 'modelid',
-				title : '<%=TfdMember.ALIAS_MODELID%>',
-				width : 50		
-				}, {
-				field : 'message',
-				title : '<%=TfdMember.ALIAS_MESSAGE%>',
-				width : 50		
-				}, {
-				field : 'pic',
-				title : '<%=TfdMember.ALIAS_PIC%>',
-				width : 50		
-				}, {
-				field : 'doctorId',
-				title : '<%=TfdMember.ALIAS_DOCTOR_ID%>',
-				width : 50		
-				}, {
-				field : 'groupId',
-				title : '<%=TfdMember.ALIAS_GROUP_ID%>',
-				width : 50		
-				}, {
-				field : 'vipEndTime',
-				title : '<%=TfdMember.ALIAS_VIP_END_TIME%>',
-				width : 50		
-			}, {
-				field : 'action',
-				title : '操作',
-				width : 100,
-				formatter : function(value, row, index) {
-					var str = '';
-					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
-					}
-					str += '&nbsp;';
-					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
-					}
-					str += '&nbsp;';
-					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
-					}
+				field : 'sex',
+				title : '性别',
+				width : 50,
+				formatter:function(value,row){
+					var str;
+					if(row.customer.sex == 1) str = '男';
+					else if(row.customer.sex == 2) str = '女';
+					else str = '未知';
 					return str;
+				}
+				}, {
+				field : 'balance',
+				title : '余额',
+				width : 50,
+				formatter:function(value,row){
+					if(!row.customer.balance) return '0.00';
+					return row.customer.balance;
 				}
 			} ] ],
 			toolbar : '#toolbar',
 			onLoadSuccess : function() {
 				$('#searchForm table').show();
 				parent.$.messager.progress('close');
-
 				$(this).datagrid('tooltip');
 			}
 		});
@@ -208,15 +143,11 @@
 	}
 
 	function viewFun(id) {
-		if (id == undefined) {
-			var rows = dataGrid.datagrid('getSelections');
-			id = rows[0].id;
-		}
-		parent.$.modalDialog({
-			title : '查看数据',
-			width : 780,
-			height : 500,
-			href : '${pageContext.request.contextPath}/fdMemberController/view?id=' + id
+		var href = '${pageContext.request.contextPath}/fdMemberController/view?id=' + id;
+		parent.$("#index_tabs").tabs('add', {
+			title : '用户详情-' + id,
+			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
+			closable : true
 		});
 	}
 
@@ -264,105 +195,15 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
-						<tr>	
-							<th><%=TfdMember.ALIAS_USERNAME%></th>	
+						<tr>
+							<th width="60"><%=TfdMember.ALIAS_MOBILE%></th>
 							<td>
-											<input type="text" name="username" maxlength="16" class="span2"/>
+								<input type="text" name="mobile" maxlength="15" class="span2"/>
 							</td>
-							<th><%=TfdMember.ALIAS_PASSWORD%></th>	
-							<td>
-											<input type="text" name="password" maxlength="32" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_SCORE%></th>	
-							<td>
-											<input type="text" name="score" maxlength="7" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_EMAIL%></th>	
-							<td>
-											<input type="text" name="email" maxlength="32" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMember.ALIAS_LOGIN%></th>	
-							<td>
-											<input type="text" name="login" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_MOBILE%></th>	
-							<td>
-											<input type="text" name="mobile" maxlength="15" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_REG_TIME%></th>	
-							<td>
-											<input type="text" name="regTime" maxlength="20" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_REG_IP%></th>	
-							<td>
-											<input type="text" name="regIp" maxlength="19" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMember.ALIAS_LAST_LOGIN_TIME%></th>	
-							<td>
-											<input type="text" name="lastLoginTime" maxlength="20" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_LAST_LOGIN_IP%></th>	
-							<td>
-											<input type="text" name="lastLoginIp" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="20" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="3" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMember.ALIAS_IS_ADMIN%></th>	
-							<td>
-											<input type="text" name="isAdmin" maxlength="3" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_GROUPID%></th>	
-							<td>
-											<input type="text" name="groupid" maxlength="3" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_AMOUNT%></th>	
-							<td>
-											<input type="text" name="amount" maxlength="8" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_MODELID%></th>	
-							<td>
-											<input type="text" name="modelid" maxlength="5" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMember.ALIAS_MESSAGE%></th>	
-							<td>
-											<input type="text" name="message" maxlength="0" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_PIC%></th>	
-							<td>
-											<input type="text" name="pic" maxlength="256" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_DOCTOR_ID%></th>	
-							<td>
-											<input type="text" name="doctorId" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMember.ALIAS_GROUP_ID%></th>	
-							<td>
-											<input type="text" name="groupId" maxlength="10" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMember.ALIAS_VIP_END_TIME%></th>	
-							<td>
-											<input type="text" name="vipEndTime" maxlength="20" class="span2"/>
-							</td>
-						</tr>	
+						</tr>
 				</table>
 			</form>
 		</div>
@@ -372,11 +213,11 @@
 	</div>
 	<div id="toolbar" style="display: none;">
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberController/addPage')}">
-			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
+			<%--<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>--%>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberController/download')}">
-			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
+			<%--<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		--%>
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">
 			</form>
 			<iframe id="downloadIframe" name="downloadIframe" style="display: none;"></iframe>

@@ -65,8 +65,8 @@ public class FdDoctorGroupServiceImpl extends BaseServiceImpl<FdDoctorGroup> imp
 				params.put("deptId", fdDoctorGroup.getDeptId());
 			}		
 			if (!F.empty(fdDoctorGroup.getGroupName())) {
-				whereHql += " and t.groupName = :groupName";
-				params.put("groupName", fdDoctorGroup.getGroupName());
+				whereHql += " and t.groupName like :groupName";
+				params.put("groupName", "%" + fdDoctorGroup.getGroupName() + "%");
 			}		
 			if (!F.empty(fdDoctorGroup.getIntroduce())) {
 				whereHql += " and t.introduce = :introduce";
@@ -99,7 +99,11 @@ public class FdDoctorGroupServiceImpl extends BaseServiceImpl<FdDoctorGroup> imp
 			if (!F.empty(fdDoctorGroup.getLeader())) {
 				whereHql += " and t.leader = :leader";
 				params.put("leader", fdDoctorGroup.getLeader());
-			}		
+			}
+			if (fdDoctorGroup.getIsBest() != null) {
+				whereHql += " and t.isBest = :isBest";
+				params.put("isBest", fdDoctorGroup.getIsBest());
+			}
 		}	
 		return whereHql;
 	}

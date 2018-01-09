@@ -55,6 +55,9 @@ public class FdDoctorGroupController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdDoctorGroup fdDoctorGroup, PageHelper ph) {
+		if("seq".equals(ph.getSort())) {
+			ph.setSort("isBest desc, t.seq");
+		}
 		return fdDoctorGroupService.dataGrid(fdDoctorGroup, ph);
 	}
 	/**

@@ -63,6 +63,18 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		dg.setRows(ol);
 		return dg;
 	}
+
+	@Override
+	public DataGrid dataGridComplex(FdMember fdMember, PageHelper ph) {
+		DataGrid dg = dataGrid(fdMember, ph);
+		List<FdMember> list = dg.getRows();
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(FdMember m : list) {
+				m.setCustomer(fdCustomerService.get(m.getId().longValue()));
+			}
+		}
+		return dg;
+	}
 	
 
 	protected String whereHql(FdMember fdMember, Map<String, Object> params) {

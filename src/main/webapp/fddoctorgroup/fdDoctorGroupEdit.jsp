@@ -35,64 +35,25 @@
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
 		<form id="form" method="post">
-				<input type="hidden" name="id" value = "${fdDoctorGroup.id}"/>
+			<input type="hidden" name="id" value = "${fdDoctorGroup.id}"/>
 			<table class="table table-hover table-condensed">
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_HOSPITAL_ID%></th>	
+				<tr>
+					<th>优秀团队</th>
 					<td>
-											<input class="span2" name="hospitalId" type="text" value="${fdDoctorGroup.hospitalId}"/>
-					</td>							
-					<th><%=TfdDoctorGroup.ALIAS_DEPT_ID%></th>	
+						<select name="isBest" class="easyui-combobox"
+								data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+							<option value="1" <c:if test="${fdDoctorGroup.isBest}">selected</c:if>>是</option>
+							<option value="0" <c:if test="${!fdDoctorGroup.isBest}">selected</c:if>>否</option>
+						</select>
+					</td>
+					<th>排序</th>
 					<td>
-											<input class="span2" name="deptId" type="text" value="${fdDoctorGroup.deptId}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_GROUP_NAME%></th>	
-					<td>
-											<input class="span2" name="groupName" type="text" value="${fdDoctorGroup.groupName}"/>
-					</td>							
-					<th><%=TfdDoctorGroup.ALIAS_INTRODUCE%></th>	
-					<td>
-											<input class="span2" name="introduce" type="text" value="${fdDoctorGroup.introduce}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_PICS%></th>	
-					<td>
-											<input class="span2" name="pics" type="text" value="${fdDoctorGroup.pics}"/>
-					</td>							
-					<th><%=TfdDoctorGroup.ALIAS_CREATE_BY%></th>	
-					<td>
-											<input class="span2" name="createBy" type="text" value="${fdDoctorGroup.createBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_CREATE_TIME%></th>	
-					<td>
-											<input class="span2" name="createTime" type="text" value="${fdDoctorGroup.createTime}"/>
-					</td>							
-					<th><%=TfdDoctorGroup.ALIAS_UPDATE_BY%></th>	
-					<td>
-											<input class="span2" name="updateBy" type="text" value="${fdDoctorGroup.updateBy}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_UPDATE_TIME%></th>	
-					<td>
-											<input class="span2" name="updateTime" type="text" value="${fdDoctorGroup.updateTime}"/>
-					</td>							
-					<th><%=TfdDoctorGroup.ALIAS_STATUS%></th>	
-					<td>
-											<input class="span2" name="status" type="text" value="${fdDoctorGroup.status}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdDoctorGroup.ALIAS_LEADER%></th>	
-					<td>
-											<input class="span2" name="leader" type="text" value="${fdDoctorGroup.leader}"/>
-					</td>							
-			</tr>	
+						<input name="seq" value="${fdDoctorGroup.seq}"
+							   class="easyui-numberspinner" style="width: 140px; height: 29px;"
+							   required="required" data-options="editable:true" />
+						<font color="red">*数值越小越靠前</font>
+					</td>
+				</tr>
 			</table>				
 		</form>
 	</div>

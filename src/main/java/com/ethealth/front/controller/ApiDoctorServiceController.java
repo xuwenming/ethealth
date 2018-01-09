@@ -64,21 +64,27 @@ public class ApiDoctorServiceController extends BaseController {
 			List<FdHospitalDept> hospitalDepts = fdHospitalDeptService.dataGrid(new FdHospitalDept(), ph).getRows();
 			obj.put("hospitalDepts", hospitalDepts);
 
-			// 专家团队 // TODO 优秀团队
+			// 优秀团队
 			ph = new PageHelper();
+			ph.setSort("seq");
+			ph.setOrder("asc");
 			ph.setHiddenTotal(true);
+			FdDoctorGroup group = new FdDoctorGroup();
+			group.setIsBest(true);
 			List<FdDoctorGroup> doctorGroups = fdDoctorGroupService.dataGridComplex(new FdDoctorGroup(), ph).getRows();
 			obj.put("bestDoctorGroups", doctorGroups);
 			obj.put("doctorGroups", doctorGroups);
 
 			// 著名专家
 			ph = new PageHelper();
-			ph.setSort("seq");
-			ph.setOrder("desc");
+			ph.setSort("isBest desc, t.seq");
+			ph.setOrder("asc");
 			ph.setHiddenTotal(true);
 			ph.setPage(1);
 			ph.setRows(5);
-			List<FdMemberDoctor> bestDoctors = fdMemberDoctorService.dataGridComplex(new FdMemberDoctor(), ph).getRows();
+			FdMemberDoctor doctor = new FdMemberDoctor();
+			doctor.setIsBest(true);
+			List<FdMemberDoctor> bestDoctors = fdMemberDoctorService.dataGridComplex(doctor, ph).getRows();
 			obj.put("bestDoctors", bestDoctors);
 
 			j.setObj(obj);
@@ -100,12 +106,8 @@ public class ApiDoctorServiceController extends BaseController {
 	public Json doctorDataGrid(FdMemberDoctor doctor, PageHelper ph) {
 		Json j = new Json();
 		try{
-			if(doctor.getIsBest() != null && doctor.getIsBest()) { // 著名专家
-				ph.setSort("sort");
-				ph.setOrder("desc");
-			} else {
-
-			}
+			ph.setSort("isBest desc, t.seq");
+			ph.setOrder("asc");
 
 			j.setObj(fdMemberDoctorService.dataGridMoreComplex(doctor, ph));
 			j.setSuccess(true);
