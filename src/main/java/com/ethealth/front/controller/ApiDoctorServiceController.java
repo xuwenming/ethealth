@@ -71,7 +71,7 @@ public class ApiDoctorServiceController extends BaseController {
 			ph.setHiddenTotal(true);
 			FdDoctorGroup group = new FdDoctorGroup();
 			group.setIsBest(true);
-			List<FdDoctorGroup> doctorGroups = fdDoctorGroupService.dataGridComplex(new FdDoctorGroup(), ph).getRows();
+			List<FdDoctorGroup> doctorGroups = fdDoctorGroupService.dataGridComplex(group, ph).getRows();
 			obj.put("bestDoctorGroups", doctorGroups);
 			obj.put("doctorGroups", doctorGroups);
 
