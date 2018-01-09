@@ -5,11 +5,13 @@ import com.mobian.controller.BaseController;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,16 +66,25 @@ public class ApiDoctorServiceController extends BaseController {
 			List<FdHospitalDept> hospitalDepts = fdHospitalDeptService.dataGrid(new FdHospitalDept(), ph).getRows();
 			obj.put("hospitalDepts", hospitalDepts);
 
-			// 优秀团队
+			// 专家团队
 			ph = new PageHelper();
-			ph.setSort("seq");
+			ph.setSort("isBest desc, t.seq");
 			ph.setOrder("asc");
 			ph.setHiddenTotal(true);
 			FdDoctorGroup group = new FdDoctorGroup();
-			group.setIsBest(true);
 			List<FdDoctorGroup> doctorGroups = fdDoctorGroupService.dataGridComplex(group, ph).getRows();
-			obj.put("bestDoctorGroups", doctorGroups);
 			obj.put("doctorGroups", doctorGroups);
+
+			// 优秀团队
+			List<FdDoctorGroup> bestDoctorGroups = new ArrayList<FdDoctorGroup>();
+			if(CollectionUtils.isNotEmpty(doctorGroups)) {
+				for(FdDoctorGroup g : doctorGroups) {
+					if(g.getIsBest() != null && g.getIsBest()) {
+						bestDoctorGroups.add(g);
+					}
+				}
+			}
+			obj.put("bestDoctorGroups", bestDoctorGroups);
 
 			// 著名专家
 			ph = new PageHelper();
