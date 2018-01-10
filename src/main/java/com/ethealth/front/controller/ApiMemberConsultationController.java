@@ -81,6 +81,7 @@ public class ApiMemberConsultationController extends BaseController {
 			message.setMtype("MT03");
 			message.setStartDate(DateUtil.parse(DateUtil.format(new Date(), Constants.DATE_FORMAT_YMD), Constants.DATE_FORMAT_YMD));
 			message.setEndDate(message.getStartDate());
+			message.setStatus("ST01");
 			PageHelper ph = new PageHelper();
 			ph.setHiddenTotal(true);
 			List<FdMessage> messages = fdMessageService.dataGrid(message, ph).getRows();
@@ -422,6 +423,7 @@ public class ApiMemberConsultationController extends BaseController {
 				message.setMtype("MT03");
 				message.setStartDate(DateUtil.parse(DateUtil.format(new Date(), Constants.DATE_FORMAT_YMD), Constants.DATE_FORMAT_YMD));
 				message.setEndDate(message.getStartDate());
+				message.setStatus("ST01");
 				PageHelper ph = new PageHelper();
 				ph.setHiddenTotal(true);
 				List<FdMessage> messages = fdMessageService.dataGrid(message, ph).getRows();
@@ -455,6 +457,58 @@ public class ApiMemberConsultationController extends BaseController {
 		}catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
 			logger.error("获取咨询有效期接口异常", e);
+		}
+
+		return j;
+	}
+
+	/**
+	 * 获取聊天记录
+	 */
+	@RequestMapping("/getConsultationLogs")
+	@ResponseBody
+	public Json getConsultationLogs(Integer patientId, String patientMobile, Integer doctorId, String doctorMobile, PageHelper ph) {
+		Json j = new Json();
+		try{
+
+			if(ph.getRows() == 0 || ph.getRows() > 50) {
+				ph.setRows(10);
+			}
+			if(F.empty(ph.getSort())) {
+				ph.setSort("createTime");
+			}
+			if(F.empty(ph.getOrder())) {
+				ph.setOrder("desc");
+			}
+
+			if(patientId == null) {
+				FdMember member = new FdMember();
+				member.setIsAdmin(0);
+				member.setUsername(patientMobile);
+				member = fdMemberService.get(member);
+				patientId = member.getId();
+			}
+			if(doctorId == null) {
+				FdMember member = new FdMember();
+				member.setIsAdmin(2);
+				member.setUsername(doctorMobile);
+				member = fdMemberService.get(member);
+				doctorId = member.getId();
+			}
+
+			FdMemberConsultationLog log = new FdMemberConsultationLog();
+			log.setFromUserId(patientId);
+			log.setToUserId(doctorId);
+
+			DataGrid dg = fdMemberConsultationLogService.dataGrid(log, ph);
+
+			j.setObj(dg);
+			j.setSuccess(true);
+			j.setMsg("获取获取聊天记录成功！");
+
+		} catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取获取聊天记录接口异常", e);
 		}
 
 		return j;
