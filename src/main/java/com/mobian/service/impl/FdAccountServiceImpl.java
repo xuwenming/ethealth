@@ -48,7 +48,11 @@ public class FdAccountServiceImpl extends BaseServiceImpl<FdAccount> implements 
 	protected String whereHql(FdAccount fdAccount, Map<String, Object> params) {
 		String whereHql = "";	
 		if (fdAccount != null) {
-			whereHql += " where t.status = 0 ";
+			whereHql += " where 1=1 ";
+			if (!F.empty(fdAccount.getUserId())) {
+				whereHql += " and t.userId = :userId";
+				params.put("userId", fdAccount.getUserId());
+			}
 			if (!F.empty(fdAccount.getBankAccount())) {
 				whereHql += " and t.bankAccount = :bankAccount";
 				params.put("bankAccount", fdAccount.getBankAccount());

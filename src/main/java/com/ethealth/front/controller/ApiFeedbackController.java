@@ -42,6 +42,7 @@ public class ApiFeedbackController extends BaseController {
 			}
 			SessionInfo s = getSessionInfo(request);
 			fdFeedback.setCreateBy(Integer.valueOf(s.getId()));
+			if(F.empty(fdFeedback.getContactWay())) fdFeedback.setContactWay(s.getName());
 			fdFeedbackService.add(fdFeedback);
 			j.setSuccess(true);
 			j.setMsg("添加成功！");

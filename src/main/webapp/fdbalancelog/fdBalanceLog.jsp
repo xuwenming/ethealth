@@ -27,7 +27,7 @@
 	var dataGrid;
 	$(function() {
 		dataGrid = $('#dataGrid').datagrid({
-			url : '${pageContext.request.contextPath}/fdBalanceLogController/dataGrid',
+			url : '${pageContext.request.contextPath}/fdBalanceLogController/dataGrid?userId=${userId}',
 			fit : true,
 			fitColumns : true,
 			border : false,
@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'createTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -49,68 +49,36 @@
 				width : 150,
 				hidden : true
 				}, {
-				field : 'adminId',
-				title : '<%=TfdBalanceLog.ALIAS_ADMIN_ID%>',
-				width : 50		
+				field : 'createTime',
+				title : '时间',
+				width : 50,
+				sortable:true,
+				formatter : function(value, row, index) {
+					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
+				}
 				}, {
-				field : 'userId',
-				title : '<%=TfdBalanceLog.ALIAS_USER_ID%>',
-				width : 50		
+				field : 'refTypeZh',
+				title : '<%=TfdBalanceLog.ALIAS_REF_TYPE%>',
+				width : 30
 				}, {
-				field : 'balanceNo',
-				title : '<%=TfdBalanceLog.ALIAS_BALANCE_NO%>',
-				width : 50		
+				field : 'amount',
+				title : '收支金额',
+				width : 30,
+				align:'right'
+				}, {
+				field : 'amountLog',
+				title : '账户余额',
+				width : 30,
+				align:'right'
 				}, {
 				field : 'refId',
 				title : '<%=TfdBalanceLog.ALIAS_REF_ID%>',
-				width : 50		
-				}, {
-				field : 'refType',
-				title : '<%=TfdBalanceLog.ALIAS_REF_TYPE%>',
-				width : 50		
-				}, {
-				field : 'createTime',
-				title : '<%=TfdBalanceLog.ALIAS_CREATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdBalanceLog.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'amount',
-				title : '<%=TfdBalanceLog.ALIAS_AMOUNT%>',
-				width : 50		
-				}, {
-				field : 'amountLog',
-				title : '<%=TfdBalanceLog.ALIAS_AMOUNT_LOG%>',
-				width : 50		
+				width : 30
 				}, {
 				field : 'note',
 				title : '<%=TfdBalanceLog.ALIAS_NOTE%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdBalanceLog.ALIAS_STATUS%>',
-				width : 50		
-			}, {
-				field : 'action',
-				title : '操作',
-				width : 100,
-				formatter : function(value, row, index) {
-					var str = '';
-					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
-					}
-					str += '&nbsp;';
-					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
-					}
-					str += '&nbsp;';
-					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
-					}
-					return str;
-				}
+				width : 100
+
 			} ] ],
 			toolbar : '#toolbar',
 			onLoadSuccess : function() {
@@ -224,59 +192,22 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 65px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
-						<tr>	
-							<th><%=TfdBalanceLog.ALIAS_ADMIN_ID%></th>	
-							<td>
-											<input type="text" name="adminId" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_USER_ID%></th>	
-							<td>
-											<input type="text" name="userId" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_BALANCE_NO%></th>	
-							<td>
-											<input type="text" name="balanceNo" maxlength="64" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_REF_ID%></th>	
-							<td>
-											<input type="text" name="refId" maxlength="64" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdBalanceLog.ALIAS_REF_TYPE%></th>	
-							<td>
-											<input type="text" name="refType" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_CREATE_TIME%></th>	
-							<td>
-											<input type="text" name="createTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_AMOUNT%></th>	
-							<td>
-											<input type="text" name="amount" maxlength="10" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdBalanceLog.ALIAS_AMOUNT_LOG%></th>	
-							<td>
-											<input type="text" name="amountLog" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_NOTE%></th>	
-							<td>
-											<input type="text" name="note" maxlength="65535" class="span2"/>
-							</td>
-							<th><%=TfdBalanceLog.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="0" class="span2"/>
-							</td>
-						</tr>	
+					<tr>
+						<th style="width: 50px;">时间查询</th>
+						<td>
+							<input type="text" class="span2" id="createTimeBegin" name="createTimeBeginStr"
+
+								   onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'createTimeEnd\',{d:-1});}'})"
+									/>
+							<input type="text" class="span2" id="createTimeEnd" name="createTimeEndStr"
+
+								   onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'createTimeBegin\',{d:1});}'})"
+									/>
+						</td>
+					</tr>
 				</table>
 			</form>
 		</div>
@@ -286,11 +217,11 @@
 	</div>
 	<div id="toolbar" style="display: none;">
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdBalanceLogController/addPage')}">
-			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
+			<%--<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>--%>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdBalanceLogController/download')}">
-			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
+			<%--<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		--%>
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">
 			</form>
 			<iframe id="downloadIframe" name="downloadIframe" style="display: none;"></iframe>

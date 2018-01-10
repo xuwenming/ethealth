@@ -26,7 +26,7 @@ public class TfdBalanceLog implements java.io.Serializable,IEntity{
 	public static final String ALIAS_ADMIN_ID = "adminId";
 	public static final String ALIAS_USER_ID = "用户id";
 	public static final String ALIAS_BALANCE_NO = "钱包流水号";
-	public static final String ALIAS_REF_ID = "业务id";
+	public static final String ALIAS_REF_ID = "业务ID";
 	public static final String ALIAS_REF_TYPE = "业务类型";
 	public static final String ALIAS_CREATE_TIME = "创建时间";
 	public static final String ALIAS_UPDATE_TIME = "更新时间";

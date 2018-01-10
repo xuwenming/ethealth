@@ -23,6 +23,11 @@
 		$.canView = true;
 	</script>
 </c:if>
+	<c:if test="${fn:contains(sessionInfo.resourceList, '/fdBalanceLogController/manager')}">
+		<script type="text/javascript">
+			$.canViewBalance = true;
+		</script>
+	</c:if>
 <script type="text/javascript">
 	var dataGrid;
 	$(function() {
@@ -84,8 +89,13 @@
 				title : '余额',
 				width : 50,
 				formatter:function(value,row){
-					if(!row.customer.balance) return '0.00';
-					return row.customer.balance;
+					var balance;
+					if(!row.customer.balance) balance = '0.00';
+					else balance = row.customer.balance;
+					if($.canViewBalance) {
+						return '<a onclick="viewBalance(\'' + row.id + '\')">'+balance+'</a>';
+					}
+					return balance;
 				}
 			} ] ],
 			toolbar : '#toolbar',
@@ -146,6 +156,15 @@
 		var href = '${pageContext.request.contextPath}/fdMemberController/view?id=' + id;
 		parent.$("#index_tabs").tabs('add', {
 			title : '用户详情-' + id,
+			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
+			closable : true
+		});
+	}
+
+	function viewBalance(id) {
+		var href = '${pageContext.request.contextPath}/fdBalanceLogController/manager?userId=' + id;
+		parent.$("#index_tabs").tabs('add', {
+			title : '余额-' + id,
 			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
 			closable : true
 		});

@@ -115,7 +115,7 @@ public class FdMemberDoctorController extends BaseController {
 	 */
 	@RequestMapping("/view")
 	public String view(HttpServletRequest request, Integer id) {
-		FdMemberDoctor fdMemberDoctor = fdMemberDoctorService.get(id);
+		FdMemberDoctor fdMemberDoctor = fdMemberDoctorService.getDetail(id);
 		request.setAttribute("fdMemberDoctor", fdMemberDoctor);
 		return "/fdmemberdoctor/fdMemberDoctorView";
 	}

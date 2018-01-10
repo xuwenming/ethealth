@@ -362,6 +362,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 		doctor.setPicUrl(picUrl);
 		doctor.setMobile(member.getMobile());
 		doctor.setEmail(member.getEmail());
+		doctor.setUsername(member.getUsername());
 
 		doctor.setCustomer(fdCustomerService.get(doctor.getId().longValue()));
 

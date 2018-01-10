@@ -23,6 +23,11 @@
 		$.canView = true;
 	</script>
 </c:if>
+<c:if test="${fn:contains(sessionInfo.resourceList, '/fdBalanceLogController/manager')}">
+	<script type="text/javascript">
+		$.canViewBalance = true;
+	</script>
+</c:if>
 <script type="text/javascript">
 	var dataGrid;
 	$(function() {
@@ -46,7 +51,13 @@
 			columns : [ [ {
 				field : 'id',
 				title : '专家ID',
-				width : 30
+				width : 30,
+				formatter : function (value, row, index) {
+					if ($.canView) {
+						return '<a onclick="viewFun(\'' + row.id + '\')">'+value+'</a>';
+					}
+					return value
+				}
 				}, {
 				field : 'username',
 				title : '用户名',
@@ -100,8 +111,13 @@
 				width : 40,
 				align:'right',
 				formatter:function(value,row){
-					if(!row.customer.balance) return '0.00';
-					return row.customer.balance;
+					var balance;
+					if(!row.customer.balance) balance = '0.00';
+					else balance = row.customer.balance;
+					if($.canViewBalance) {
+						return '<a onclick="viewBalance(\'' + row.id + '\')">'+balance+'</a>';
+					}
+					return balance;
 				}
 				}, {
 				field : 'status',
@@ -190,15 +206,20 @@
 	}
 
 	function viewFun(id) {
-		if (id == undefined) {
-			var rows = dataGrid.datagrid('getSelections');
-			id = rows[0].id;
-		}
-		parent.$.modalDialog({
-			title : '查看数据',
-			width : 780,
-			height : 500,
-			href : '${pageContext.request.contextPath}/fdMemberDoctorController/view?id=' + id
+		var href = '${pageContext.request.contextPath}/fdMemberDoctorController/view?id=' + id;
+		parent.$("#index_tabs").tabs('add', {
+			title : '专家详情-' + id,
+			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
+			closable : true
+		});
+	}
+
+	function viewBalance(id) {
+		var href = '${pageContext.request.contextPath}/fdBalanceLogController/manager?userId=' + id;
+		parent.$("#index_tabs").tabs('add', {
+			title : '余额-' + id,
+			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
+			closable : true
 		});
 	}
 

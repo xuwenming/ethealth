@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.mobian.absx.F;
 import com.mobian.pageModel.Colum;
 import com.mobian.pageModel.FdBalanceLog;
 import com.mobian.pageModel.DataGrid;
@@ -15,6 +16,8 @@ import com.mobian.pageModel.Json;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdBalanceLogServiceI;
 
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +45,8 @@ public class FdBalanceLogController extends BaseController {
 	 * @return
 	 */
 	@RequestMapping("/manager")
-	public String manager(HttpServletRequest request) {
+	public String manager(Integer userId, HttpServletRequest request) {
+		request.setAttribute("userId", userId);
 		return "/fdbalancelog/fdBalanceLog";
 	}
 
@@ -54,7 +58,10 @@ public class FdBalanceLogController extends BaseController {
 	 */
 	@RequestMapping("/dataGrid")
 	@ResponseBody
-	public DataGrid dataGrid(FdBalanceLog fdBalanceLog, PageHelper ph) {
+	public DataGrid dataGrid(FdBalanceLog fdBalanceLog, String createTimeBeginStr, String createTimeEndStr, PageHelper ph) {
+		if(!F.empty(createTimeBeginStr)) fdBalanceLog.setCreateTimeStart(DateUtil.parse(createTimeBeginStr, Constants.DATE_FORMAT).getTime());
+		if(!F.empty(createTimeEndStr)) fdBalanceLog.setCreateTimeEnd(DateUtil.parse(createTimeEndStr, Constants.DATE_FORMAT).getTime());
+
 		return fdBalanceLogService.dataGrid(fdBalanceLog, ph);
 	}
 	/**
@@ -71,7 +78,7 @@ public class FdBalanceLogController extends BaseController {
 	 */
 	@RequestMapping("/download")
 	public void download(FdBalanceLog fdBalanceLog, PageHelper ph,String downloadFields,HttpServletResponse response) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException{
-		DataGrid dg = dataGrid(fdBalanceLog,ph);		
+		DataGrid dg = dataGrid(fdBalanceLog,null,null,ph);
 		downloadFields = downloadFields.replace("&quot;", "\"");
 		downloadFields = downloadFields.substring(1,downloadFields.length()-1);
 		List<Colum> colums = JSON.parseArray(downloadFields, Colum.class);

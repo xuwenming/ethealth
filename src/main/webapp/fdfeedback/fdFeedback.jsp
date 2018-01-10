@@ -35,7 +35,7 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
+			sortName : 'createTime',
 			sortOrder : 'desc',
 			checkOnSelect : false,
 			selectOnCheck : false,
@@ -49,52 +49,28 @@
 				width : 150,
 				hidden : true
 				}, {
+				field : 'createTime',
+				title : '反馈时间',
+				width : 30,
+				formatter : function(value, row, index) {
+					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
+				}
+				}, {
+				field : 'createBy',
+				title : '反馈人ID',
+				width : 20,
+				formatter : function (value, row, index) {
+					return '<a onclick="viewUser(\'' + value + '\')">'+value+'</a>';
+				}
+				}, {
 				field : 'contactWay',
 				title : '<%=TfdFeedback.ALIAS_CONTACT_WAY%>',
-				width : 50		
+				width : 30
 				}, {
 				field : 'content',
 				title : '<%=TfdFeedback.ALIAS_CONTENT%>',
-				width : 50		
-				}, {
-				field : 'createBy',
-				title : '<%=TfdFeedback.ALIAS_CREATE_BY%>',
-				width : 50		
-				}, {
-				field : 'createTime',
-				title : '<%=TfdFeedback.ALIAS_CREATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'updateBy',
-				title : '<%=TfdFeedback.ALIAS_UPDATE_BY%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdFeedback.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdFeedback.ALIAS_STATUS%>',
-				width : 50		
-			}, {
-				field : 'action',
-				title : '操作',
-				width : 100,
-				formatter : function(value, row, index) {
-					var str = '';
-					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
-					}
-					str += '&nbsp;';
-					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
-					}
-					str += '&nbsp;';
-					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
-					}
-					return str;
-				}
+				width : 120
+
 			} ] ],
 			toolbar : '#toolbar',
 			onLoadSuccess : function() {
@@ -164,6 +140,15 @@
 		});
 	}
 
+	function viewUser(id) {
+		var href = '${pageContext.request.contextPath}/fdMemberController/view?id=' + id;
+		parent.$("#index_tabs").tabs('add', {
+			title : '用户详情-' + id,
+			content : '<iframe src="' + href + '" frameborder="0" scrolling="auto" style="width:100%;height:98%;"></iframe>',
+			closable : true
+		});
+	}
+
 	function addFun() {
 		parent.$.modalDialog({
 			title : '添加数据',
@@ -208,41 +193,17 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 65px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
 						<tr>	
-							<th><%=TfdFeedback.ALIAS_CONTACT_WAY%></th>	
+							<th width="60px"><%=TfdFeedback.ALIAS_CONTACT_WAY%></th>
 							<td>
-											<input type="text" name="contactWay" maxlength="50" class="span2"/>
+								<input type="text" name="contactWay" maxlength="50" class="span2"/>
 							</td>
-							<th><%=TfdFeedback.ALIAS_CONTENT%></th>	
-							<td>
-											<input type="text" name="content" maxlength="1000" class="span2"/>
-							</td>
-							<th><%=TfdFeedback.ALIAS_CREATE_BY%></th>	
-							<td>
-											<input type="text" name="createBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdFeedback.ALIAS_CREATE_TIME%></th>	
-							<td>
-											<input type="text" name="createTime" maxlength="19" class="span2"/>
-							</td>
+
 						</tr>	
-						<tr>	
-							<th><%=TfdFeedback.ALIAS_UPDATE_BY%></th>	
-							<td>
-											<input type="text" name="updateBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdFeedback.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdFeedback.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="2" class="span2"/>
-							</td>
-						</tr>	
+
 				</table>
 			</form>
 		</div>
@@ -252,11 +213,11 @@
 	</div>
 	<div id="toolbar" style="display: none;">
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdFeedbackController/addPage')}">
-			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
+			<%--<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>--%>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdFeedbackController/download')}">
-			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
+			<%--<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		--%>
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">
 			</form>
 			<iframe id="downloadIframe" name="downloadIframe" style="display: none;"></iframe>

@@ -94,7 +94,15 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 			if (!F.empty(fdBalanceLog.getStatus())) {
 				whereHql += " and t.status = :status";
 				params.put("status", fdBalanceLog.getStatus());
-			}		
+			}
+			if(!F.empty(fdBalanceLog.getCreateTimeStart())) {
+				whereHql += " and t.createTime >= :createTimeStart";
+				params.put("createTimeStart", fdBalanceLog.getCreateTimeStart());
+			}
+			if(!F.empty(fdBalanceLog.getCreateTimeEnd())) {
+				whereHql += " and t.createTime <= :createTimeEnd";
+				params.put("createTimeEnd", fdBalanceLog.getCreateTimeEnd());
+			}
 		}	
 		return whereHql;
 	}
