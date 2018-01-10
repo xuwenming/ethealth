@@ -128,6 +128,10 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				whereHql += " and t.groupId = :groupId";
 				params.put("groupId", fdMemberDoctorSh.getGroupId());
 			}
+			if (!F.empty(fdMemberDoctorSh.getAuditType())) {
+				whereHql += " and t.auditType = :auditType";
+				params.put("auditType", fdMemberDoctorSh.getAuditType());
+			}
 
 			if(!F.empty(fdMemberDoctorSh.getMobile())) {
 				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.username like :mobile)";
