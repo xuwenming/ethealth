@@ -58,7 +58,7 @@ public class FdMemberConsultationLogServiceImpl extends BaseServiceImpl<FdMember
 				params.put("fromUserId", fdMemberConsultationLog.getFromUserId());
 			}		
 			if (!F.empty(fdMemberConsultationLog.getToUserId())) {
-				whereHql += " and (t.toUserId = :toUserId or t.fromUserId = :fromUserId)";
+				whereHql += " and (t.toUserId = :toUserId or t.fromUserId = :toUserId)";
 				params.put("toUserId", fdMemberConsultationLog.getToUserId());
 			}		
 			if (!F.empty(fdMemberConsultationLog.getCreateTime())) {
