@@ -180,7 +180,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
 					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag(JPushUtil.PATIENT_TAG, pushMessage.getContent(), pushMessage.getExtras(), 0);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 0);
 				}
 
 			} else if(consumerType == 2) { // 只推送医生
@@ -189,7 +189,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
 					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag(JPushUtil.DOCTOR_TAG, pushMessage.getContent(), pushMessage.getExtras(), 2);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 			}
 
@@ -233,7 +233,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
 					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag(JPushUtil.PATIENT_TAG, pushMessage.getContent(), pushMessage.getExtras(), 0);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 0);
 				}
 
 			} else if(consumerType == 2) { // 只推送医生
@@ -242,7 +242,7 @@ public class FdMessageServiceImpl extends BaseServiceImpl<FdMessage> implements 
 					int isAdmin = Integer.valueOf(alias.substring(0, 1));
 					pushResult = JPushUtil.pushMessageToAlias(alias, pushMessage.getContent(), pushMessage.getExtras(), isAdmin);
 				} else {
-					pushResult = JPushUtil.pushMessageToTag(JPushUtil.DOCTOR_TAG, pushMessage.getContent(), pushMessage.getExtras(), 2);
+					pushResult = JPushUtil.pushMessageToAll(pushMessage.getContent(), pushMessage.getExtras(), 2);
 				}
 			}
 
