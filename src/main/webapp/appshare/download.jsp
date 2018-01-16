@@ -2,7 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="com.mobian.listener.Application" %>
 <%
-	String downloadUrl = Application.getString("SV500");
+	String iosDownloadUrl = Application.getDescString("APP01");
+	String androidDownloadUrl = Application.getDescString("APP02");
 %>
 <!DOCTYPE html>
 <html>
@@ -11,26 +12,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=0.66, minimum-scale=0.66, maximum-scale=0.66, user-scalable=yes">
 <script type="text/javascript">
 	function download() {
-		window.location.href="<%=downloadUrl %>";
-		/*
-		if(isWeiXin()) {
-// 	        alert('微信扫描无法下载，请点击右上角切换其他浏览器打开.')
-	    } else {
-	        switch(getDevice()) {
-	            case 'Android':
-	            	window.location.href="${pageContext.request.contextPath}/";
-	                break;
-	            case 'iOS':
-	               window.location.href="";
-// 	               alert("暂不提供IOS下载！");
-	                break;
-	            default:
-// 	            	alert("暂无官网地址！");
-	            	window.location.href="${pageContext.request.contextPath}/";
-	                break;
-	        }
-	    }
-		 */
+		switch(getDevice()) {
+			case 'Android':
+				window.location.href="<%=androidDownloadUrl %>";
+				break;
+			case 'iOS':
+				window.location.href="<%=iosDownloadUrl %>";
+				break;
+			default:
+				window.location.href="<%=androidDownloadUrl %>";
+				break;
+		}
 	}
 	
 	function isWeiXin() {   
