@@ -1,28 +1,31 @@
 ALTER TABLE `fd_hospital_dept`
-  ADD COLUMN `icon`  varchar(255) NULL COMMENT '小图标' AFTER `name`;
+  ADD COLUMN `icon`  varchar(255) NULL COMMENT '小图标';
 ALTER TABLE `fd_hospital_dept`
-  ADD COLUMN `pid`  int(10) NULL COMMENT '父id' AFTER `icon`;
+  ADD COLUMN `pid`  int(10) NULL COMMENT '父id';
 
 ALTER TABLE `fd_doctor_opinion`
-  ADD COLUMN `file_create_time`  bigint(13) NULL COMMENT '附件创建时间' AFTER `file`;
+  ADD COLUMN `file_create_time`  bigint(13) NULL COMMENT '附件创建时间';
 ALTER TABLE `fd_doctor_opinion`
-  ADD COLUMN `file_to_imgs`  text NULL COMMENT '附件转图片地址集合' AFTER `file_create_time`;
+  ADD COLUMN `file_to_imgs`  text NULL COMMENT '附件转图片地址集合';
 
 ALTER TABLE `fd_member`
-  ADD COLUMN `hx_password`  varchar(36) NULL COMMENT '环信登录密码' AFTER `vip_end_time`;
+  ADD COLUMN `hx_password`  varchar(36) NULL COMMENT '环信登录密码';
 ALTER TABLE `fd_member`
-  ADD COLUMN `hx_status`  tinyint(1) NULL DEFAULT 0 COMMENT '环信是否注册，1：已注册；0：未注册' AFTER `hx_password`;
+  ADD COLUMN `hx_status`  tinyint(1) NULL DEFAULT 0 COMMENT '环信是否注册，1：已注册；0：未注册';
 ALTER TABLE `fd_member`
   ADD COLUMN `head_image`  varchar(256) NULL COMMENT '用户头像（为空时再取pic）' AFTER `pic`;
+ALTER TABLE `fd_member`
+  DROP INDEX `username` ,
+  ADD UNIQUE INDEX `username` (`username`, `is_admin`) USING BTREE ;
 
 ALTER TABLE `fd_member_appointment`
-  ADD COLUMN `sourse`  varchar(6) NULL DEFAULT 'AS01' COMMENT '来源{AS}' AFTER `file`;
+  ADD COLUMN `sourse`  varchar(6) NULL DEFAULT 'AS01' COMMENT '来源{AS}';
 ALTER TABLE `fd_member_appointment`
-  ADD COLUMN `appointment_no`  varchar(64) NULL COMMENT '预约订单号' AFTER `sourse`;
+  ADD COLUMN `appointment_no`  varchar(64) NULL COMMENT '预约订单号';
 ALTER TABLE `fd_member_appointment`
-  ADD COLUMN `amount`  bigint NULL COMMENT '订单金额' AFTER `appointment_no`;
+  ADD COLUMN `amount`  bigint NULL COMMENT '订单金额';
 ALTER TABLE `fd_member_appointment`
-  ADD COLUMN `appoint_address`  varchar(200) NULL COMMENT '预约门诊地址' AFTER `amount`;
+  ADD COLUMN `appoint_address`  varchar(200) NULL COMMENT '预约门诊地址';
 
 ALTER TABLE `fd_member_doctor_sh`
   ADD COLUMN `hospital_name`  varchar(100) NULL COMMENT '医院名称',
@@ -33,10 +36,6 @@ ALTER TABLE `fd_member_doctor_sh`
 ALTER TABLE `fd_member_doctor_sh`
   DROP PRIMARY KEY,
   ADD PRIMARY KEY (`id`, `audit_type`);
-
-ALTER TABLE `fd_member`
-  DROP INDEX `username` ,
-  ADD UNIQUE INDEX `username` (`username`, `is_admin`) USING BTREE ;
 
 ALTER TABLE `fd_member_doctor`
   ADD COLUMN `accept_appointment`  tinyint NULL DEFAULT 1 COMMENT '是否接受预约1是 0否',
@@ -50,11 +49,19 @@ ALTER TABLE `fd_doctor_group`
   ADD COLUMN `is_best`  tinyint NULL DEFAULT 0 COMMENT '是否优秀团队1是 0否',
   ADD COLUMN `seq`  int NULL DEFAULT 0 COMMENT '排序（越小越靠前）';
 
+ALTER TABLE fd_customer MODIFY `real_name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+ALTER TABLE fd_member_doctor_sh MODIFY `speciality` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '擅长';
+ALTER TABLE fd_member_doctor_sh MODIFY `introduce` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '自我介绍';
+ALTER TABLE fd_member_doctor MODIFY `speciality` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '擅长';
+ALTER TABLE fd_member_doctor MODIFY `introduce` VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '自我介绍';
+ALTER TABLE fd_member_appointment MODIFY `appoint_message` char(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '预约留言';
+ALTER TABLE fd_member_appointment MODIFY `refuse_reason` char(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '拒绝理由';
+
 
 CREATE TABLE `fd_feedback` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键id',
   `contact_way` varchar(50) DEFAULT NULL COMMENT '联系方式',
-  `content` varchar(1000) DEFAULT NULL COMMENT '正文',
+  `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '正文',
   `create_by` int(10) DEFAULT NULL COMMENT '创建人',
   `create_time` bigint(13) DEFAULT NULL COMMENT '创建时间',
   `update_by` int(10) DEFAULT NULL COMMENT '修改人',
@@ -90,6 +97,7 @@ CREATE TABLE `fd_member_consultation_expire` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='咨询有效期表';
 
+DROP TABLE IF EXISTS `fd_balance_log`;
 CREATE TABLE `fd_balance_log` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `admin_id` bigint(11) DEFAULT '0',
@@ -116,12 +124,12 @@ CREATE TABLE `fd_member_appointment_comment` (
   `status` varchar(2) DEFAULT '0' COMMENT '是否删除 1 是 0 否',
   `effect` float DEFAULT NULL COMMENT '治疗效果',
   `attitude` float DEFAULT NULL COMMENT '服务态度',
-  `disease` varchar(100) DEFAULT NULL COMMENT '看什么病',
+  `disease` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '看什么病',
   `objective` varchar(6) DEFAULT NULL COMMENT '看病目的{OT}',
   `objective_other` varchar(100) DEFAULT NULL COMMENT '看病目的_其他',
   `therapy` varchar(6) DEFAULT NULL COMMENT '治疗方式{TW}',
   `therapy_other` varchar(100) DEFAULT NULL COMMENT '治疗方式_其他',
-  `comment` varchar(300) DEFAULT NULL COMMENT '评价内容',
+  `comment` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '评价内容',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='预约评价表';
 
@@ -132,7 +140,7 @@ CREATE TABLE `fd_member_consultation_friend` (
   `create_time` bigint(20) DEFAULT NULL COMMENT '创建时间',
   `update_time` bigint(20) DEFAULT NULL COMMENT '更新时间',
   `status` varchar(2) DEFAULT '0' COMMENT '是否删除 0 否 1 病人删除 2医生删除 3 互删',
-  `last_content` text COMMENT '最后聊天记录',
+  `last_content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin COMMENT '最后聊天记录',
   `last_time` datetime DEFAULT NULL COMMENT '最后消息时间',
   `sender_type` int(1) DEFAULT NULL COMMENT '发送方类型1患者 2医生',
   PRIMARY KEY (`id`)
@@ -242,7 +250,21 @@ CREATE TABLE `fd_patient` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='患者信息表';
 
-ALTER TABLE fd_customer MODIFY `real_name` VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
-ALTER TABLE fd_feedback MODIFY `content` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '正文';
+DROP TABLE IF EXISTS `fd_payment_log`;
+CREATE TABLE `fd_payment_log` (
+  `id` varchar(50) NOT NULL DEFAULT '' COMMENT 'id',
+  `payment_id` varchar(50) DEFAULT NULL COMMENT '支付id',
+  `type` varchar(16) DEFAULT NULL COMMENT '支付类型（微信/支付宝）',
+  `status` varchar(16) DEFAULT NULL COMMENT '支付状态（0 待支付 1 支付中 2 完成支付 3 退款 9 取消）',
+  `total_fee` bigint(11) DEFAULT NULL COMMENT '总金额',
+  `ref_id` varchar(64) DEFAULT NULL COMMENT '第三方支付订单号',
+  `refund_no` varchar(64) DEFAULT NULL COMMENT '退款单号',
+  `ref_refund_no` varchar(64) DEFAULT NULL COMMENT '第三方退款单号',
+  `refund_fee` bigint(20) DEFAULT NULL COMMENT '退款金额',
+  `refund_date` datetime DEFAULT NULL COMMENT '退款日期',
+  `create_date` datetime DEFAULT NULL COMMENT '创建日期',
+  `remark` varchar(512) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='交易日志表';
 
 
