@@ -6,7 +6,7 @@
 <head>
 <title>医家盟管理平台-登录</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link href="${pageContext.request.contextPath}/winvoice/resource/img/favicon.ico" rel="shortcut icon"/>
+<link href="${pageContext.request.contextPath}/style/images/logo.png" rel="shortcut icon"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/style/styleFront.css">
 
 <script src="${pageContext.request.contextPath}/jslib/jquery-1.8.3.js"
@@ -49,7 +49,7 @@ function loginFun() {
 <body>
 <div id="login">
 	<div class="login_top">
-		<img alt="" src="${pageContext.request.contextPath}/style/images/qian_pc_02.png" width="120" height="55">
+		<img alt="" src="${pageContext.request.contextPath}/style/images/logo.png" width="120" height="55">
 	</div>
     <div class="login_content1">
 		<div class="login_con">

@@ -46,6 +46,9 @@ public class ApiHomeController extends BaseController {
 	@Autowired
 	private FdMemberServiceI fdMemberService;
 
+	@Autowired
+	private FdDoctorDynamicServiceI fdDoctorDynamicService;
+
 	/**
 	 * 获取首页数据接口
 	 */
@@ -114,6 +117,34 @@ public class ApiHomeController extends BaseController {
 				completionService.sync();
 			}
 			obj.put("consultationDynamic", friends);
+
+			// 专家动态
+//			ph = new PageHelper();
+//			ph.setPage(1);
+//			ph.setRows(5);
+//			ph.setHiddenTotal(true);
+//			ph.setSort("updateTime");
+//			ph.setOrder("desc");
+//			FdDoctorDynamic dynamic = new FdDoctorDynamic();
+//			List<FdDoctorDynamic> doctorDynamics = fdDoctorDynamicService.dataGrid(dynamic, ph).getRows();
+//			if(CollectionUtils.isNotEmpty(doctorDynamics)) {
+//				CompletionService completionService = CompletionFactory.initCompletion();
+//				for(FdDoctorDynamic doctorDynamic : doctorDynamics) {
+//					completionService.submit(new Task<FdDoctorDynamic, FdMember>(new CacheKey("fdMember", doctorDynamic.getUserId() + ""), doctorDynamic) {
+//						@Override
+//						public FdMember call() throws Exception {
+//							return fdMemberService.getSimple(getD().getUserId());
+//						}
+//
+//						protected void set(FdDoctorDynamic d, FdMember v) {
+//							if(v != null)
+//								d.setMember(v);
+//						}
+//					});
+//				}
+//				completionService.sync();
+//			}
+//			obj.put("doctorDynamic", doctorDynamics);
 
 
 			j.setSuccess(true);

@@ -14,7 +14,7 @@ public class FdDoctorDynamic implements java.io.Serializable {
 	private Integer status;	
 	private java.lang.String content;	
 
-	
+	private FdMember member;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -61,4 +61,11 @@ public class FdDoctorDynamic implements java.io.Serializable {
 		return this.content;
 	}
 
+	public FdMember getMember() {
+		return member;
+	}
+
+	public void setMember(FdMember member) {
+		this.member = member;
+	}
 }

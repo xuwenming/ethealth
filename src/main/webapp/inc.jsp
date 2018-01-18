@@ -2,7 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
-<link rel="shortcut icon" type="image/png" href="${pageContext.request.contextPath}/web/images/qianchenglogo.png">
+<link rel="shortcut icon" type="image/png" href="${pageContext.request.contextPath}/style/images/logo.png">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <script type="text/javascript"
