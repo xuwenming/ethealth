@@ -174,6 +174,7 @@ public class ApiHomeController extends BaseController {
 				}
 			});
 
+			System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~:" + messageDynamics.size());
 			obj.put("messageDynamic", messageDynamics);
 
 
