@@ -240,14 +240,14 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Override
 	public FdMember getSimple(Integer id) {
 		FdMember member = get(id);
-		String picUrl = member.getHeadImage();
-		if(F.empty(picUrl)) {
-			if(!F.empty(member.getPic())) {
-				FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
-				if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
-			}
-		}
-		member.setPicUrl(picUrl);
+//		String picUrl = member.getHeadImage();
+//		if(F.empty(picUrl)) {
+//			if(!F.empty(member.getPic())) {
+//				FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
+//				if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
+//			}
+//		}
+//		member.setPicUrl(picUrl);
 		member.setCustomer(fdCustomerService.get(member.getId().longValue()));
 		return member;
 	}

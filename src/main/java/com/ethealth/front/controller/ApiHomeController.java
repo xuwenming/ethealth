@@ -5,10 +5,13 @@ import com.mobian.concurrent.CacheKey;
 import com.mobian.concurrent.CompletionService;
 import com.mobian.concurrent.Task;
 import com.mobian.controller.BaseController;
+import com.mobian.enums.EnumConstants;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
 import com.mobian.service.impl.CompletionFactory;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.PathUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 首页接口
@@ -47,7 +47,10 @@ public class ApiHomeController extends BaseController {
 	private FdMemberServiceI fdMemberService;
 
 	@Autowired
-	private FdDoctorDynamicServiceI fdDoctorDynamicService;
+	private FdMessageServiceI fdMessageService;
+
+	@Autowired
+	private FdDoctorCloseTimeServiceI fdDoctorCloseTimeService;
 
 	/**
 	 * 获取首页数据接口
@@ -118,33 +121,60 @@ public class ApiHomeController extends BaseController {
 			}
 			obj.put("consultationDynamic", friends);
 
-			// 专家动态
-//			ph = new PageHelper();
-//			ph.setPage(1);
-//			ph.setRows(5);
-//			ph.setHiddenTotal(true);
-//			ph.setSort("updateTime");
-//			ph.setOrder("desc");
-//			FdDoctorDynamic dynamic = new FdDoctorDynamic();
-//			List<FdDoctorDynamic> doctorDynamics = fdDoctorDynamicService.dataGrid(dynamic, ph).getRows();
-//			if(CollectionUtils.isNotEmpty(doctorDynamics)) {
-//				CompletionService completionService = CompletionFactory.initCompletion();
-//				for(FdDoctorDynamic doctorDynamic : doctorDynamics) {
-//					completionService.submit(new Task<FdDoctorDynamic, FdMember>(new CacheKey("fdMember", doctorDynamic.getUserId() + ""), doctorDynamic) {
-//						@Override
-//						public FdMember call() throws Exception {
-//							return fdMemberService.getSimple(getD().getUserId());
-//						}
-//
-//						protected void set(FdDoctorDynamic d, FdMember v) {
-//							if(v != null)
-//								d.setMember(v);
-//						}
-//					});
-//				}
-//				completionService.sync();
-//			}
-//			obj.put("doctorDynamic", doctorDynamics);
+			// 滚动消息
+			List<FdDynamicMessage> messageDynamics = new ArrayList<FdDynamicMessage>();
+
+			// 系统消息
+			FdMessage fdMessage = new FdMessage();
+			fdMessage.setConsumerType(1);
+			fdMessage.setStatus("ST01");
+			fdMessage.setIsPushed(true);
+			fdMessage.setMtype("MT01,MT03");
+			ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(5);
+			ph.setHiddenTotal(true);
+			ph.setSort("createTime");
+			ph.setOrder("desc");
+			List<FdMessage> messages = fdMessageService.dataGrid(fdMessage, ph).getRows();
+			if(CollectionUtils.isNotEmpty(messages)) {
+				for(FdMessage message : messages) {
+					FdDynamicMessage d = new FdDynamicMessage();
+					d.setCreateTime(message.getCreateTime());
+					d.setContent(message.getPushContent());
+					messageDynamics.add(d);
+				}
+			}
+			// 停诊通知
+			ph = new PageHelper();
+			ph.setPage(1);
+			ph.setRows(5);
+			ph.setHiddenTotal(true);
+			ph.setSort("createTime");
+			ph.setOrder("desc");
+			List<FdDoctorCloseTime> closeTimes = fdDoctorCloseTimeService.dataGrid(new FdDoctorCloseTime(), ph).getRows();
+			if(CollectionUtils.isNotEmpty(closeTimes)) {
+				for(FdDoctorCloseTime closeTime : closeTimes) {
+					String time = DateUtil.format(closeTime.getCloseDate(), Constants.DATE_FORMAT_YMD) + closeTime.getWeek();
+					if(closeTime.getTime() == 0) time += "全天";
+					else if(closeTime.getTime() == 1) time += "上午";
+					else if(closeTime.getTime() == 2) time += "下午";
+					else if(closeTime.getTime() == 3) time += "夜班";
+					FdDynamicMessage d = new FdDynamicMessage();
+					d.setCreateTime(closeTime.getCreateTime());
+					FdMember member = fdMemberService.getSimple(closeTime.getDoctorId());
+					d.setContent("停诊通知：" + member.getCustomer().getRealName() + "医生与" + time + "发布了停诊");
+					messageDynamics.add(d);
+				}
+			}
+
+			Collections.sort(messageDynamics, new Comparator<FdDynamicMessage>() {
+				public int compare(FdDynamicMessage arg0, FdDynamicMessage arg1) {
+					return arg1.getCreateTime().compareTo(arg0.getCreateTime());
+				}
+			});
+
+			obj.put("messageDynamic", messageDynamics);
 
 
 			j.setSuccess(true);
