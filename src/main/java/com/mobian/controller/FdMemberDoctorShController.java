@@ -117,7 +117,7 @@ public class FdMemberDoctorShController extends BaseController {
 					completionService.submit(new Task<FdMemberDoctorSh, String>(new CacheKey("fdHospitalDept", sh.getDepartment() + ""), sh) {
 						@Override
 						public String call() throws Exception {
-							FdHospitalDept dept = fdHospitalDeptService.get(getD().getHospital());
+							FdHospitalDept dept = fdHospitalDeptService.get(getD().getDepartment());
 							return dept.getName();
 						}
 
