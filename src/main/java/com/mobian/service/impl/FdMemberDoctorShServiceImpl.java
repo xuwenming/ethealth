@@ -134,7 +134,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			}
 
 			if(!F.empty(fdMemberDoctorSh.getMobile())) {
-				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.username like :mobile)";
+				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.mobile like :mobile)";
 				params.put("mobile", "%" + fdMemberDoctorSh.getMobile() + "%");
 			} else {
 				whereHql += " and exists (select 1 from TfdMember m where m.id = t.id and m.status <> -1)";

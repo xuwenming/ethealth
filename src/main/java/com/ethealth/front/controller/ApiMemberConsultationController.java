@@ -403,6 +403,13 @@ public class ApiMemberConsultationController extends BaseController {
 			Map<String, Object> obj = new HashMap<String, Object>();
 
 			if(doctorId == null) {
+				if("admin".equals(hxAccount)) {
+					obj.put("acceptConsultation", false);
+					obj.put("isConsultation", false);
+					j.setObj(obj);
+					j.setSuccess(true);
+					return j;
+				}
 				String[] account = hxAccount.split("-");
 				if(Integer.valueOf(account[0]) != 2) {
 					j.setMsg("账号信息有误");

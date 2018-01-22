@@ -258,6 +258,8 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		Map<String, Object> params = new HashMap<String, Object>();
 		String patientMobiles = "", doctorMobiles = "";
 		for(String mobile : mobiles.split(",")) {
+			if("admin".equals(mobile)) continue;
+
 			String[] arr = mobile.split("-");
 			if(Integer.valueOf(arr[0]) == 0) {
 				patientMobiles += F.empty(patientMobiles) ? arr[1] : "," + arr[1];
