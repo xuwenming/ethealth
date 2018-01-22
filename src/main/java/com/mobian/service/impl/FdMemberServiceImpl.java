@@ -351,7 +351,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			for (TfdMember t : l) {
 				FdMember o = new FdMember();
 				BeanUtils.copyProperties(t, o);
-				fillSimpleDoctorInfo(o);
+				fillSimpleDoctorInfo(o, false);
 				ol.add(o);
 			}
 		}
@@ -414,7 +414,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		return null;
 	}
 
-	private void fillSimpleDoctorInfo(FdMember member) {
+	private void fillSimpleDoctorInfo(FdMember member, boolean status) {
 		String picUrl = member.getHeadImage();
 		if(F.empty(picUrl)) {
 			if(!F.empty(member.getPic())) {
@@ -430,7 +430,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 
 		if(doctor != null) {
 			FdMemberDoctorSh sh = fdMemberDoctorShService.get(doctor.getId(), 2);
-			if(sh != null && "1".equals(sh.getStatus())) { // 待审核
+			if(sh != null && "1".equals(sh.getStatus()) && status) { // 待审核
 				member.setStatus(2);
 				if(!F.empty(sh.getHospital())) {
 					FdHospital hospital = fdHospitalService.get(sh.getHospital());
@@ -478,7 +478,10 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			member.setMemberDoctor(doctor);
 
 		}
+	}
 
+	private void fillSimpleDoctorInfo(FdMember member) {
+		fillSimpleDoctorInfo(member, true);
 	}
 
 }
