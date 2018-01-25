@@ -3,10 +3,10 @@ ALTER TABLE `fd_hospital_dept`
 ALTER TABLE `fd_hospital_dept`
   ADD COLUMN `pid`  int(10) NULL COMMENT '父id';
 
-ALTER TABLE `fd_doctor_opinion`
-  ADD COLUMN `file_create_time`  bigint(13) NULL COMMENT '附件创建时间';
-ALTER TABLE `fd_doctor_opinion`
-  ADD COLUMN `file_to_imgs`  text NULL COMMENT '附件转图片地址集合';
+-- ALTER TABLE `fd_doctor_opinion`
+--   ADD COLUMN `file_create_time`  bigint(13) NULL COMMENT '附件创建时间';
+-- ALTER TABLE `fd_doctor_opinion`
+--   ADD COLUMN `file_to_imgs`  text NULL COMMENT '附件转图片地址集合';
 
 ALTER TABLE `fd_member`
   ADD COLUMN `hx_password`  varchar(36) NULL COMMENT '环信登录密码';
