@@ -264,7 +264,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 			if(Integer.valueOf(arr[0]) == 0) {
 				patientMobiles += F.empty(patientMobiles) ? arr[1] : "," + arr[1];
 			} else {
-				doctorMobiles += F.empty(patientMobiles) ? arr[1] : "," + arr[1];
+				doctorMobiles += F.empty(doctorMobiles) ? arr[1] : "," + arr[1];
 			}
  		}
 		List<TfdMember> l = new ArrayList<TfdMember>();
