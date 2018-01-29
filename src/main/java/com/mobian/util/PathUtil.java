@@ -25,6 +25,7 @@ public abstract class PathUtil {
 
 	public static String getPicPath(String dbPath){
 		if(F.empty(dbPath))return null;
+		if(dbPath.startsWith("http")) return dbPath;
 		return getBathPath()+dbPath;
 	}
 
