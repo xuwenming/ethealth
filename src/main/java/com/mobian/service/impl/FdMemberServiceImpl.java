@@ -417,7 +417,7 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	private void fillSimpleDoctorInfo(FdMember member, boolean status) {
 		String picUrl = member.getHeadImage();
 		if(F.empty(picUrl)) {
-			if(!F.empty(member.getPic())) {
+			if(!F.empty(member.getPic()) && !F.empty(member.getPic())) {
 				FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
 				if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
 			}

@@ -221,7 +221,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 					public FdMember call() throws Exception {
 						FdMember member = fdMemberService.get(getD().getId());
 						String picUrl = member.getHeadImage();
-						if(F.empty(picUrl)) {
+						if(F.empty(picUrl) && !F.empty(member.getPic())) {
 							FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
 							if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
 						}
@@ -355,7 +355,7 @@ public class FdMemberDoctorServiceImpl extends BaseServiceImpl<FdMemberDoctor> i
 
 		FdMember member = fdMemberService.get(doctor.getId());
 		String picUrl = member.getHeadImage();
-		if(F.empty(picUrl)) {
+		if(F.empty(picUrl) && !F.empty(member.getPic())) {
 			FdPicture pic = fdPictureService.get(Integer.valueOf(member.getPic()));
 			if(pic != null) picUrl = PathUtil.getPicPath(pic.getPath());
 		}
