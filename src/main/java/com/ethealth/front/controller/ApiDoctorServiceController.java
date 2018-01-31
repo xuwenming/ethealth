@@ -119,6 +119,9 @@ public class ApiDoctorServiceController extends BaseController {
 	public Json doctorDataGrid(FdMemberDoctor doctor, PageHelper ph) {
 		Json j = new Json();
 		try{
+			if(ph.getRows() == 0 || ph.getRows() > 50) {
+				ph.setRows(10);
+			}
 			ph.setSort("isBest desc, t.seq");
 			ph.setOrder("asc");
 
