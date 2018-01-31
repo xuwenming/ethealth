@@ -211,6 +211,7 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 			add(sh);
 		} else {
 			edit(sh);
+			if(F.empty(sh.getPics())) sh.setPics(o.getPics());
 		}
 
 		if(sh.getAuditType() == 1) {

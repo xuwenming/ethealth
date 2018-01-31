@@ -94,8 +94,6 @@ public class ApiDoctorController extends BaseController {
 
 			if(headImageFile != null)
 				sh.setPics(uploadFile(HEAD_IMAGE, headImageFile));
-			else
-				sh.setPics(doctor.getPicUrl());
 
 			fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 
