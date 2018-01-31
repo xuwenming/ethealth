@@ -78,7 +78,9 @@ public class FdBalanceLogServiceImpl extends BaseServiceImpl<FdBalanceLog> imple
 			if (!F.empty(fdBalanceLog.getRefType())) {
 				whereHql += " and t.refType = :refType";
 				params.put("refType", fdBalanceLog.getRefType());
-			}		
+			} else {
+				whereHql += " and t.refType is not null ";
+			}
 			if (!F.empty(fdBalanceLog.getCreateTime())) {
 				whereHql += " and t.createTime = :createTime";
 				params.put("createTime", fdBalanceLog.getCreateTime());
