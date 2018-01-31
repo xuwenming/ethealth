@@ -6,6 +6,7 @@ import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
 import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
@@ -14,6 +15,7 @@ import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import cn.jpush.api.push.model.notification.PlatformNotification;
 import com.mobian.listener.Application;
+import com.mobian.util.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +74,9 @@ public class JPushUtil {
                                         .addExtras(extras)
                                         .build())
                                 .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
+                                .build()
                 )
                 .build();
         PushResult result = null;
@@ -96,6 +101,9 @@ public class JPushUtil {
                 .setMessage(Message.newBuilder()
                                 .setMsgContent(message)
                                 .addExtras(extras)
+                                .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
                                 .build()
                 )
                 .build();
@@ -142,6 +150,9 @@ public class JPushUtil {
                                         .addExtras(extras)
                                         .build())
                                 .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
+                                .build()
                 )
                 .build();
         PushResult result = null;
@@ -181,6 +192,9 @@ public class JPushUtil {
                 .setMessage(Message.newBuilder()
                                 .setMsgContent(message)
                                 .addExtras(extras)
+                                .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
                                 .build()
                 )
                 .build();
@@ -227,6 +241,9 @@ public class JPushUtil {
                                         .addExtras(extras)
                                         .build())
                                 .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
+                                .build()
                 )
                 .build();
         PushResult result = null;
@@ -266,6 +283,9 @@ public class JPushUtil {
                 .setMessage(Message.newBuilder()
                                 .setMsgContent(message)
                                 .addExtras(extras)
+                                .build()
+                ).setOptions(Options.newBuilder()
+                                .setApnsProduction("2".equals(Application.getString(Constants.SYSTEM_PUBLISH_SETTING)))
                                 .build()
                 )
                 .build();
