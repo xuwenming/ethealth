@@ -302,6 +302,7 @@ public class ApiCommonController extends BaseController {
 				String version = Application.getString("VM01", "1.0.0");
 				if(F.empty(versionNo) || !versionNo.equals(version)) {
 					result.put("updateMark", true);
+					result.put("version", version); // 最新版本号
 					result.put("filePath", Application.getDescString("APP02")); // 更新地址
 					result.put("isForce", Application.getString("VM03", "0")); // 是否强制
 					result.put("updateLog", Application.getDescString("VM02")); // 更新日志
@@ -310,6 +311,7 @@ public class ApiCommonController extends BaseController {
 				String version = Application.getString("VM11", "1.0.0");
 				if(F.empty(versionNo) || !versionNo.equals(version)) {
 					result.put("updateMark", true);
+					result.put("version", version); // 最新版本号
 					result.put("filePath", Application.getDescString("APP04")); // 更新地址
 					result.put("isForce", Application.getString("VM13", "0")); // 是否强制
 					result.put("updateLog", Application.getDescString("VM12")); // 更新日志
