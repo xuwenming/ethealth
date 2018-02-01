@@ -292,28 +292,30 @@ public class ApiCommonController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/checkUpdate")
-	public Json checkUpdate(String versionNo) {
+	public Json checkUpdate(String versionNo, Integer isAdmin) {
 		Json j = new Json();
 		try{
 			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("andriod_mark", false);
-			result.put("ios_mark", false);
-			
-			// 检查android版本
-			BaseData android_version = Application.get("VM01");
-			if(F.empty(versionNo) || (android_version != null && !versionNo.equals(android_version.getName()))) {
-				result.put("andriod_mark", true);
-				result.put("android_filePath", android_version.getIcon());
-				result.put("android_update_log", android_version.getDescription());
-			} 
-			
-			// 检查ios版本
-			BaseData ios_version = Application.get("VM02");
-			if(F.empty(versionNo) || (ios_version != null && !versionNo.equals(ios_version.getName()))) {
-				result.put("ios_mark", true);
-				result.put("ios_downloadUrl", ios_version.getDescription());
-			} 
-			
+			result.put("updateMark", false);
+
+			if(isAdmin == null || isAdmin == 0) {
+				String version = Application.getString("VM01", "1.0.0");
+				if(F.empty(versionNo) || !versionNo.equals(version)) {
+					result.put("updateMark", true);
+					result.put("filePath", Application.getDescString("APP02")); // 更新地址
+					result.put("isForce", Application.getString("VM03", "0")); // 是否强制
+					result.put("updateLog", Application.getDescString("VM02")); // 更新日志
+				}
+			} else {
+				String version = Application.getString("VM11", "1.0.0");
+				if(F.empty(versionNo) || !versionNo.equals(version)) {
+					result.put("updateMark", true);
+					result.put("filePath", Application.getDescString("APP04")); // 更新地址
+					result.put("isForce", Application.getString("VM13", "0")); // 是否强制
+					result.put("updateLog", Application.getDescString("VM12")); // 更新日志
+				}
+			}
+
 			j.setObj(result);
 			j.success();
 		}catch(Exception e){
