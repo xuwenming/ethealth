@@ -303,9 +303,10 @@ public class ApiCommonController extends BaseController {
 				if(F.empty(versionNo) || !versionNo.equals(version)) {
 					result.put("updateMark", true);
 					result.put("version", version); // 最新版本号
+					result.put("filePath", Application.getDescString("APP02")); // 更新地址
 					BaseData bd = Application.get("VM04");
 					if(bd != null) {
-						result.put("filePath", bd.getIcon()); // 下载地址
+						result.put("downloadPath", bd.getIcon()); // app下载地址
 					}
 
 					result.put("isForce", Application.getString("VM03", "0")); // 是否强制
@@ -316,10 +317,10 @@ public class ApiCommonController extends BaseController {
 				if(F.empty(versionNo) || !versionNo.equals(version)) {
 					result.put("updateMark", true);
 					result.put("version", version); // 最新版本号
-//					result.put("filePath", Application.getDescString("APP04")); // 更新地址
+					result.put("filePath", Application.getDescString("APP04")); // 更新地址
 					BaseData bd = Application.get("VM14");
 					if(bd != null) {
-						result.put("filePath", bd.getIcon()); // 下载地址
+						result.put("downloadPath", bd.getIcon()); // app下载地址
 					}
 					result.put("isForce", Application.getString("VM13", "0")); // 是否强制
 					result.put("updateLog", Application.getDescString("VM12")); // 更新日志
