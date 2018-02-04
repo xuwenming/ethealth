@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserServiceI {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("name", user.getName());
 		params.put("pwd", MD5Util.md5(user.getPwd()));
-		Tuser t = userDao.get("from Tuser t where t.name = :name and t.pwd = :pwd and t.utype in ('ES01','ES02')", params);
+		Tuser t = userDao.get("from Tuser t where t.name = :name and t.pwd = :pwd", params);
 		if (t != null) {
 			BeanUtils.copyProperties(t, user);
 			return user;

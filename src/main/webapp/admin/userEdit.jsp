@@ -60,16 +60,6 @@
 							   class="easyui-validatebox span2" data-options="required:true"
 							   value="${user.phone}"></td>
 				</tr>
-				<tr>
-					<th>部门</th>
-					<td>
-						<jb:select dataType="EO" name="orgName" value="${user.orgName}" mustSelect="true" required="true"></jb:select>
-					</td>
-					<th>状态</th>
-					<td>
-						<jb:select dataType="ES" name="utype" value="${user.utype}" mustSelect="true" required="true"></jb:select>
-					</td>
-				</tr>
 			</table>
 		</form>
 	</div>
