@@ -202,7 +202,16 @@ public class ApiUserController extends BaseController {
                     return j;
                 }
 
+                boolean flag = false;
                 if(!"000000".equals(vcode)) {
+                    flag = true;
+                } else {
+                    if("0".equals(Application.getString("SV800", "0"))) {
+                        flag = true;
+                    }
+                }
+
+                if(flag) {
                     String oldCode = redisUserService.getValidateCode(username);
                     if(F.empty(oldCode)) {
                         j.setMsg("验证码已过期！");
@@ -212,6 +221,7 @@ public class ApiUserController extends BaseController {
                         j.setMsg("验证码错误！");
                         return j;
                     }
+
                 }
 
                 //验证手机号码是否已绑定
