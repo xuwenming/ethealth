@@ -109,11 +109,15 @@ public class ApiUserController extends BaseController {
      */
     @RequestMapping("/logout")
     @ResponseBody
-    public Json logout(HttpServletRequest request) {
+    public Json logout(String userId, HttpServletRequest request) {
         Json j = new Json();
         try{
-            SessionInfo s = getSessionInfo(request);
-            tokenManage.destroyTokenByMbUserId(s.getId());
+            if(F.empty(userId)) {
+                SessionInfo s = getSessionInfo(request);
+                userId = s.getId();
+            }
+
+            tokenManage.destroyTokenByMbUserId(userId);
             j.setSuccess(true);
             j.setMsg("退出成功！");
         } catch (ServiceException e) {
