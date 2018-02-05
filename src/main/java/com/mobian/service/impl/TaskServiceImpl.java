@@ -28,8 +28,8 @@ public class TaskServiceImpl implements TaskServiceI {
     @Override
     public void deleteHxAccount() {
         try {
-            int max = Integer.valueOf(Application.getString(HuanxinUtil.OPEN_STATUS, "1"));
-            if(max == 1) {
+            int status = Integer.valueOf(Application.getString(HuanxinUtil.OPEN_STATUS, "1"));
+            if(status == 1) {
                 List<FdMember> memberList = fdMemberService.queryAllByDelHxAccount();
                 if(CollectionUtils.isNotEmpty(memberList)) {
                     for(FdMember member : memberList) {
