@@ -65,6 +65,11 @@ public class ApiUserController extends BaseController {
             String username = member.getUsername();
             String password = member.getPassword();
             if(!F.empty(username) && !F.empty(password)) {
+                if(!Util.isMobilePhone(username)) {
+                    j.setMsg("手机号码格式不正确！");
+                    return j;
+                }
+
                 member.setStatusArr("1,2,3");
                 FdMember o = fdMemberService.get(member);
                 if(o == null) {
