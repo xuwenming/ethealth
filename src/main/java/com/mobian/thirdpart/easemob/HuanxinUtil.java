@@ -25,6 +25,7 @@ public class HuanxinUtil {
 	public static final String CLIENT_ID = "HX02";
 	public static final String CLIENT_SECRET = "HX03";
 	public static final String MAX_ACCOUNT_NUM = "HX04";
+	public static final String OPEN_STATUS = "HX05";
 
 	private static RedisUtil redisUtil = Application.getBean(RedisUtil.class);
 

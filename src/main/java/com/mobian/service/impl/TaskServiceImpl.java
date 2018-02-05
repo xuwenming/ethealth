@@ -2,6 +2,7 @@ package com.mobian.service.impl;
 
 import com.mobian.absx.F;
 import com.mobian.interceptors.TokenManage;
+import com.mobian.listener.Application;
 import com.mobian.pageModel.FdMember;
 import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.TaskServiceI;
@@ -27,22 +28,24 @@ public class TaskServiceImpl implements TaskServiceI {
     @Override
     public void deleteHxAccount() {
         try {
-            List<FdMember> memberList = fdMemberService.queryAllByDelHxAccount();
-            if(CollectionUtils.isNotEmpty(memberList)) {
-                for(FdMember member : memberList) {
-                    // 删除环信账号
-                    HuanxinUtil.delUser(member.getIsAdmin() + "-" + member.getMobile());
-                    // 更新环信状态
-                    FdMember o = new FdMember();
-                    o.setId(member.getId());
-                    o.setHxStatus(false);
-                    fdMemberService.edit(o);
+            int max = Integer.valueOf(Application.getString(HuanxinUtil.OPEN_STATUS, "1"));
+            if(max == 1) {
+                List<FdMember> memberList = fdMemberService.queryAllByDelHxAccount();
+                if(CollectionUtils.isNotEmpty(memberList)) {
+                    for(FdMember member : memberList) {
+                        // 删除环信账号
+                        HuanxinUtil.delUser(member.getIsAdmin() + "-" + member.getMobile());
+                        // 更新环信状态
+                        FdMember o = new FdMember();
+                        o.setId(member.getId());
+                        o.setHxStatus(false);
+                        fdMemberService.edit(o);
 
-                    // 清除当前用户的登录token
-                    tokenManage.destroyTokenByMbUserId(member.getId() + "");
+                        // 清除当前用户的登录token
+                        tokenManage.destroyTokenByMbUserId(member.getId() + "");
+                    }
                 }
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
