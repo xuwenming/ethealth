@@ -5,25 +5,8 @@ package com.mobian.service;
  */
 public interface TaskServiceI {
     /**
-     * 发送消息
+     * 剔除环信账号
      */
-    void sendMessage();
-    /**
-     * 发送消息  提醒司机回单
-     */
-    void remindDrivers();
-    /**
-     * 设置合同价
-     */
-    void setContractPrice();
-
-    /**
-     * 设置订单量
-     */
-    void setOrderQuantity();
-    /**
-     * 删除未支付的订单
-     */
-    void deleteUnPayOrder();
+    void deleteHxAccount();
 
 }

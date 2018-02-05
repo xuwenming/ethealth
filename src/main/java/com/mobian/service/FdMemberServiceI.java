@@ -70,4 +70,6 @@ public interface FdMemberServiceI {
 	List<FdMember> getByMobiles(String mobiles);
 
 	DataGrid dataGridComplex(FdMember fdMember, PageHelper ph);
+
+	List<FdMember> queryAllByDelHxAccount();
 }

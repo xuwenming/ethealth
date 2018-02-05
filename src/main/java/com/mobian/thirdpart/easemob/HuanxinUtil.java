@@ -24,6 +24,7 @@ public class HuanxinUtil {
 	public static final String APPKEY = "HX01";
 	public static final String CLIENT_ID = "HX02";
 	public static final String CLIENT_SECRET = "HX03";
+	public static final String MAX_ACCOUNT_NUM = "HX04";
 
 	private static RedisUtil redisUtil = Application.getBean(RedisUtil.class);
 
@@ -204,6 +205,16 @@ public class HuanxinUtil {
 	 */
 	public static String createUsers(String usesJsonString) {
 		String response = httpsRequest(getUrl("users"), "POST", usesJsonString, true);
+		log.info(response);
+		return response;
+	}
+
+	/**
+	 * 环信用户删除
+	 * @return
+	 */
+	public static String delUser(String username) {
+		String response = httpsRequest(getUrl("users/" + username), "DELETE", null, true);
 		log.info(response);
 		return response;
 	}

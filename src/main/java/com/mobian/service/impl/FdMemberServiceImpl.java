@@ -2,9 +2,11 @@ package com.mobian.service.impl;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberDaoI;
+import com.mobian.listener.Application;
 import com.mobian.model.TfdMember;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
+import com.mobian.thirdpart.easemob.HuanxinUtil;
 import com.mobian.util.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -75,7 +77,6 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		}
 		return dg;
 	}
-	
 
 	protected String whereHql(FdMember fdMember, Map<String, Object> params) {
 		String whereHql = "";	
@@ -338,6 +339,26 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 		params.put("id", id);
 		fdMemberDao.executeHql("update TfdMember t set t.isdeleted = 1 where t.id = :id",params);
 		//fdMemberDao.delete(fdMemberDao.get(TfdMember.class, id));
+	}
+
+	@Override
+	public List<FdMember> queryAllByDelHxAccount() {
+		int max = Integer.valueOf(Application.getString(HuanxinUtil.MAX_ACCOUNT_NUM, "90"));
+
+		List<FdMember> ol = new ArrayList<FdMember>();
+		String hql = " from TfdMember t where t.hxStatus = 1 ";
+		Long count = fdMemberDao.count("select count(*) " + hql);
+		if(count != null && count > max) {
+			List<TfdMember> l = fdMemberDao.findBy(hql + " order by t.lastLoginTime desc ", max);
+			if (l != null && l.size() > 0) {
+				for (TfdMember t : l) {
+					FdMember o = new FdMember();
+					BeanUtils.copyProperties(t, o);
+					ol.add(o);
+				}
+			}
+		}
+		return ol;
 	}
 
 	@Override

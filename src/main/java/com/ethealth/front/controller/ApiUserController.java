@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
+import java.util.Date;
 
 /**
 * Created by guxin on 2017/4/22.
@@ -83,9 +83,9 @@ public class ApiUserController extends BaseController {
                     } else {
                         o.setHxStatus(false);
                     }
-
-                    fdMemberService.edit(o);
                 }
+                o.setLastLoginTime(new Date().getTime());
+                fdMemberService.edit(o);
 
                 String tokenId = tokenManage.buildToken(o.getId().toString(), o.getMobile(), null);
                 o.setTokenId(tokenId);
@@ -254,6 +254,7 @@ public class ApiUserController extends BaseController {
                 member.setStatus(-1);
             }
 
+            member.setLastLoginTime(new Date().getTime());
             fdMemberService.addMember(member);
 
             if(member.getIsAdmin() == 0) {
