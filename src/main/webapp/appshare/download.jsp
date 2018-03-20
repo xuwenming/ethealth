@@ -2,8 +2,16 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="com.mobian.listener.Application" %>
 <%
-	String iosDownloadUrl = Application.getDescString("APP01");
-	String androidDownloadUrl = Application.getDescString("APP02");
+	String sourse = request.getParameter("sourse");
+	String iosDownloadUrl, androidDownloadUrl;
+	if(sourse == null || "1".equals(sourse)) {
+		iosDownloadUrl = Application.getDescString("APP01");
+		androidDownloadUrl = Application.getDescString("APP02");
+	} else {
+		iosDownloadUrl = Application.getDescString("APP03");
+		androidDownloadUrl = Application.getDescString("APP04");
+	}
+
 %>
 <!DOCTYPE html>
 <html>
