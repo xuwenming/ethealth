@@ -293,9 +293,6 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				fdMessageService.addAndPushMessage(message);
 			}
 		} else {
-			member.setStatus(3);
-			fdMemberService.edit(member);
-
 			if(fdMemberDoctorSh.getAuditType() == 2) {
 				FdMessage message = new FdMessage();
 				message.setTitle("编辑审核失败");
@@ -306,6 +303,9 @@ public class FdMemberDoctorShServiceImpl extends BaseServiceImpl<FdMemberDoctorS
 				message.setAlias("2_" + member.getMobile());
 				message.setPushMessage(new PushMessage("M002", "尊敬的医生您好，您在医家盟修改医生信息审核失败，非常抱歉！", 0));
 				fdMessageService.addAndPushMessage(message);
+			} else {
+				member.setStatus(3);
+				fdMemberService.edit(member);
 			}
 		}
 	}
