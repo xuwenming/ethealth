@@ -97,6 +97,7 @@ public class ApiDoctorController extends BaseController {
 
 			fdMemberDoctorShService.addOrUpdateMemberDoctorSh(sh);
 
+			sh.setHeadImage(sh.getPics());
 			j.setObj(sh);
 			j.setSuccess(true);
 			j.setMsg("修改成功！");

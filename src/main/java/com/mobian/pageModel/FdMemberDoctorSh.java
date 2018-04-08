@@ -40,6 +40,7 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 	private String mobile;
 	private String levelName;
 	private String birthdayStr;
+	private String headImage;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -246,5 +247,13 @@ public class FdMemberDoctorSh implements java.io.Serializable {
 
 	public void setBirthdayStr(String birthdayStr) {
 		this.birthdayStr = birthdayStr;
+	}
+
+	public String getHeadImage() {
+		return headImage;
+	}
+
+	public void setHeadImage(String headImage) {
+		this.headImage = headImage;
 	}
 }
