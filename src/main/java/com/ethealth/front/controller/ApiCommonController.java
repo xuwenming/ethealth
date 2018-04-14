@@ -293,6 +293,8 @@ public class ApiCommonController extends BaseController {
 	@ResponseBody
 	@RequestMapping("/checkUpdate")
 	public Json checkUpdate(String versionNo, Integer isAdmin) {
+		System.out.println("~~~~~~~~~~~~versionNo=" + versionNo);
+		System.out.println("~~~~~~~~~~~~isAdmin=" + isAdmin);
 		Json j = new Json();
 		try{
 			Map<String, Object> result = new HashMap<String, Object>();
