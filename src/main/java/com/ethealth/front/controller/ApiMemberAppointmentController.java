@@ -210,12 +210,28 @@ public class ApiMemberAppointmentController extends BaseController {
 			exist.setStatus("1");
 			exist.setAppointTime(appointment.getAppointTime() + EnumConstants.TIME.getCnName(appointment.getTime()));
 			exist = fdMemberAppointmentService.get(exist);
-			if(exist != null && !"3".equals(exist.getAppointStatus())) {
-				obj.put("appointmentNo", -2);
-				j.setMsg("您在" + exist.getAppointTime()+"已预约，请勿重复预约！");
-				j.setObj(obj);
-				return j;
+			if(exist != null) {
+				String mark = Application.getString("SV801", "0");
+				if("0".equals(mark)) {
+					if("3".equals(exist.getAppointStatus())) {
+						j.setMsg("您在" + exist.getAppointTime()+"预约已被拒绝！");
+					} else {
+						j.setMsg("您在" + exist.getAppointTime()+"已预约，请勿重复预约！");
+					}
+					obj.put("appointmentNo", -2);
+					j.setObj(obj);
+					return j;
+				} else {
+					if(!"3".equals(exist.getAppointStatus())) {
+						obj.put("appointmentNo", -2);
+						j.setMsg("您在" + exist.getAppointTime()+"已预约，请勿重复预约！");
+						j.setObj(obj);
+						return j;
+					}
+				}
+
 			}
+
 
 			Double fee = Double.valueOf(Application.getString("UC001", "99"));
 			long totalFee = new BigDecimal(fee.toString()).multiply(new BigDecimal(100)).longValue();
