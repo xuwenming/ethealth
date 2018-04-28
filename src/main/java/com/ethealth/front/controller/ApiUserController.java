@@ -1,5 +1,6 @@
 package com.ethealth.front.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.mobian.absx.F;
 import com.mobian.absx.UUID;
 import com.mobian.controller.BaseController;
@@ -97,6 +98,7 @@ public class ApiUserController extends BaseController {
                 o.setUsername(username);
                 j.setSuccess(true);
                 j.setMsg("登陆成功！");
+                System.out.println("登录返回结果：" + JSONObject.toJSONString(o));
                 j.setObj(o);
                 return j;
             }
