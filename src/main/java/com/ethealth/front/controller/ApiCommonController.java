@@ -1,6 +1,6 @@
 package com.ethealth.front.controller;
 
-import com.mobian.absx.F;
+import com.mobian.absx.*;
 import com.mobian.controller.BaseController;
 import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
@@ -268,15 +268,12 @@ public class ApiCommonController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/upload_errorlog")
-	public Json uploadErrorlog(Bug bug, @RequestParam MultipartFile logFile, HttpServletRequest request) {
+	public Json uploadErrorlog(Bug bug, @RequestParam(required = false) MultipartFile logFile) {
 		Json j = new Json();
 		try{
-			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-			Calendar calendar = Calendar.getInstance();  
-			String dirName = "errorlog/" + calendar.get(Calendar.YEAR) + "/" + (calendar.get(Calendar.MONTH)+1) + "/" + calendar.get(Calendar.DAY_OF_MONTH);
-			bug.setFilePath(uploadFile(request, dirName, logFile, format.format(calendar.getTime())));
+			bug.setFilePath(uploadFile("errorlog", logFile));
 			bug.setTypeId("0"); // 错误
-			bug.setId(UUID.randomUUID().toString());
+			bug.setId(com.mobian.absx.UUID.uuid());
 			bugService.add(bug);
 			j.success();
 		}catch(Exception e){
