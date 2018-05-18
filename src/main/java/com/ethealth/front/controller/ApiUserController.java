@@ -8,6 +8,7 @@ import com.mobian.exception.ServiceException;
 import com.mobian.interceptors.TokenManage;
 import com.mobian.listener.Application;
 import com.mobian.pageModel.*;
+import com.mobian.service.FdMemberAppointmentServiceI;
 import com.mobian.service.FdMemberDoctorShServiceI;
 import com.mobian.service.FdMemberServiceI;
 import com.mobian.service.FdPatientServiceI;
@@ -55,6 +56,9 @@ public class ApiUserController extends BaseController {
     @Autowired
     private FdPatientServiceI fdPatientService;
 
+    @Autowired
+    private FdMemberAppointmentServiceI fdMemberAppointmentService;
+
     /**
      * 登录接口
      */
@@ -93,6 +97,15 @@ public class ApiUserController extends BaseController {
                 }
                 o.setLastLoginTime(new Date().getTime());
                 fdMemberService.edit(o);
+
+                // 医生端获取未处理的加号
+                if(member.getIsAdmin() == 2) {
+                    FdMemberAppointment appointment = new FdMemberAppointment();
+                    appointment.setDoctorId(o.getId());
+                    appointment.setStatus("1");
+                    appointment.setAppointStatus("0"); // 未回复
+                    o.setAppointmentCount(fdMemberAppointmentService.getAppointmentCount(appointment));
+                }
 
                 String tokenId = tokenManage.buildToken(o.getId().toString(), o.getMobile(), null);
                 o.setTokenId(tokenId);
@@ -415,7 +428,7 @@ public class ApiUserController extends BaseController {
      */
     @RequestMapping("/edit")
     @ResponseBody
-    public Json edit(FdMember member, HttpServletRequest request, @RequestParam(required = false) MultipartFile headImageFile) {
+    public Json edit(FdMember member, String vcode, HttpServletRequest request, @RequestParam(required = false) MultipartFile headImageFile) {
         Json j = new Json();
         try{
             SessionInfo s = getSessionInfo(request);
@@ -425,6 +438,53 @@ public class ApiUserController extends BaseController {
             String password = member.getPassword();
             if(!F.empty(password)) {
                 member.setPassword(MD5Util.encryptPassword(password));
+            }
+
+            String mobile = member.getMobile();
+
+            if(F.empty(mobile)) {
+                j.setMsg("手机号不能为空！");
+                return j;
+            }
+            if(!F.empty(mobile)) {
+                if(!Util.isMobilePhone(mobile)) {
+                    j.setMsg("手机号码格式不正确！");
+                    return j;
+                }
+                if(F.empty(vcode)) {
+                    j.setMsg("验证码不能为空！");
+                    return j;
+                }
+
+                boolean flag = false;
+                if(!"000000".equals(vcode)) {
+                    flag = true;
+                } else {
+                    if("0".equals(Application.getString("SV800", "0"))) {
+                        flag = true;
+                    }
+                }
+
+                if(flag) {
+                    String oldCode = redisUserService.getValidateCode(mobile);
+                    if(F.empty(oldCode)) {
+                        j.setMsg("验证码已过期！");
+                        return j;
+                    }
+                    if(!oldCode.equals(vcode)) {
+                        j.setMsg("验证码错误！");
+                        return j;
+                    }
+
+                }
+
+                // 验证手机号码是否已绑定
+                if(F.empty(member.getIsAdmin())) member.setIsAdmin(0); // 患者
+                boolean hasPhone = fdMemberService.checkUsername(mobile, member.getIsAdmin());
+                if(hasPhone) {
+                    j.setMsg("手机号码已绑定！");
+                    return j;
+                }
             }
 
             member.setHeadImage(uploadFile(HEAD_IMAGE, headImageFile));

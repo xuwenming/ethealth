@@ -15,9 +15,11 @@ public class FdMemberConsultationLog implements java.io.Serializable {
 	private java.lang.Long updateTime;	
 	private java.lang.String status;	
 	private java.lang.String content;	
-	private java.lang.Integer senderType;	
+	private java.lang.Integer senderType;
 
-	
+	private java.lang.Long createTimeStart;
+	private java.lang.Long createTimeEnd;
+
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -85,4 +87,19 @@ public class FdMemberConsultationLog implements java.io.Serializable {
 		return this.senderType;
 	}
 
+	public Long getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(Long createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public Long getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(Long createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
 }

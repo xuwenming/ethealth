@@ -92,7 +92,15 @@ public class FdMemberConsultationOrderServiceImpl extends BaseServiceImpl<FdMemb
 			if (!F.empty(fdMemberConsultationOrder.getStatus())) {
 				whereHql += " and t.status = :status";
 				params.put("status", fdMemberConsultationOrder.getStatus());
-			}		
+			}
+			if (!F.empty(fdMemberConsultationOrder.getCreateTimeStart())) {
+				whereHql += " and t.createTime >= :createTimeStart";
+				params.put("createTimeStart", fdMemberConsultationOrder.getCreateTimeStart());
+			}
+			if (!F.empty(fdMemberConsultationOrder.getCreateTimeEnd())) {
+				whereHql += " and t.createTime <= :createTimeEnd";
+				params.put("createTimeEnd", fdMemberConsultationOrder.getCreateTimeEnd());
+			}
 		}	
 		return whereHql;
 	}

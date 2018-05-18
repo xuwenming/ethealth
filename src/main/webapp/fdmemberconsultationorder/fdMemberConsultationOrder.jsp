@@ -226,6 +226,8 @@
 	        	param.downloadFields = columsStr;
 	        	param.page = options.pageNumber;
 	        	param.rows = options.pageSize;
+				param.sort = options.sortName;
+				param.order = options.sortOrder;
 	        	
        	 }
         }); 
@@ -241,7 +243,7 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 115px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
 						<tr>
@@ -257,16 +259,28 @@
 							<td>
 								<jb:selectGrid dataType="userId" name="doctorId" params="{isAdmin:2}"></jb:selectGrid>
 							</td>
-							<th>支付状态</th>
-							<td>
-								<select name="status" class="easyui-combobox"
-										data-options="width:140,height:29,editable:false,panelHeight:'auto'">
-									<option value="">全部</option>
-									<option value="0">已支付</option>
-									<option value="1">未支付</option>
-								</select>
-							</td>
+
 						</tr>
+					<tr>
+						<th>支付状态</th>
+						<td>
+							<select name="status" class="easyui-combobox"
+									data-options="width:140,height:29,editable:false,panelHeight:'auto'">
+								<option value="">全部</option>
+								<option value="0">已支付</option>
+								<option value="1">未支付</option>
+							</select>
+						</td>
+						<th>下单时间</th>
+						<td colspan="3"><input class="span2" name="createTimeStartDate"
+											   placeholder="点击选择时间"
+											   onclick="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"
+											   readonly="readonly" />至<input class="span2"
+																			 name="createTimeEndDate" placeholder="点击选择时间"
+																			 onclick="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"
+																			 readonly="readonly" /></td>
+
+					</tr>
 				</table>
 			</form>
 		</div>

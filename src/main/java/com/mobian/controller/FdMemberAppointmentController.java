@@ -57,6 +57,8 @@ public class FdMemberAppointmentController extends BaseController {
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberAppointment fdMemberAppointment, PageHelper ph) {
 		fdMemberAppointment.setIsShowWx(true);
+		if(fdMemberAppointment.getCreateTimeStartDate() != null) fdMemberAppointment.setCreateTimeStart(fdMemberAppointment.getCreateTimeStartDate().getTime());
+		if(fdMemberAppointment.getCreateTimeEndDate() != null) fdMemberAppointment.setCreateTimeEnd(fdMemberAppointment.getCreateTimeEndDate().getTime());
 		DataGrid dg = fdMemberAppointmentService.dataGrid(fdMemberAppointment, ph);
 		List<FdMemberAppointment> list = dg.getRows();
 		if(CollectionUtils.isNotEmpty(list)) {

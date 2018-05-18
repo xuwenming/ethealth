@@ -517,4 +517,41 @@ public class ApiMemberAppointmentController extends BaseController {
 		return j;
 	}
 
+	/**
+	 * 获取加号统计列表
+	 */
+	@RequestMapping("/statistics")
+	@ResponseBody
+	public Json statistics(String startDateStr, String endDateStr, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			if(F.empty(startDateStr)) {
+				j.setMsg("请选择开始时间");
+				return j;
+			}
+			if(F.empty(endDateStr)) {
+				j.setMsg("请选择结束时间");
+				return j;
+			}
+			SessionInfo s = getSessionInfo(request);
+			FdMemberAppointment appointment = new FdMemberAppointment();
+			appointment.setDoctorId(Integer.valueOf(s.getId()));
+			appointment.setStartDate(DateUtil.parse(startDateStr, Constants.DATE_FORMAT_YMD));
+			appointment.setEndDate(DateUtil.parse(endDateStr, Constants.DATE_FORMAT_YMD));
+
+			j.setObj(fdMemberAppointmentService.statistics(appointment));
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取加号统计列表接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取加号统计列表接口异常", e);
+		}
+
+		return j;
+	}
+
 }

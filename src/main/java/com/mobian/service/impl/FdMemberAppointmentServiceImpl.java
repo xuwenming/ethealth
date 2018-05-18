@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +55,52 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 		dg.setRows(ol);
 		return dg;
 	}
-	
+
+	@Override
+	public int getAppointmentCount(FdMemberAppointment appointment) {
+		String hql = " from TfdMemberAppointment t ";
+		Map<String, Object> params = new HashMap<String, Object>();
+		String where = whereHql(appointment, params);
+		Long count = fdMemberAppointmentDao.count("select count(*) " + hql + where, params);
+		return count == null ? 0 : count.intValue();
+	}
+
+	@Override
+	public Map<String, Object> statistics(FdMemberAppointment appointment) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		String sql = " select substring(appoint_time, 1, 10) appointTime, count(*) count from fd_member_appointment ";
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		String where = " where 1 = 1 ";
+		if (!F.empty(appointment.getDoctorId())) {
+			where += " and doctor_id = :doctorId";
+			params.put("doctorId", appointment.getDoctorId());
+		}
+		if (appointment.getStartDate() != null) {
+			where += " and str_to_date(substring(appoint_time, 1, 10), '%Y-%m-%d') >= :startDate";
+			params.put("startDate", appointment.getStartDate());
+		}
+		if (appointment.getEndDate() != null) {
+			where += " and str_to_date(substring(appoint_time, 1, 10), '%Y-%m-%d') <= :endDate";
+			params.put("endDate", appointment.getEndDate());
+		}
+
+		List<Map> list = fdMemberAppointmentDao.findBySql2Map(sql + where + " group by appointTime order by appointTime asc ", params);
+		int total = 0;
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(Map map : list) {
+				String appointTime = (String)map.get("appointTime");
+				Integer count = ((BigInteger)map.get("count")).intValue();
+				map.put("appointTime", DateUtil.format(DateUtil.parse(appointTime, Constants.DATE_FORMAT_YMD), "yyyy年MM月dd日"));
+				total += (count == null ? 0 : count);
+			}
+		}
+		result.put("total", total);
+		result.put("data", list);
+
+		return result;
+	}
+
 
 	protected String whereHql(FdMemberAppointment fdMemberAppointment, Map<String, Object> params) {
 		String whereHql = "";	
@@ -165,6 +211,23 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			if(!F.empty(fdMemberAppointment.getQuery())) {
 				whereHql += " and (t.appointName like :query or t.linkName like :query or t.linkWay like :query) ";
 				params.put("query", "%" + fdMemberAppointment.getQuery() + "%");
+			}
+
+			if (fdMemberAppointment.getStartDate() != null) {
+				whereHql += " and str_to_date(substring(appointTime, 1, 10), '%Y-%m-%d') >= :startDate";
+				params.put("startDate", fdMemberAppointment.getStartDate());
+			}
+			if (fdMemberAppointment.getEndDate() != null) {
+				whereHql += " and str_to_date(substring(appointTime, 1, 10), '%Y-%m-%d') <= :endDate";
+				params.put("endDate", fdMemberAppointment.getEndDate());
+			}
+			if (!F.empty(fdMemberAppointment.getCreateTimeStart())) {
+				whereHql += " and t.createTime >= :createTimeStart";
+				params.put("createTimeStart", fdMemberAppointment.getCreateTimeStart());
+			}
+			if (!F.empty(fdMemberAppointment.getCreateTimeEnd())) {
+				whereHql += " and t.createTime <= :createTimeEnd";
+				params.put("createTimeEnd", fdMemberAppointment.getCreateTimeEnd());
 			}
 		}
 		return whereHql;

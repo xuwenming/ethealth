@@ -4,6 +4,8 @@ import com.mobian.pageModel.FdMemberConsultationLog;
 import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
 
+import java.util.Map;
+
 /**
  * 
  * @author John
@@ -51,4 +53,5 @@ public interface FdMemberConsultationLogServiceI {
 	 */
 	public void delete(Integer id);
 
+	Map<String, Object> statistics(FdMemberConsultationLog log);
 }

@@ -4,6 +4,8 @@ import com.mobian.pageModel.FdMemberAppointment;
 import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
 
+import java.util.Map;
+
 /**
  * 
  * @author John
@@ -58,4 +60,8 @@ public interface FdMemberAppointmentServiceI {
 	void updatePaySuccess(FdMemberAppointment appointment);
 
 	void editAppointment(FdMemberAppointment appointment);
+
+	int getAppointmentCount(FdMemberAppointment appointment);
+
+	Map<String, Object> statistics(FdMemberAppointment appointment);
 }

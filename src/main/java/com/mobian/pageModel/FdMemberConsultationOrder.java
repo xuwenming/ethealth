@@ -24,6 +24,11 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 	private String doctorMobile;
 	private Date expireDate;
 
+	private java.lang.Long createTimeStart;
+	private java.lang.Long createTimeEnd;
+	private Date createTimeStartDate;
+	private Date createTimeEndDate;
+
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -137,5 +142,37 @@ public class FdMemberConsultationOrder implements java.io.Serializable {
 
 	public void setDoctorMobile(String doctorMobile) {
 		this.doctorMobile = doctorMobile;
+	}
+
+	public Long getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(Long createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public Long getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(Long createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
+
+	public Date getCreateTimeStartDate() {
+		return createTimeStartDate;
+	}
+
+	public void setCreateTimeStartDate(Date createTimeStartDate) {
+		this.createTimeStartDate = createTimeStartDate;
+	}
+
+	public Date getCreateTimeEndDate() {
+		return createTimeEndDate;
+	}
+
+	public void setCreateTimeEndDate(Date createTimeEndDate) {
+		this.createTimeEndDate = createTimeEndDate;
 	}
 }

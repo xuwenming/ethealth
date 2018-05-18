@@ -49,6 +49,7 @@ public class FdMember implements java.io.Serializable {
 	private String statusArr;
 	private int unreadMsgCount;
 	private String q;
+	private int appointmentCount; // 未处理的加号
 
 
 	public void setId(java.lang.Integer value) {
@@ -342,5 +343,13 @@ public class FdMember implements java.io.Serializable {
 
 	public void setQ(String q) {
 		this.q = q;
+	}
+
+	public int getAppointmentCount() {
+		return appointmentCount;
+	}
+
+	public void setAppointmentCount(int appointmentCount) {
+		this.appointmentCount = appointmentCount;
 	}
 }

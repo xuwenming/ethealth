@@ -53,6 +53,15 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	private Boolean isShowWx; // 是否显示来自微信公众号
 
+	private Date startDate;
+	private Date endDate;
+
+	private java.lang.Long createTimeStart;
+	private java.lang.Long createTimeEnd;
+
+	private Date createTimeStartDate;
+	private Date createTimeEndDate;
+
 	public String getTimeZh() {
 		if(F.empty(time)) return null;
 		return EnumConstants.TIME.getCnName(time);
@@ -336,5 +345,53 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setIsShowWx(Boolean isShowWx) {
 		this.isShowWx = isShowWx;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
+	public Long getCreateTimeStart() {
+		return createTimeStart;
+	}
+
+	public void setCreateTimeStart(Long createTimeStart) {
+		this.createTimeStart = createTimeStart;
+	}
+
+	public Long getCreateTimeEnd() {
+		return createTimeEnd;
+	}
+
+	public void setCreateTimeEnd(Long createTimeEnd) {
+		this.createTimeEnd = createTimeEnd;
+	}
+
+	public Date getCreateTimeStartDate() {
+		return createTimeStartDate;
+	}
+
+	public void setCreateTimeStartDate(Date createTimeStartDate) {
+		this.createTimeStartDate = createTimeStartDate;
+	}
+
+	public Date getCreateTimeEndDate() {
+		return createTimeEndDate;
+	}
+
+	public void setCreateTimeEndDate(Date createTimeEndDate) {
+		this.createTimeEndDate = createTimeEndDate;
 	}
 }

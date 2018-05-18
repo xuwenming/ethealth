@@ -313,14 +313,15 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	@Override
 	public void editMember(FdMember member) {
 		this.edit(member);
-		if(!F.empty(member.getRealName()) || !F.empty(member.getSex()) || !F.empty(member.getBirthday())) {
+		if(!F.empty(member.getRealName()) || !F.empty(member.getSex()) || !F.empty(member.getBirthday()) || !F.empty(member.getMobile())) {
 			FdCustomer customer = new FdCustomer();
 			customer.setUserId(member.getId().longValue());
 			if(!F.empty(member.getBirthday())) {
 				customer.setBirthday(DateUtil.parse(member.getBirthday(), Constants.DATE_FORMAT_YMD).getTime());
 			}
-			customer.setRealName(member.getRealName());
-			customer.setSex(member.getSex());
+			if(!F.empty(member.getRealName())) customer.setRealName(member.getRealName());
+			if(!F.empty(member.getSex())) customer.setSex(member.getSex());
+			if(!F.empty(member.getMobile())) customer.setPhone(member.getMobile());
 			fdCustomerService.edit(customer);
 		}
 

@@ -528,4 +528,41 @@ public class ApiMemberConsultationController extends BaseController {
 		return j;
 	}
 
+	/**
+	 * 获取咨询统计列表
+	 */
+	@RequestMapping("/statistics")
+	@ResponseBody
+	public Json statistics(String startDateStr, String endDateStr, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			if(F.empty(startDateStr)) {
+				j.setMsg("请选择开始时间");
+				return j;
+			}
+			if(F.empty(endDateStr)) {
+				j.setMsg("请选择结束时间");
+				return j;
+			}
+			SessionInfo s = getSessionInfo(request);
+			FdMemberConsultationLog log = new FdMemberConsultationLog();
+			log.setToUserId(Integer.valueOf(s.getId()));
+			log.setCreateTimeStart(DateUtil.parse(startDateStr, Constants.DATE_FORMAT_YMD).getTime());
+			log.setCreateTimeEnd(DateUtil.parse(endDateStr, Constants.DATE_FORMAT_YMD).getTime());
+
+			j.setObj(fdMemberConsultationLogService.statistics(log));
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取咨询统计列表接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取咨询统计列表接口异常", e);
+		}
+
+		return j;
+	}
+
 }

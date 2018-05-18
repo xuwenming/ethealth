@@ -65,6 +65,9 @@ public class FdMemberConsultationOrderController extends BaseController {
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberConsultationOrder fdMemberConsultationOrder, PageHelper ph) {
+		if(fdMemberConsultationOrder.getCreateTimeStartDate() != null) fdMemberConsultationOrder.setCreateTimeStart(fdMemberConsultationOrder.getCreateTimeStartDate().getTime());
+		if(fdMemberConsultationOrder.getCreateTimeEndDate() != null) fdMemberConsultationOrder.setCreateTimeEnd(fdMemberConsultationOrder.getCreateTimeEndDate().getTime());
+
 		DataGrid dg = fdMemberConsultationOrderService.dataGrid(fdMemberConsultationOrder, ph);
 		List<FdMemberConsultationOrder> list = dg.getRows();
 		if(CollectionUtils.isNotEmpty(list)) {

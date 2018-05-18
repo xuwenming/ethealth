@@ -1,5 +1,6 @@
 package com.mobian.service.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
 import com.mobian.service.FdMemberConsultationLogServiceI;
 
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,7 +68,7 @@ public class FdMemberConsultationLogServiceImpl extends BaseServiceImpl<FdMember
 			if (!F.empty(fdMemberConsultationLog.getCreateTime())) {
 				whereHql += " and t.createTime = :createTime";
 				params.put("createTime", fdMemberConsultationLog.getCreateTime());
-			}		
+			}
 			if (!F.empty(fdMemberConsultationLog.getUpdateTime())) {
 				whereHql += " and t.updateTime = :updateTime";
 				params.put("updateTime", fdMemberConsultationLog.getUpdateTime());
@@ -117,6 +121,40 @@ public class FdMemberConsultationLogServiceImpl extends BaseServiceImpl<FdMember
 		params.put("id", id);
 		fdMemberConsultationLogDao.executeHql("update TfdMemberConsultationLog t set t.status = 1 where t.id = :id",params);
 		//fdMemberConsultationLogDao.delete(fdMemberConsultationLogDao.get(TfdMemberConsultationLog.class, id));
+	}
+
+	@Override
+	public Map<String, Object> statistics(FdMemberConsultationLog log) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		String sql = " select from_unixtime(create_time/1000, '%Y年%m月%d日') consultationTime, count(*) count from fd_member_consultation_log ";
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		String where = " where 1 = 1 ";
+		if (!F.empty(log.getToUserId())) {
+			where += " and to_user_id = :toUserId";
+			params.put("toUserId", log.getToUserId());
+		}
+		if (!F.empty(log.getCreateTimeStart())) {
+			where += " and create_time >= :createTimeStart";
+			params.put("createTimeStart", log.getCreateTimeStart());
+		}
+		if (!F.empty(log.getCreateTimeEnd())) {
+			where += " and create_time <= :createTimeEnd";
+			params.put("createTimeEnd", log.getCreateTimeEnd());
+		}
+
+		List<Map> list = fdMemberConsultationLogDao.findBySql2Map(sql + where + " group by consultationTime order by consultationTime asc ", params);
+		int total = 0;
+		if(CollectionUtils.isNotEmpty(list)) {
+			for(Map map : list) {
+				Integer count = ((BigInteger)map.get("count")).intValue();
+				total += (count == null ? 0 : count);
+			}
+		}
+		result.put("total", total);
+		result.put("data", list);
+
+		return result;
 	}
 
 }
