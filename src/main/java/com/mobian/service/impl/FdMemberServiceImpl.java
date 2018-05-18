@@ -305,6 +305,9 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 	public void edit(FdMember fdMember) {
 		TfdMember t = fdMemberDao.get(TfdMember.class, fdMember.getId());
 		if (t != null) {
+			if(!F.empty(fdMember.getMobile()) && t.getUsername().equals(t.getMobile())) {
+				fdMember.setUsername(fdMember.getMobile());
+			}
 			MyBeanUtils.copyProperties(fdMember, t, new String[] { "id" , "addtime", "isdeleted","updatetime" },true);
 		}
 	}
