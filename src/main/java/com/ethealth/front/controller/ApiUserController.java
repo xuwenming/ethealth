@@ -441,11 +441,6 @@ public class ApiUserController extends BaseController {
             }
 
             String mobile = member.getMobile();
-
-            if(F.empty(mobile)) {
-                j.setMsg("手机号不能为空！");
-                return j;
-            }
             if(!F.empty(mobile)) {
                 if(!Util.isMobilePhone(mobile)) {
                     j.setMsg("手机号码格式不正确！");
