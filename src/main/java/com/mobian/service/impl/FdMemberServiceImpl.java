@@ -315,6 +315,12 @@ public class FdMemberServiceImpl extends BaseServiceImpl<FdMember> implements Fd
 
 	@Override
 	public void editMember(FdMember member) {
+		if(!F.empty(member.getMobile())) {
+			FdMember old = get(member.getId());
+			// 删除环信账号
+			HuanxinUtil.delUser(old.getIsAdmin() + "-" + old.getMobile());
+			member.setHxStatus(false);
+		}
 		this.edit(member);
 		if(!F.empty(member.getRealName()) || !F.empty(member.getSex()) || !F.empty(member.getBirthday()) || !F.empty(member.getMobile())) {
 			FdCustomer customer = new FdCustomer();
