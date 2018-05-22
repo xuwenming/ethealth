@@ -235,7 +235,7 @@ public class BaseController extends Objectx {
 
 	protected SessionInfo getSessionInfo(HttpServletRequest request){
 		SessionInfo s = tokenManage.getSessionInfo(request);
-		if(TokenManage.DEFAULT_TOKEN.equals(s.getId()))
+		if(s == null || TokenManage.DEFAULT_TOKEN.equals(s.getId()))
 			throw new ServiceException("token_expire");
 
 		return s;
