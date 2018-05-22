@@ -99,13 +99,13 @@ public class ApiUserController extends BaseController {
                 fdMemberService.edit(o);
 
                 // 医生端获取未处理的加号
-                if(member.getIsAdmin() == 2) {
-                    FdMemberAppointment appointment = new FdMemberAppointment();
-                    appointment.setDoctorId(o.getId());
-                    appointment.setStatus("1");
-                    appointment.setAppointStatus("0"); // 未回复
-                    o.setAppointmentCount(fdMemberAppointmentService.getAppointmentCount(appointment));
-                }
+//                if(member.getIsAdmin() == 2) {
+//                    FdMemberAppointment appointment = new FdMemberAppointment();
+//                    appointment.setDoctorId(o.getId());
+//                    appointment.setStatus("1");
+//                    appointment.setAppointStatus("0"); // 未回复
+//                    o.setAppointmentCount(fdMemberAppointmentService.getAppointmentCount(appointment));
+//                }
 
                 String tokenId = tokenManage.buildToken(o.getId().toString(), o.getMobile(), null);
                 o.setTokenId(tokenId);

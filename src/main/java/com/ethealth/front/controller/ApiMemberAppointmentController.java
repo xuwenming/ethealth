@@ -554,4 +554,35 @@ public class ApiMemberAppointmentController extends BaseController {
 		return j;
 	}
 
+	/**
+	 * 获取加号数量
+	 */
+	@RequestMapping("/getCount")
+	@ResponseBody
+	public Json getCount(FdMemberAppointment appointment, HttpServletRequest request) {
+		Json j = new Json();
+		try{
+			Map<String, Object> obj = new HashMap<String, Object>();
+			SessionInfo s = getSessionInfo(request);
+			appointment.setDoctorId(Integer.valueOf(s.getId()));
+			appointment.setStatus("1");
+			obj.put("totalCount", fdMemberAppointmentService.getAppointmentCount(appointment));
+			appointment.setAppointStatus("0"); // 未回复
+			obj.put("unconfirmedCount", fdMemberAppointmentService.getAppointmentCount(appointment));
+
+			j.setObj(obj);
+			j.setSuccess(true);
+			j.setMsg("获取成功！");
+
+		} catch (ServiceException e) {
+			j.setObj(e.getMessage());
+			logger.error("获取医生加号数量接口异常", e);
+		}catch(Exception e){
+			j.setMsg(Application.getString(EX_0001));
+			logger.error("获取医生加号数量接口异常", e);
+		}
+
+		return j;
+	}
+
 }
