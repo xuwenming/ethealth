@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * Created by xuwm on 2017/5/17.
@@ -72,7 +74,54 @@ public class ApiBalanceController extends BaseController {
 //            balanceLog.setCreateTimeEnd(now.getTimeInMillis());
 
             balanceLog.setUserId(Long.valueOf(s.getId()));
+
             j.setObj(fdBalanceLogService.dataGrid(balanceLog, ph));
+            j.setSuccess(true);
+            j.setMsg("获取钱包明细成功！");
+
+        } catch (ServiceException e) {
+            j.setObj(e.getMessage());
+            logger.error("获取钱包明细接口异常", e);
+        }catch(Exception e){
+            j.setMsg(Application.getString(EX_0001));
+            logger.error("获取钱包明细接口异常", e);
+        }
+
+        return j;
+    }
+
+    /**
+     * 获取钱包明细接口
+     */
+    @RequestMapping("/dataGridAll")
+    @ResponseBody
+    public Json dataGridAll(FdBalanceLog balanceLog, String date, PageHelper ph, HttpServletRequest request) {
+        Json j = new Json();
+        try{
+            Map<String, Object> obj = new HashMap<String, Object>();
+            SessionInfo s = getSessionInfo(request);
+            if(ph.getRows() == 0 || ph.getRows() > 50) {
+                ph.setRows(10);
+            }
+            if(F.empty(ph.getSort())) {
+                ph.setSort("createTime");
+            }
+            if(F.empty(ph.getOrder())) {
+                ph.setOrder("desc");
+            }
+
+            if(ph.getPage() == 0 || ph.getPage() == 1) {
+                FdWithdrawLog log = new FdWithdrawLog();
+                log.setUserId(s.getId());
+                log.setHandleStatus("HS01,HS03");
+
+                obj.put("withdrawLogs", fdWithdrawLogService.query(log));
+            }
+
+            balanceLog.setUserId(Long.valueOf(s.getId()));
+            obj.put("balanceLogs", fdBalanceLogService.dataGrid(balanceLog, ph));
+
+            j.setObj(obj);
             j.setSuccess(true);
             j.setMsg("获取钱包明细成功！");
 

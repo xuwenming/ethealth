@@ -117,8 +117,8 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 				params.put("bankCard", fdWithdrawLog.getBankCard());
 			}		
 			if (!F.empty(fdWithdrawLog.getHandleStatus())) {
-				whereHql += " and t.handleStatus = :handleStatus";
-				params.put("handleStatus", fdWithdrawLog.getHandleStatus());
+				whereHql += " and t.handleStatus in :handleStatus";
+				params.put("handleStatus", fdWithdrawLog.getHandleStatus().split(","));
 			}		
 			if (!F.empty(fdWithdrawLog.getHandleLoginId())) {
 				whereHql += " and t.handleLoginId = :handleLoginId";
@@ -182,7 +182,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		List<FdWithdrawLog> ol = new ArrayList<FdWithdrawLog>();
 		String hql = " from TfdWithdrawLog t ";
 		@SuppressWarnings("unchecked")
-		List<TfdWithdrawLog> l = query(hql, log, fdWithdrawLogDao);
+		List<TfdWithdrawLog> l = query(hql, log, fdWithdrawLogDao, "createTime", "desc");
 		if (l != null && l.size() > 0) {
 			for (TfdWithdrawLog t : l) {
 				FdWithdrawLog o = new FdWithdrawLog();
