@@ -16,6 +16,8 @@ public class RSAUtil {
 
 	private static Cipher cipher;
 
+	public static final String PRIVATE_KEY = "privateKey";
+
 	private final static String ENCODING = "UTF-8";
 	
 	public static final String publicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDChIjqEL4Lrr55xfGOymQlKeILVe8JvtfvHkazZvFpKHeN+rQMsroXcE5d6AjBYDMQZ9shyUmOzrb0DN+rFGp4N0XcxeN7qkSDl6ZUldFji3BeitXyODeOpn4y/ox+Arc4N4NteXFZHM7pXuq7g5ATcYMPt/veWwleWjXYYG7NRQIDAQAB";

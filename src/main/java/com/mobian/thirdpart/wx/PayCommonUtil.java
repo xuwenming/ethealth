@@ -4,6 +4,10 @@ import com.mobian.listener.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.security.PublicKey;
 import java.util.*;
 
 
@@ -105,6 +109,19 @@ public class PayCommonUtil {
 				+ "]]></return_msg></xml>";
 	}
 
+	public static String getRSA(String str) {
+		byte[] estr = new byte[0];   //对银行账号进行加密
+		try {
+			InputStream instream = new FileInputStream(new File(PayCommonUtil.class.getClassLoader().getResource("pksc8_public.pem").getPath()));
+			PublicKey pub = RSAUtil.getPubKey(instream, "RSA");
+			String rsa = "RSA/ECB/OAEPWITHSHA-1ANDMGF1PADDING";
+			estr = RSAUtil.encrypt(str.getBytes(), pub, 2048, 11, rsa);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Base64.encode(estr);
+	}
+
 	/**
 	 * 微信企业付款请求参数
 	 * @return
@@ -113,25 +130,21 @@ public class PayCommonUtil {
 		try {
 			SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();
 			// 金额  必填（单位为分必须为整数）
-			parameters.put("amount", (long)((double)params.get("amount")*100) + "");
-			// 校验用户姓名选项 NO_CHECK：不校验真实姓名 FORCE_CHECK：强校验真实姓名 OPTION_CHECK：针对已实名认证的用户才校验真实姓名
-			parameters.put("check_name", "OPTION_CHECK");
+			parameters.put("amount", (int)(params.get("amount")) + "");
 			// 企业付款描述信息
-			parameters.put("desc", "集东集西提现");
-			// 公众账号ID 必填
-			parameters.put("mch_appid", Application.getString(WeixinUtil.APPID));
+			parameters.put("desc", "医家盟提现");
 			// 商户号 必填
-			parameters.put("mchid", Application.getString(WeixinUtil.MCH_ID));
+			parameters.put("mch_id", Application.getString(WeixinUtil.MCH_ID));
 			// 随机字符串  必填 不长于32位
 			parameters.put("nonce_str", WeixinUtil.CreateNoncestr());
-			// 用户openid，此参数必传
-			parameters.put("openid", params.get("openid").toString());
 			// 商户订单号  必填
 			parameters.put("partner_trade_no", params.get("partner_trade_no").toString());
-			// 收款用户姓名
-			parameters.put("re_user_name", params.get("re_user_name").toString());
-			// 调用接口的机器Ip地址
-			parameters.put("spbill_create_ip", params.get("spbill_create_ip").toString());
+			// 收款方银行卡号
+			parameters.put("enc_bank_no", getRSA(params.get("re_user_name").toString()));
+			// 收款方用户名
+			parameters.put("enc_true_name", getRSA(params.get("re_user_name").toString()));
+			// 收款方开户行
+			parameters.put("bank_code", params.get("re_user_name").toString());
 
 			// 签名 必填
 			String sign = PayCommonUtil.createSign("UTF-8", parameters);

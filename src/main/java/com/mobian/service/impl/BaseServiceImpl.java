@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.mobian.absx.F;
 import com.mobian.dao.BaseDaoI;
 import com.mobian.pageModel.DataGrid;
 import com.mobian.pageModel.PageHelper;
@@ -36,9 +37,17 @@ public abstract class BaseServiceImpl<T> {
 
 
 	protected List query(String hql,T t,BaseDaoI dao){
+		return query(hql, t, dao, null, null);
+	}
+
+	protected List query(String hql,T t,BaseDaoI dao, String sort, String order){
 		Map<String, Object> params = new HashMap<String, Object>();
 		String where = whereHql(t, params);
-		List<T> l = dao.find(hql  + where, params);
+		String orderString = "";
+		if(sort != null) {
+			orderString = " order by t." + sort + " " + (F.empty(order) ? "desc" : order);
+		}
+		List<T> l = dao.find(hql  + where + orderString, params);
 		return l;
 	}
 }

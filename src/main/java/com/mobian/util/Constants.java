@@ -90,5 +90,10 @@ public interface Constants {
 	 * 微信登录默认密码
 	 */
 	public static final String DEFAULT_PASSWORD = "123456";
+
+	/**
+	 * 提现密码
+	 */
+	public static String CASH_PASSWORD = "WD03";
 	
 }

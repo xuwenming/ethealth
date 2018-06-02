@@ -37,7 +37,6 @@ import com.alibaba.fastjson.JSON;
 @RequestMapping("/userController")
 public class UserController extends BaseController {
 
-	public static final String PRIVATE_KEY = "privateKey";
 	@Autowired
 	private UserServiceI userService;
 
@@ -60,7 +59,7 @@ public class UserController extends BaseController {
 	@RequestMapping("/login")
 	public Json login(User user, HttpSession session, HttpServletRequest request) {
 		Json j = new Json();
-		String privateKey = (String)session.getAttribute(PRIVATE_KEY);
+		String privateKey = (String)session.getAttribute(RSAUtil.PRIVATE_KEY);
 		user.setName(RSAUtil.decryptByPravite(user.getName(),privateKey));
 		user.setPwd(RSAUtil.decryptByPravite(user.getPwd(), privateKey));
 		User u = userService.login(user);
@@ -92,7 +91,7 @@ public class UserController extends BaseController {
 		try {
 			Map<String,String> keyMap = RSAUtil.generateKeyPair();
 			String publicKey = keyMap.get("publicKey");
-			session.setAttribute(PRIVATE_KEY,keyMap.get(PRIVATE_KEY));
+			session.setAttribute(RSAUtil.PRIVATE_KEY, keyMap.get(RSAUtil.PRIVATE_KEY));
 			j.setSuccess(true);
 			j.setMsg("获取RSA公钥接口成功！");
 			j.setObj(publicKey);

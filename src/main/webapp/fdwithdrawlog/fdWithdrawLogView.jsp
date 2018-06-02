@@ -1,0 +1,104 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.mobian.model.TfdWithdrawLog" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<script type="text/javascript">
+	$(function() {
+		parent.$.messager.progress('close');		
+	});
+</script>
+<div class="easyui-layout" data-options="fit:true,border:false">
+	<div data-options="region:'center',border:false">
+		<table class="table table-hover table-condensed">
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_CREATE_TIME%></th>	
+					<td>
+						${fdWithdrawLog.createTime}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_UPDATE_TIME%></th>	
+					<td>
+						${fdWithdrawLog.updateTime}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_STATUS%></th>	
+					<td>
+						${fdWithdrawLog.status}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_WITHDRAW_NO%></th>	
+					<td>
+						${fdWithdrawLog.withdrawNo}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_AMOUNT%></th>	
+					<td>
+						${fdWithdrawLog.amount}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_USER_ID%></th>	
+					<td>
+						${fdWithdrawLog.userId}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_CONTENT%></th>	
+					<td>
+						${fdWithdrawLog.content}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_BANK_ACCOUNT%></th>	
+					<td>
+						${fdWithdrawLog.bankAccount}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_BANK_CODE%></th>	
+					<td>
+						${fdWithdrawLog.bankCode}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_BANK_NAME%></th>	
+					<td>
+						${fdWithdrawLog.bankName}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_BANK_CARD%></th>	
+					<td>
+						${fdWithdrawLog.bankCard}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_HANDLE_STATUS%></th>	
+					<td>
+						${fdWithdrawLog.handleStatus}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_HANDLE_LOGIN_ID%></th>	
+					<td>
+						${fdWithdrawLog.handleLoginId}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_HANDLE_REMARK%></th>	
+					<td>
+						${fdWithdrawLog.handleRemark}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_HANDLE_TIME%></th>	
+					<td>
+						${fdWithdrawLog.handleTime}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_PAYMENT_NO%></th>	
+					<td>
+						${fdWithdrawLog.paymentNo}							
+					</td>							
+				</tr>		
+				<tr>	
+					<th><%=TfdWithdrawLog.ALIAS_REF_TYPE%></th>	
+					<td>
+						${fdWithdrawLog.refType}							
+					</td>							
+					<th><%=TfdWithdrawLog.ALIAS_APPLY_LOGIN_IP%></th>	
+					<td>
+						${fdWithdrawLog.applyLoginIp}							
+					</td>							
+				</tr>		
+		</table>
+	</div>
+</div>
