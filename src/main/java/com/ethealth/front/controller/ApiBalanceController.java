@@ -147,12 +147,19 @@ public class ApiBalanceController extends BaseController {
     public Json getLastWithdraw(HttpServletRequest request){
         Json j = new Json();
         try{
+            Map<String, Object> obj = new HashMap<String, Object>();
             SessionInfo s = getSessionInfo(request);
 
             FdWithdrawLog log = new FdWithdrawLog();
             log.setUserId(s.getId());
             FdWithdrawLog withdrawLog = fdWithdrawLogService.get(log);
-            j.setObj(withdrawLog);
+            obj.put("withdrawLog", withdrawLog);
+
+            long max = new BigDecimal(Double.valueOf(Application.getString("WD02", "1000")).toString()).multiply(new BigDecimal(100)).longValue();
+            FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
+            long balanceAmount = new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).longValue();
+            obj.put("amount", balanceAmount >= max ? BigDecimal.valueOf(max).divide(new BigDecimal(100)) : BigDecimal.valueOf(balanceAmount).divide(new BigDecimal(100)));
+            j.setObj(obj);
             j.success();
             j.setMsg("申请成功");
 
