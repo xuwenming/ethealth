@@ -219,7 +219,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 			if (new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < withdrawLog.getAmount()) throw new ServiceException("余额不足");
 			//2. 参数填充
 			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("amount", withdrawLog.getAmount());
+			params.put("amount", withdrawLog.getAmount() - withdrawLog.getServiceAmt());
 			params.put("partner_trade_no", withdrawLog.getWithdrawNo());
 			params.put("enc_bank_no", withdrawLog.getBankCard());
 			params.put("enc_true_name", withdrawLog.getBankAccount());
@@ -253,6 +253,8 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 							"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
 							"\n提现单号：" + withdrawLog.getWithdrawNo() +
 							"\n金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) +
+							"\n手续费：" + BigDecimal.valueOf(withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) +
+							"\n实际到账：" + BigDecimal.valueOf(withdrawLog.getAmount() - withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) +
 							"\n银行：" + withdrawLog.getBankCodeZh() +
 							"\n开户行支行：" + withdrawLog.getBankName() +
 							"\n银行卡号：" + withdrawLog.getBankCard() +
