@@ -254,14 +254,14 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 					String content = "尊敬的用户您好，您的提现申请已审核通过!" +
 							"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
 							"\n提现单号：" + withdrawLog.getWithdrawNo() +
-							"\n金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) +
-							"\n手续费：" + BigDecimal.valueOf(withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) +
-							"\n实际到账：" + BigDecimal.valueOf(withdrawLog.getAmount() - withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) +
+							"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) + "元" +
+							"\n手续费：" + BigDecimal.valueOf(withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
+							"\n实际到账：" + BigDecimal.valueOf(withdrawLog.getAmount() - withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
 							"\n银行：" + withdrawLog.getBankCodeZh() +
 							"\n开户行支行：" + withdrawLog.getBankName() +
 							"\n银行卡号：" + withdrawLog.getBankCard() +
 							"\n开户人姓名：" + withdrawLog.getBankAccount() +
-							"\n银行到账存在延时，有任何疑问可通过客户端直接联系我们，谢谢！";
+							"\n\n银行到账存在延时，有任何疑问可通过客户端直接联系我们，谢谢！";
 					message.setContent(content);
 					message.setUserId(Integer.valueOf(withdrawLog.getUserId()));
 					message.setMtype("MT02");
@@ -317,13 +317,13 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 			String content = "尊敬的用户您好，您的提现申请审核不通过!" +
 					"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
 					"\n提现单号：" + withdrawLog.getWithdrawNo() +
-					"\n金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) +
+					"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) + "元" +
 					"\n银行：" + withdrawLog.getBankCodeZh() +
 					"\n开户行支行：" + withdrawLog.getBankName() +
 					"\n银行卡号：" + withdrawLog.getBankCard() +
 					"\n开户人姓名：" + withdrawLog.getBankAccount() +
 					"\n原因：" + fdWithdrawLog.getHandleRemark() +
-					"\n钱款已退回余额，有任何疑问可通过客户端直接联系我们，谢谢！";
+					"\n\n钱款已退回余额，有任何疑问可通过客户端直接联系我们，谢谢！";
 			message.setContent(content);
 			message.setUserId(Integer.valueOf(withdrawLog.getUserId()));
 			message.setMtype("MT02");
