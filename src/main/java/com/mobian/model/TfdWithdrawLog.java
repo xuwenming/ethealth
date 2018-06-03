@@ -86,6 +86,9 @@ public class TfdWithdrawLog implements java.io.Serializable,IEntity{
 	private java.lang.String refType;
 	//@Length(max=64)
 	private java.lang.String applyLoginIp;
+
+	private java.lang.Integer serviceAmt;
+	private java.lang.Integer cmmsAmt;
 	//columns END
 
 
@@ -269,8 +272,25 @@ public class TfdWithdrawLog implements java.io.Serializable,IEntity{
 	public void setApplyLoginIp(java.lang.String applyLoginIp) {
 		this.applyLoginIp = applyLoginIp;
 	}
-	
-	
+
+	@Column(name = "service_amt", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+	public Integer getServiceAmt() {
+		return serviceAmt;
+	}
+
+	public void setServiceAmt(Integer serviceAmt) {
+		this.serviceAmt = serviceAmt;
+	}
+
+	@Column(name = "cmms_amt", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+	public Integer getCmmsAmt() {
+		return cmmsAmt;
+	}
+
+	public void setCmmsAmt(Integer cmmsAmt) {
+		this.cmmsAmt = cmmsAmt;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
