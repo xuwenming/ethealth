@@ -27,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * FdWithdrawLog管理控制器
@@ -161,7 +162,15 @@ public class FdWithdrawLogController extends BaseController {
 	@RequestMapping("/view")
 	public String view(HttpServletRequest request, Integer id) {
 		FdWithdrawLog fdWithdrawLog = fdWithdrawLogService.get(id);
+		FdMember member = fdMemberService.getSimple(Integer.valueOf(fdWithdrawLog.getUserId()));
+		fdWithdrawLog.setUserName(member.getCustomer().getRealName());
+		fdWithdrawLog.setUserMobile(member.getMobile());
+		if(!F.empty(fdWithdrawLog.getHandleLoginId())) {
+			fdWithdrawLog.setHandleLoginName(userService.getFromCache(fdWithdrawLog.getHandleLoginId()).getName());
+		}
+
 		request.setAttribute("fdWithdrawLog", fdWithdrawLog);
+
 		return "/fdwithdrawlog/fdWithdrawLogView";
 	}
 
@@ -217,7 +226,8 @@ public class FdWithdrawLogController extends BaseController {
 	 */
 	@RequestMapping("/editAuditPage")
 	public String editAuditPage(HttpServletRequest request, Integer id) {
-		request.setAttribute("id", id);
+		FdWithdrawLog fdWithdrawLog = fdWithdrawLogService.get(id);
+		request.setAttribute("fdWithdrawLog", fdWithdrawLog);
 		return "/fdwithdrawlog/fdWithDrawLogAudit";
 	}
 
@@ -249,6 +259,19 @@ public class FdWithdrawLogController extends BaseController {
 
 		return json;
 
+
+	}
+
+	@RequestMapping("/viewStatus")
+	@ResponseBody
+	public Json viewStatus(String withdrawNo) {
+		Json json = new Json();
+
+		Map<String, String> obj = fdWithdrawLogService.queryStatus(withdrawNo);
+		json.setObj(obj);
+		json.success();
+
+		return json;
 
 	}
 

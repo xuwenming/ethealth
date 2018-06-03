@@ -1,5 +1,6 @@
 package com.mobian.service.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -18,6 +19,7 @@ import com.mobian.util.Constants;
 import com.mobian.util.DateUtil;
 import com.mobian.util.IpUtil;
 import org.apache.commons.collections.CollectionUtils;
+import org.jdom.JDOMException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -282,6 +284,16 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		}
 		// 拒绝
 		else if ("HS03".equals(fdWithdrawLog.getHandleStatus())) {
+
+			if("HS02".equals(withdrawLog.getHandleStatus())) {
+				Map<String, String> map = queryStatus(withdrawLog.getWithdrawNo());
+				if("PROCESSING".equals(map.get("status"))) {
+					throw new ServiceException("提现正在处理中，无法拒绝！");
+				} else if("SUCCESS".equals(map.get("status"))) {
+					throw new ServiceException("提现已处理成功，无法拒绝！");
+				}
+			}
+
 			fdWithdrawLog.setHandleLoginId(loginId);
 			fdWithdrawLog.setHandleTime(new Date());
 			edit(fdWithdrawLog);
@@ -310,7 +322,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 					"\n开户行支行：" + withdrawLog.getBankName() +
 					"\n银行卡号：" + withdrawLog.getBankCard() +
 					"\n开户人姓名：" + withdrawLog.getBankAccount() +
-					"\n原因：" + withdrawLog.getHandleRemark() +
+					"\n原因：" + fdWithdrawLog.getHandleRemark() +
 					"\n钱款已退回余额，有任何疑问可通过客户端直接联系我们，谢谢！";
 			message.setContent(content);
 			message.setUserId(Integer.valueOf(withdrawLog.getUserId()));
@@ -335,6 +347,27 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		balanceLog.setStatus(false);
 		balanceLog.setNote("提现扣款");
 		fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+	}
+
+	@Override
+	public Map<String, String> queryStatus(String withdrawNo) {
+		Map<String, String> result = new HashMap<String, String>();
+
+		try {
+			String requestXml = PayCommonUtil.requestQueryBankXML(withdrawNo);
+			Map<String, String> resultMap = XMLUtil.doXMLParse(HttpUtil.httpsRequestSSL(WeixinUtil.QUERY_BANK_URL, requestXml));
+			if (!F.empty(resultMap.get("result_code")) && resultMap.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
+				result.put("status", resultMap.get("status"));
+				result.put("reason", resultMap.get("reason"));
+				return result;
+			}
+
+		} catch (JDOMException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

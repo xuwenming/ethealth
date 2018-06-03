@@ -69,7 +69,7 @@ public class ApiUserController extends BaseController {
         try{
             String username = member.getUsername();
             String password = member.getPassword();
-            System.out.println("登录username=" + username + ";password=" + password);
+//            System.out.println("登录username=" + username + ";password=" + password);
             if(!F.empty(username) && !F.empty(password)) {
                 if(!Util.isMobilePhone(username)) {
                     j.setMsg("手机号码格式不正确！");

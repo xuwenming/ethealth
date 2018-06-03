@@ -6,6 +6,7 @@ import com.mobian.pageModel.PageHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -61,4 +62,6 @@ public interface FdWithdrawLogServiceI {
 	void editAudit(FdWithdrawLog fdWithdrawLog, String loginId, HttpServletRequest request);
 
 	void addAndBalance(FdWithdrawLog withdrawLog);
+
+	Map<String,String> queryStatus(String withdrawNo);
 }

@@ -28,6 +28,11 @@
 		$.canEditAudit = true;
 	</script>
 </c:if>
+	<c:if test="${fn:contains(sessionInfo.resourceList, '/fdWithdrawLogController/viewStatus')}">
+		<script type="text/javascript">
+			$.canViewStatus = true;
+		</script>
+	</c:if>
 <script type="text/javascript">
 	var dataGrid;
 	$(function() {
@@ -56,10 +61,16 @@
 				}, {
 				field : 'withdrawNo',
 				title : '提现单号',
-				width : 50
+				width : 60,
+				formatter : function (value, row, index) {
+					if ($.canView) {
+						return '<a onclick="viewFun(\'' + row.id + '\')">'+value+'</a>';
+					}
+					return value
+				}
 				}, {
 				field : 'createTime',
-				title : '<%=TfdWithdrawLog.ALIAS_CREATE_TIME%>',
+				title : '申请时间',
 				width : 60,
 				formatter : function (value, row, index) {
 					return new Date(value).format('yyyy-MM-dd HH:mm:ss');
@@ -67,7 +78,7 @@
 				}, {
 				field : 'userName',
 				title : '申请人姓名',
-				width : 50
+				width : 40
 				}, {
 				field : 'userMobile',
 				title : '申请人手机号',
@@ -75,7 +86,7 @@
 				}, {
 				field : 'amount',
 				title : '<%=TfdWithdrawLog.ALIAS_AMOUNT%>',
-				width : 30,
+				width : 40,
 				align: "right",
 				formatter: function (value, row, index) {
 					if (value != null)
@@ -86,23 +97,23 @@
 				}, {
 				field : 'bankAccount',
 				title : '<%=TfdWithdrawLog.ALIAS_BANK_ACCOUNT%>',
-				width : 50		
+				width : 40
 				}, {
 				field : 'bankCodeZh',
 				title : '银行',
-				width : 50		
+				width : 40
 				}, {
 				field : 'bankName',
 				title : '<%=TfdWithdrawLog.ALIAS_BANK_NAME%>',
-				width : 50		
+				width : 65
 				}, {
 				field : 'bankCard',
 				title : '<%=TfdWithdrawLog.ALIAS_BANK_CARD%>',
-				width : 50		
+				width : 70
 				}, {
 				field : 'handleStatusZh',
 				title : '<%=TfdWithdrawLog.ALIAS_HANDLE_STATUS%>',
-				width : 50,
+				width : 40,
 				formatter: function (value, row, index) {
 					var str;
 					if(row.handleStatus == "HS01") str = value;
@@ -112,9 +123,9 @@
 					return str;
 				}
 				}, {
-				field : 'handleLoginId',
+				field : 'handleLoginName',
 				title : '<%=TfdWithdrawLog.ALIAS_HANDLE_LOGIN_ID%>',
-				width : 50		
+				width : 40
 				}, {
 				field : 'refTypeZh',
 				title : '<%=TfdWithdrawLog.ALIAS_REF_TYPE%>',
@@ -129,7 +140,11 @@
 				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
-					if ($.canEditAudit && row.handleStatus != 'HS02'){
+					if ($.canViewStatus && row.handleStatus == 'HS02') {
+						str += '<a onclick="viewStatus(\'' + row.withdrawNo + '\')">查看状态</a>';
+					}
+					str += '&nbsp;';
+					if ($.canEditAudit && row.handleStatus != 'HS03'){
 						str += '<a onclick="editAuditFun(\'' + row.id + '\',\'' + row.auditType + '\')">审核</a>';
 					}
 					return str;
@@ -159,11 +174,16 @@
 			buttons: [{
 				text: '同意',
 				handler: function () {
+					var f = parent.$.modalDialog.handler.find('#form');
+					var $handleStatus = f.find("input[name=handleStatus]");
+					if($handleStatus.val() == 'HS02') {
+						parent.$.messager.alert('提示', '提现已审核通过，请勿重复操作', 'info');
+						return;
+					}
 					parent.$.messager.confirm('询问', '同意提现，是否继续？', function(b) {
 						if (b) {
 							parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
-							var f = parent.$.modalDialog.handler.find('#form');
-							f.find("input[name=handleStatus]").val("HS02");
+							$handleStatus.val("HS02");
 							f.submit();
 						}
 					});
@@ -172,7 +192,7 @@
 				{
 					text: '拒绝',
 					handler: function () {
-						parent.$.messager.confirm('询问', '拒绝提现，是否继续？', function(b) {
+						parent.$.messager.confirm('询问', '拒绝提现余额退回，是否继续？', function(b) {
 							if (b) {
 								parent.$.modalDialog.openner_dataGrid = dataGrid;//因为添加成功之后，需要刷新这个dataGrid，所以先预定义好
 								var f = parent.$.modalDialog.handler.find('#form');
@@ -184,6 +204,28 @@
 				}
 			]
 		});
+	}
+
+	function viewStatus(withdrawNo) {
+		$.post('${pageContext.request.contextPath}/fdWithdrawLogController/viewStatus', {
+			withdrawNo : withdrawNo
+		}, function(result) {
+			if (result.success) {
+				if(result.obj) {
+					if(result.obj.status == 'PROCESSING') {
+						parent.$.messager.alert('提示', '提现正在处理中...', 'info');
+					} else if(result.obj.status == 'SUCCESS') {
+						parent.$.messager.alert('提示', '提现已处理成功', 'info');
+					} else {
+						parent.$.messager.alert('提示', '1、提现失败<br>2、原因：' + result.obj.reason + '<br><br>请及时将该提现审核拒绝！', 'error');
+					}
+
+				} else {
+					parent.$.messager.alert('提示', '接口异常', 'error');
+				}
+
+			}
+		}, 'JSON');
 	}
 
 	function deleteFun(id) {

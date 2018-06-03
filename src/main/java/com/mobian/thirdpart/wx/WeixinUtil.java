@@ -62,6 +62,11 @@ public class WeixinUtil {
 	public final static String PAY_BANK_URL = "https://api.mch.weixin.qq.com/mmpaysptrans/pay_bank";
 
 	/**
+	 * 查询微信支付企业付款到银行卡接口
+	 */
+	public final static String QUERY_BANK_URL = "https://api.mch.weixin.qq.com/mmpaysptrans/query_bank";
+
+	/**
 	 * 微信查询订单接口(POST)
 	 */
 	public final static String ORDER_QUERY_URL = "https://api.mch.weixin.qq.com/pay/orderquery";

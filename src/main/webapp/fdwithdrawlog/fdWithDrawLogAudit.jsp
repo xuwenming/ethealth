@@ -43,6 +43,7 @@
 					parent.$.modalDialog.handler.dialog('close');
 				} else {
 					parent.$.messager.alert('错误', result.msg, 'error');
+					$("input[name=handleStatus]").val($("input[name=oldHandleStatus]").val());
 				}
 			}
 		});
@@ -51,8 +52,9 @@
 <div class="easyui-layout" data-options="fit:true,border:false">
 	<div data-options="region:'center',border:false" title="" style="overflow: hidden;">
 		<form id="form" method="post">
-				<input type="hidden" name="id" value = "${id}"/>
-				<input name="handleStatus" type="hidden"/>
+				<input type="hidden" name="id" value = "${fdWithdrawLog.id}"/>
+				<input name="handleStatus" type="hidden" value="${fdWithdrawLog.handleStatus}"/>
+				<input name="oldHandleStatus" type="hidden" value="${fdWithdrawLog.handleStatus}"/>
 			<table class="table table-hover table-condensed">
 
 				<tr>

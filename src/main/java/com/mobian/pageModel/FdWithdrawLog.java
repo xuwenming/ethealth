@@ -1,7 +1,10 @@
 package com.mobian.pageModel;
 
 import com.mobian.listener.Application;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 
+import java.util.Calendar;
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -257,5 +260,14 @@ public class FdWithdrawLog implements java.io.Serializable {
 
 	public void setCmmsAmt(Integer cmmsAmt) {
 		this.cmmsAmt = cmmsAmt;
+	}
+
+	public String getCreateTimeStr() {
+		if(createTime != null) {
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(createTime);
+			return DateUtil.format(c.getTime(), Constants.DATE_FORMAT);
+		}
+		return null;
 	}
 }

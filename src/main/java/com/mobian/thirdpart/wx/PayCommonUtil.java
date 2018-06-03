@@ -228,4 +228,24 @@ public class PayCommonUtil {
 		return null;
 	}
 
+	public static String requestQueryBankXML(String partner_trade_no) {
+		try {
+			SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();
+			// 商户号 必填
+			parameters.put("mch_id", Application.getString(WeixinUtil.MCH_ID));
+			// 随机字符串  必填 不长于32位
+			parameters.put("nonce_str", WeixinUtil.CreateNoncestr());
+			// 商户订单号  必填
+			parameters.put("partner_trade_no", partner_trade_no);
+			// 签名 必填
+			String sign = PayCommonUtil.createSign("UTF-8", parameters);
+			parameters.put("sign", sign);
+
+			return PayCommonUtil.getRequestXml(parameters);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }
