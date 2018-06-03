@@ -3,6 +3,7 @@ package com.mobian.thirdpart.wx;
 import com.mobian.absx.F;
 import com.mobian.listener.Application;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -153,10 +154,11 @@ public class HttpUtil {
 	 * @return 返回微信服务器响应的信息
 	 */
 	public static String httpsRequestSSL(String requestUrl, String outputStr) {
-		String jsonStr = null;
+		StringBuffer reultBuffer = new StringBuffer();
 		try {
 			KeyStore keyStore  = KeyStore.getInstance("PKCS12");
-			String mchId = Application.getString(WeixinUtil.MCH_ID);
+//			String mchId = Application.getString(WeixinUtil.MCH_ID);
+			String mchId = "1493767442";
 
 			FileInputStream instream = new FileInputStream(new File(HttpUtil.class.getClassLoader().getResource("apiclient_cert.p12").getPath()));
 			try {
@@ -179,35 +181,48 @@ public class HttpUtil {
 			CloseableHttpClient httpclient = HttpClients.custom()
 					.setSSLSocketFactory(sslsf)
 					.build();
+
+			HttpPost httpost = new HttpPost(requestUrl);
+
+			StringEntity myEntity = new org.apache.http.entity.StringEntity(outputStr, "UTF-8");
+			myEntity.setContentType("text/xml;charset=UTF-8");
+			myEntity.setContentEncoding("UTF-8");
+			httpost.setHeader("Content-Type", "text/xml; charset=UTF-8");
+			httpost.setEntity(myEntity);
+
+			CloseableHttpResponse response      = null;
+			InputStream inputStream             = null;
+			InputStreamReader inputStreamReader = null;
+			BufferedReader bufferedReader       = null;
 			try {
-
-				HttpPost httpost = new HttpPost(requestUrl);
-
-				httpost.addHeader("Connection", "keep-alive");
-				httpost.addHeader("Accept", "*/*");
-				httpost.addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-				httpost.addHeader("Host", "api.mch.weixin.qq.com");
-				httpost.addHeader("X-Requested-With", "XMLHttpRequest");
-				httpost.addHeader("Cache-Control", "max-age=0");
-				httpost.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0) ");
-				if(!F.empty(outputStr))
-					httpost.setEntity(new StringEntity(outputStr, "UTF-8"));
-				CloseableHttpResponse response = httpclient.execute(httpost);
-				try {
-					HttpEntity entity = response.getEntity();
-					jsonStr = EntityUtils.toString(response.getEntity(), "UTF-8");
-					EntityUtils.consume(entity);
-					System.out.println(jsonStr);
-				} finally {
-					response.close();
+				response = httpclient.execute(httpost);
+				HttpEntity entity = response.getEntity();
+				if (entity!=null){
+					inputStream = entity.getContent();
+					inputStreamReader = new InputStreamReader(inputStream,"UTF-8");
+					bufferedReader = new BufferedReader(inputStreamReader);
+					String str = null;
+					while ((str = bufferedReader.readLine()) != null) {
+						reultBuffer.append(str);
+					}
 				}
-			} finally {
+			} catch (ClientProtocolException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}finally{
 				httpclient.close();
+				response.close();
+				bufferedReader.close();
+				inputStreamReader.close();
+				inputStream.close();
+				inputStream = null;
 			}
+
 		} catch (Exception e) {
 			log.error("https request error:{}", e);
 		}
-		return jsonStr;
+		return  reultBuffer.toString();
 	}
 
 }

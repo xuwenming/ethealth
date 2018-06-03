@@ -204,8 +204,8 @@ public class ApiBalanceController extends BaseController {
                 return j;
             }
 
-            if(F.empty(withdrawLog.getAmount()) || withdrawLog.getAmount() < 100) {
-                j.setMsg("单次提现不能低于1元");
+            if(F.empty(withdrawLog.getAmount()) || withdrawLog.getAmount() < 200) {
+                j.setMsg("单次提现不能低于2元");
                 return j;
             }
 
@@ -247,6 +247,21 @@ public class ApiBalanceController extends BaseController {
             withdrawLog.setRefType(refType);
             withdrawLog.setWithdrawNo(Util.CreateNo("T"));
             withdrawLog.setHandleStatus("HS01");
+
+            int serviceAmtFlag = Integer.valueOf(Application.getString("WD04", "1"));
+            int serviceAmt = 0;
+            if(serviceAmtFlag == 1) {
+                if(withdrawLog.getAmount() <= 1000*100) {
+                    serviceAmt = 100;
+                } else {
+                    BigDecimal amt = new BigDecimal(BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).toString()).multiply(new BigDecimal(0.1)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                    serviceAmt = new BigDecimal(amt.toString()).multiply(new BigDecimal(100)).intValue();
+                    if(serviceAmt > 2500) {
+                        serviceAmt = 2500;
+                    }
+                }
+            }
+            withdrawLog.setServiceAmt(serviceAmt);
             fdWithdrawLogService.addAndBalance(withdrawLog);
             j.success();
             j.setMsg("申请成功");

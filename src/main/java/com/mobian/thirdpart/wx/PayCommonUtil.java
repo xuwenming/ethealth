@@ -115,7 +115,7 @@ public class PayCommonUtil {
 			InputStream instream = new FileInputStream(new File(PayCommonUtil.class.getClassLoader().getResource("pksc8_public.pem").getPath()));
 			PublicKey pub = RSAUtil.getPubKey(instream, "RSA");
 			String rsa = "RSA/ECB/OAEPWITHSHA-1ANDMGF1PADDING";
-			estr = RSAUtil.encrypt(str.getBytes(), pub, 2048, 11, rsa);
+			estr = RSAUtil.encrypt(str.getBytes("UTF-8"), pub, 2048, 11, rsa);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -140,11 +140,11 @@ public class PayCommonUtil {
 			// 商户订单号  必填
 			parameters.put("partner_trade_no", params.get("partner_trade_no").toString());
 			// 收款方银行卡号
-			parameters.put("enc_bank_no", getRSA(params.get("re_user_name").toString()));
+			parameters.put("enc_bank_no", getRSA(params.get("enc_bank_no").toString()));
 			// 收款方用户名
-			parameters.put("enc_true_name", getRSA(params.get("re_user_name").toString()));
+			parameters.put("enc_true_name", getRSA(params.get("enc_true_name").toString()));
 			// 收款方开户行
-			parameters.put("bank_code", params.get("re_user_name").toString());
+			parameters.put("bank_code", params.get("bank_code").toString());
 
 			// 签名 必填
 			String sign = PayCommonUtil.createSign("UTF-8", parameters);

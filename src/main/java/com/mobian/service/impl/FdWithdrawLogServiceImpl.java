@@ -1,26 +1,21 @@
 package com.mobian.service.impl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdWithdrawLogDaoI;
 import com.mobian.exception.ServiceException;
 import com.mobian.model.TfdWithdrawLog;
 import com.mobian.pageModel.*;
-import com.mobian.service.FdBalanceLogServiceI;
-import com.mobian.service.FdCustomerServiceI;
-import com.mobian.service.FdWithdrawLogServiceI;
+import com.mobian.service.*;
 
 import com.mobian.thirdpart.wx.HttpUtil;
 import com.mobian.thirdpart.wx.PayCommonUtil;
 import com.mobian.thirdpart.wx.WeixinUtil;
 import com.mobian.thirdpart.wx.XMLUtil;
+import com.mobian.util.Constants;
+import com.mobian.util.DateUtil;
 import com.mobian.util.IpUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +36,12 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 
 	@Autowired
 	private FdBalanceLogServiceI fdBalanceLogService;
+
+	@Autowired
+	private FdMemberServiceI fdMemberService;
+
+	@Autowired
+	private FdMessageServiceI fdMessageService;
 
 	@Override
 	public DataGrid dataGrid(FdWithdrawLog fdWithdrawLog, PageHelper ph) {
@@ -210,6 +211,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 	@Override
 	public void editAudit(FdWithdrawLog fdWithdrawLog, String loginId, HttpServletRequest request) {
 		FdWithdrawLog withdrawLog = get(fdWithdrawLog.getId());
+
 		//通过
 		if ("HS02".equals(fdWithdrawLog.getHandleStatus())) {
 			//1.  判断是否合规
@@ -237,14 +239,41 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 					fdWithdrawLog.setHandleLoginId(loginId);
 					fdWithdrawLog.setHandleTime(new Date());
 					fdWithdrawLog.setPaymentNo(resultMap.get("payment_no").toString());
+					if(resultMap.get("cmms_amt") != null)
+						fdWithdrawLog.setCmmsAmt(Integer.valueOf(resultMap.get("cmms_amt")));
 					edit(fdWithdrawLog);
+
+					// 添加用户消息
+					FdMember user = fdMemberService.get(Integer.valueOf(withdrawLog.getUserId()));
+					FdMessage message = new FdMessage();
+					message.setTitle("提现审核通过");
+					Calendar c = Calendar.getInstance();
+					c.setTimeInMillis(withdrawLog.getCreateTime());
+					String content = "尊敬的用户您好，您的提现申请已审核通过!" +
+							"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
+							"\n提现单号：" + withdrawLog.getWithdrawNo() +
+							"\n金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) +
+							"\n银行：" + withdrawLog.getBankCodeZh() +
+							"\n开户行支行：" + withdrawLog.getBankName() +
+							"\n银行卡号：" + withdrawLog.getBankCard() +
+							"\n开户人姓名：" + withdrawLog.getBankAccount() +
+							"\n银行到账存在延时，有任何疑问可通过客户端直接联系我们，谢谢！";
+					message.setContent(content);
+					message.setUserId(Integer.valueOf(withdrawLog.getUserId()));
+					message.setMtype("MT02");
+					message.setIsRead(false);
+					message.setAlias("0_" + user.getMobile());
+					message.setPushMessage(new PushMessage("M401", "您在医家盟申请的提现已审核通过!"));
+					fdMessageService.addAndPushMessage(message);
 				} else {
 					fdWithdrawLog.setHandleStatus("HS01");
+					fdWithdrawLog.setHandleLoginId(loginId);
 					fdWithdrawLog.setHandleRemark("提现失败" + resultMap.get("err_code_des"));
 					edit(fdWithdrawLog);
 				}
 			} catch (Exception e) {
 				fdWithdrawLog.setHandleStatus("HS01");
+				fdWithdrawLog.setHandleLoginId(loginId);
 				fdWithdrawLog.setHandleRemark("提现失败--接口异常");
 				edit(fdWithdrawLog);
 			}
@@ -264,6 +293,30 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 			balanceLog.setStatus(false);
 			balanceLog.setNote("提现失败，余额退回");
 			fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
+
+			// 添加用户消息
+			FdMember user = fdMemberService.get(Integer.valueOf(withdrawLog.getUserId()));
+			FdMessage message = new FdMessage();
+			message.setTitle("提现审核拒绝");
+			Calendar c = Calendar.getInstance();
+			c.setTimeInMillis(withdrawLog.getCreateTime());
+			String content = "尊敬的用户您好，您的提现申请审核不通过!" +
+					"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
+					"\n提现单号：" + withdrawLog.getWithdrawNo() +
+					"\n金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) +
+					"\n银行：" + withdrawLog.getBankCodeZh() +
+					"\n开户行支行：" + withdrawLog.getBankName() +
+					"\n银行卡号：" + withdrawLog.getBankCard() +
+					"\n开户人姓名：" + withdrawLog.getBankAccount() +
+					"\n原因：" + withdrawLog.getHandleRemark() +
+					"\n钱款已退回余额，有任何疑问可通过客户端直接联系我们，谢谢！";
+			message.setContent(content);
+			message.setUserId(Integer.valueOf(withdrawLog.getUserId()));
+			message.setMtype("MT02");
+			message.setIsRead(false);
+			message.setAlias("0_" + user.getMobile());
+			message.setPushMessage(new PushMessage("M401", "您在医家盟申请的提现审核不通过!"));
+			fdMessageService.addAndPushMessage(message);
 		}
 	}
 

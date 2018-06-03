@@ -15,7 +15,8 @@ public class FdWithdrawLog implements java.io.Serializable {
 	private java.lang.String status;	
 	private java.lang.String withdrawNo;	
 	private java.lang.Integer amount;	
-	private java.lang.String userId;	
+	private java.lang.Integer serviceAmt;
+	private java.lang.String userId;
 	private java.lang.String content;	
 	private java.lang.String bankAccount;	
 	private java.lang.String bankCode;	
@@ -26,7 +27,8 @@ public class FdWithdrawLog implements java.io.Serializable {
 	private java.lang.String handleRemark;	
 	private Date handleTime;			
 	private java.lang.String paymentNo;	
-	private java.lang.String refType;	
+	private java.lang.Integer cmmsAmt;
+	private java.lang.String refType;
 	private java.lang.String applyLoginIp;
 
 	private java.lang.Long createTimeStart;
@@ -239,5 +241,21 @@ public class FdWithdrawLog implements java.io.Serializable {
 
 	public void setHandleLoginName(String handleLoginName) {
 		this.handleLoginName = handleLoginName;
+	}
+
+	public Integer getServiceAmt() {
+		return serviceAmt;
+	}
+
+	public void setServiceAmt(Integer serviceAmt) {
+		this.serviceAmt = serviceAmt;
+	}
+
+	public Integer getCmmsAmt() {
+		return cmmsAmt;
+	}
+
+	public void setCmmsAmt(Integer cmmsAmt) {
+		this.cmmsAmt = cmmsAmt;
 	}
 }

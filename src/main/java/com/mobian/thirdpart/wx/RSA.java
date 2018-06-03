@@ -32,21 +32,23 @@ public class RSA {
                 sb.append(k + "=" + v + "&");
             }
         }
-		sb.append("key=" + "33097ad18741352fe3ded9acd004c58b");
+		sb.append("key=33097ad18741352fe3ded9acd004c58b");
         String sign = MD5Util.MD5Encode(sb.toString(), characterEncoding).toUpperCase();
 
         return sign;
     }
 
     public static void main(String[] args) {
-        String url = "https://fraud.mch.weixin.qq.com/risk/getpublickey";
-        SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();
-        parameters.put("mch_id", "1493767442");
-        parameters.put("nonce_str", CreateNoncestr());
-        parameters.put("sign_type", "MD5");
-        parameters.put("sign", createSign("UTF-8", parameters));
+//        String url = "https://fraud.mch.weixin.qq.com/risk/getpublickey";
+//        SortedMap<Object,Object> parameters = new TreeMap<Object,Object>();
+//        parameters.put("mch_id", "1493767442");
+//        parameters.put("nonce_str", CreateNoncestr());
+//        parameters.put("sign_type", "MD5");
+//        parameters.put("sign", createSign("UTF-8", parameters));
+//
+//        String request = HttpUtil.httpsRequestSSL(url, PayCommonUtil.getRequestXml(parameters));
+//        System.out.println(request);
 
-        String request = HttpUtil.httpsRequestSSL(url, PayCommonUtil.getRequestXml(parameters));
-        System.out.println(request);
+        System.out.println(PayCommonUtil.getRSA("徐文明"));
     }
 }
