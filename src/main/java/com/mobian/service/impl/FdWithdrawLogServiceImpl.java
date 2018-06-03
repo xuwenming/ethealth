@@ -149,6 +149,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		TfdWithdrawLog t = new TfdWithdrawLog();
 		BeanUtils.copyProperties(fdWithdrawLog, t);
 		fdWithdrawLogDao.save(t);
+		fdWithdrawLog.setId(t.getId());
 	}
 
 	@Override
@@ -232,38 +233,53 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 				Map<String, String> resultMap = XMLUtil.doXMLParse(result);
 
 				if (!F.empty(resultMap.get("result_code")) && resultMap.get("result_code").toString().equalsIgnoreCase("SUCCESS")) {
-					//4. 扣除余额
-					FdBalanceLog balanceLog = new FdBalanceLog();
-					balanceLog.setUserId(Long.valueOf(withdrawLog.getUserId()));
-					balanceLog.setRefType(withdrawLog.getRefType());
-					balanceLog.setRefId(fdWithdrawLog.getId() + "");
-					balanceLog.setAmount(-BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).floatValue());
-					balanceLog.setStatus(false);
-					balanceLog.setNote("提现扣款");
-					fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
-
-					//5. 编辑提现申请记录
+					//4. 编辑提现申请记录
 					fdWithdrawLog.setHandleLoginId(loginId);
 					fdWithdrawLog.setHandleTime(new Date());
 					fdWithdrawLog.setPaymentNo(resultMap.get("payment_no").toString());
 					edit(fdWithdrawLog);
 				} else {
-					withdrawLog.setHandleStatus("HS01");
-					withdrawLog.setHandleRemark("提现失败" + resultMap.get("err_code_des"));
-					edit(withdrawLog);
+					fdWithdrawLog.setHandleStatus("HS01");
+					fdWithdrawLog.setHandleRemark("提现失败" + resultMap.get("err_code_des"));
+					edit(fdWithdrawLog);
 				}
 			} catch (Exception e) {
-				withdrawLog.setHandleStatus("HS01");
-				withdrawLog.setHandleRemark("提现失败--接口异常");
-				edit(withdrawLog);
+				fdWithdrawLog.setHandleStatus("HS01");
+				fdWithdrawLog.setHandleRemark("提现失败--接口异常");
+				edit(fdWithdrawLog);
 			}
 		}
 		// 拒绝
 		else if ("HS03".equals(fdWithdrawLog.getHandleStatus())) {
 			fdWithdrawLog.setHandleLoginId(loginId);
 			fdWithdrawLog.setHandleTime(new Date());
-			edit(withdrawLog);
+			edit(fdWithdrawLog);
+
+			// 余额退回
+			FdBalanceLog balanceLog = new FdBalanceLog();
+			balanceLog.setUserId(Long.valueOf(withdrawLog.getUserId()));
+			balanceLog.setRefType("BBT009");
+			balanceLog.setRefId(withdrawLog.getId() + "");
+			balanceLog.setAmount(BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).floatValue());
+			balanceLog.setStatus(false);
+			balanceLog.setNote("提现失败，余额退回");
+			fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 		}
+	}
+
+	@Override
+	public void addAndBalance(FdWithdrawLog withdrawLog) {
+		add(withdrawLog);
+
+		// 扣除钱包余额
+		FdBalanceLog balanceLog = new FdBalanceLog();
+		balanceLog.setUserId(Long.valueOf(withdrawLog.getUserId()));
+		balanceLog.setRefType(withdrawLog.getRefType());
+		balanceLog.setRefId(withdrawLog.getId() + "");
+		balanceLog.setAmount(-BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).floatValue());
+		balanceLog.setStatus(false);
+		balanceLog.setNote("提现扣款");
+		fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 	}
 
 }

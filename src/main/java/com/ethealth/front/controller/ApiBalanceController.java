@@ -240,7 +240,7 @@ public class ApiBalanceController extends BaseController {
             withdrawLog.setRefType(refType);
             withdrawLog.setWithdrawNo(Util.CreateNo("T"));
             withdrawLog.setHandleStatus("HS01");
-            fdWithdrawLogService.add(withdrawLog);
+            fdWithdrawLogService.addAndBalance(withdrawLog);
             j.success();
             j.setMsg("申请成功");
 

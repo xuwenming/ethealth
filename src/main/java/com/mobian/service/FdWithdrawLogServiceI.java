@@ -59,4 +59,6 @@ public interface FdWithdrawLogServiceI {
 	FdWithdrawLog get(FdWithdrawLog log);
 
 	void editAudit(FdWithdrawLog fdWithdrawLog, String loginId, HttpServletRequest request);
+
+	void addAndBalance(FdWithdrawLog withdrawLog);
 }
