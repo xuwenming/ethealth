@@ -273,7 +273,7 @@ public class TfdWithdrawLog implements java.io.Serializable,IEntity{
 		this.applyLoginIp = applyLoginIp;
 	}
 
-	@Column(name = "service_amt", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+	@Column(name = "service_amt", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getServiceAmt() {
 		return serviceAmt;
 	}
@@ -282,7 +282,7 @@ public class TfdWithdrawLog implements java.io.Serializable,IEntity{
 		this.serviceAmt = serviceAmt;
 	}
 
-	@Column(name = "cmms_amt", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+	@Column(name = "cmms_amt", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
 	public Integer getCmmsAmt() {
 		return cmmsAmt;
 	}
