@@ -217,8 +217,8 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		//通过
 		if ("HS02".equals(fdWithdrawLog.getHandleStatus())) {
 			//1.  判断是否合规
-			FdCustomer customer = fdCustomerService.get(Long.valueOf(withdrawLog.getUserId()));
-			if (new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < withdrawLog.getAmount()) throw new ServiceException("余额不足");
+//			FdCustomer customer = fdCustomerService.get(Long.valueOf(withdrawLog.getUserId()));
+//			if (new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < withdrawLog.getAmount()) throw new ServiceException("余额不足");
 			//2. 参数填充
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("amount", withdrawLog.getAmount() - withdrawLog.getServiceAmt());
@@ -343,7 +343,12 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		balanceLog.setUserId(Long.valueOf(withdrawLog.getUserId()));
 		balanceLog.setRefType(withdrawLog.getRefType());
 		balanceLog.setRefId(withdrawLog.getId() + "");
-		balanceLog.setAmount(-BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).floatValue());
+
+		int amount = withdrawLog.getAmount();
+		if(withdrawLog.getServiceAmt() != null) {
+			amount += withdrawLog.getServiceAmt();
+		}
+		balanceLog.setAmount(-BigDecimal.valueOf(amount).divide(new BigDecimal(100)).floatValue());
 		balanceLog.setStatus(false);
 		balanceLog.setNote("提现扣款");
 		fdBalanceLogService.addLogAndUpdateBalance(balanceLog);

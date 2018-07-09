@@ -158,7 +158,23 @@ public class ApiBalanceController extends BaseController {
             long max = new BigDecimal(Double.valueOf(Application.getString("WD02", "1000")).toString()).multiply(new BigDecimal(100)).longValue();
             FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
             long balanceAmount = new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).longValue();
-            obj.put("amount", balanceAmount >= max ? BigDecimal.valueOf(max).divide(new BigDecimal(100)) : BigDecimal.valueOf(balanceAmount).divide(new BigDecimal(100)));
+            long amount = balanceAmount >= max ? max : balanceAmount;
+
+            int serviceAmtFlag = Integer.valueOf(Application.getString("WD04", "1"));
+            if(serviceAmtFlag == 1) {
+                if(amount <= 1000*100) {
+                    amount = amount - 100;
+                } else {
+                    BigDecimal amt = new BigDecimal(BigDecimal.valueOf(amount).divide(new BigDecimal(100)).toString()).multiply(new BigDecimal(0.1)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                    int serviceAmt = new BigDecimal(amt.toString()).multiply(new BigDecimal(100)).intValue();
+                    if(serviceAmt > 2500) {
+                        serviceAmt = 2500;
+                    }
+                    amount = amount - serviceAmt;
+                }
+            }
+
+            obj.put("amount", BigDecimal.valueOf(amount).divide(new BigDecimal(100)));
             j.setObj(obj);
             j.success();
             j.setMsg("申请成功");
@@ -209,9 +225,23 @@ public class ApiBalanceController extends BaseController {
                 return j;
             }
 
-            long max = new BigDecimal(Double.valueOf(Application.getString("WD02", "1000")).toString()).multiply(new BigDecimal(100)).longValue();
-            if(withdrawLog.getAmount() > max*100) {
-                j.setMsg("单次提现不得超过额度" + max + "元");
+            int serviceAmtFlag = Integer.valueOf(Application.getString("WD04", "1"));
+            int serviceAmt = 0;
+            if(serviceAmtFlag == 1) {
+                if(withdrawLog.getAmount() <= 1000*100) {
+                    serviceAmt = 100;
+                } else {
+                    BigDecimal amt = new BigDecimal(BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).toString()).multiply(new BigDecimal(0.1)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+                    serviceAmt = new BigDecimal(amt.toString()).multiply(new BigDecimal(100)).intValue();
+                    if(serviceAmt > 2500) {
+                        serviceAmt = 2500;
+                    }
+                }
+            }
+
+            long max = new BigDecimal(Application.getString("WD02", "1000")).multiply(new BigDecimal(100)).longValue();
+            if(withdrawLog.getAmount() + serviceAmt > max) {
+                j.setMsg("单次提现不得超过额度" + BigDecimal.valueOf(max-serviceAmt).divide(new BigDecimal(100)).toString() + "元");
                 return j;
             }
 
@@ -237,7 +267,7 @@ public class ApiBalanceController extends BaseController {
             }
 
             FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
-            if(customer == null || new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < withdrawLog.getAmount()) {
+            if(customer == null || new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < (withdrawLog.getAmount() + serviceAmt)) {
                 j.setMsg("余额不足！");
                 return j;
             }
@@ -247,20 +277,6 @@ public class ApiBalanceController extends BaseController {
             withdrawLog.setRefType(refType);
             withdrawLog.setWithdrawNo(Util.CreateNo("T"));
             withdrawLog.setHandleStatus("HS01");
-
-            int serviceAmtFlag = Integer.valueOf(Application.getString("WD04", "1"));
-            int serviceAmt = 0;
-            if(serviceAmtFlag == 1) {
-                if(withdrawLog.getAmount() <= 1000*100) {
-                    serviceAmt = 100;
-                } else {
-                    BigDecimal amt = new BigDecimal(BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)).toString()).multiply(new BigDecimal(0.1)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
-                    serviceAmt = new BigDecimal(amt.toString()).multiply(new BigDecimal(100)).intValue();
-                    if(serviceAmt > 2500) {
-                        serviceAmt = 2500;
-                    }
-                }
-            }
             withdrawLog.setServiceAmt(serviceAmt);
             fdWithdrawLogService.addAndBalance(withdrawLog);
             j.success();
