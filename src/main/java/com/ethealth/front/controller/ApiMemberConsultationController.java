@@ -485,40 +485,42 @@ public class ApiMemberConsultationController extends BaseController {
 		Json j = new Json();
 		try{
 
-			if(ph.getRows() == 0 || ph.getRows() > 50) {
-				ph.setRows(10);
-			}
-			if(F.empty(ph.getSort())) {
-				ph.setSort("createTime");
-			}
-			if(F.empty(ph.getOrder())) {
-				ph.setOrder("desc");
-			}
-
-			if(patientId == null) {
-				FdMember member = new FdMember();
-				member.setIsAdmin(0);
-				member.setUsername(patientMobile);
-				member = fdMemberService.get(member);
-				patientId = member.getId();
-			}
-			if(doctorId == null) {
-				FdMember member = new FdMember();
-				member.setIsAdmin(2);
-				member.setUsername(doctorMobile);
-				member = fdMemberService.get(member);
-				doctorId = member.getId();
-			}
-
-			FdMemberConsultationLog log = new FdMemberConsultationLog();
-			log.setFromUserId(patientId);
-			log.setToUserId(doctorId);
-
-			DataGrid dg = fdMemberConsultationLogService.dataGrid(log, ph);
-
-			j.setObj(dg);
-			j.setSuccess(true);
-			j.setMsg("获取获取聊天记录成功！");
+//			if(ph.getRows() == 0 || ph.getRows() > 50) {
+//				ph.setRows(10);
+//			}
+//			if(F.empty(ph.getSort())) {
+//				ph.setSort("createTime");
+//			}
+//			if(F.empty(ph.getOrder())) {
+//				ph.setOrder("desc");
+//			}
+//
+//			if(patientId == null) {
+//				FdMember member = new FdMember();
+//				member.setIsAdmin(0);
+//				member.setUsername(patientMobile);
+//				member = fdMemberService.get(member);
+//				patientId = member.getId();
+//			}
+//			if(doctorId == null) {
+//				FdMember member = new FdMember();
+//				member.setIsAdmin(2);
+//				member.setUsername(doctorMobile);
+//				member = fdMemberService.get(member);
+//				doctorId = member.getId();
+//			}
+//
+//			FdMemberConsultationLog log = new FdMemberConsultationLog();
+//			log.setFromUserId(patientId);
+//			log.setToUserId(doctorId);
+//
+//			DataGrid dg = fdMemberConsultationLogService.dataGrid(log, ph);
+//
+//			j.setObj(dg);
+//			j.setSuccess(true);
+//			j.setMsg("获取获取聊天记录成功！");
+			j.setSuccess(false);
+			j.setMsg("访问受限");
 
 		} catch(Exception e){
 			j.setMsg(Application.getString(EX_0001));
