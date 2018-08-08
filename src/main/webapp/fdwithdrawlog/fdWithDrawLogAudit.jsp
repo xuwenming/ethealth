@@ -32,6 +32,7 @@
 				$('#checkPwd').val(checkPwd);
 				if (!isValid) {
 					parent.$.messager.progress('close');
+                    $("input[name=handleStatus]").val($("input[name=oldHandleStatus]").val());
 				}
 				return isValid;
 			},
