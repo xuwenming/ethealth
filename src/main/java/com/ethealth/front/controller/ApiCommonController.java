@@ -91,10 +91,11 @@ public class ApiCommonController extends BaseController {
 			out.write("img{border:0; line-height:0; width: 100%;}");
 			out.write("ol,ul {list-style:none;}");
 			out.write("a { color: #000; text-decoration: none; outline: none;}");
-			out.write("a img { border: none; }");
-			out.write("</style></head><body");
+			out.write("a img { border: none; }</style>");
+			out.write("<script>function load(){var imgstyle=document.getElementsByTagName('img');for(i=0;i<imgstyle.length;i++){imgstyle[i].style.width='100%';}}</script>");
+			out.write("</head><body onload='load()'>");
 			out.write(content);
-			out.write("<script type=\"text/javascript\">window.onload = function(){var imgstyle=document.getElementsBytagName('img');for(i=0;i<imgstyle.length;i++){imgstyle[i].style.width='100%';}}<script></body></html>");
+			out.write("</body></html>");
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally{
