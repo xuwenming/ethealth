@@ -117,8 +117,10 @@
 				formatter: function (value, row, index) {
 					var str;
 					if(row.handleStatus == "HS01") str = value;
-					else if(row.handleStatus == "HS02") str = '<font color="#4cd964;">'+value+'</font>';
-					else str =  '<font color="#f6383a;">'+value+'</font>';
+					else if(row.handleStatus == "HS02") str = '<font style="color:#1AAFF0;">'+value+'</font>';
+					else if(row.handleStatus == "HS03")str =  '<font color="#f6383a;">'+value+'</font>';
+					else if(row.handleStatus == "HS04")str =  '<font color="#4cd964;">'+value+'</font>';
+					else str =  '<font color="#F00;">'+value+'</font>';
 
 					return str;
 				}
@@ -140,11 +142,11 @@
 				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
-					if ($.canViewStatus && row.handleStatus == 'HS02') {
-						str += '<a onclick="viewStatus(\'' + row.withdrawNo + '\')">查看状态</a>';
-					}
-					str += '&nbsp;';
-					if ($.canEditAudit && row.handleStatus != 'HS03'){
+//					if ($.canViewStatus && row.handleStatus == 'HS02') {
+//						str += '<a onclick="viewStatus(\'' + row.withdrawNo + '\')">查看状态</a>';
+//					}
+//					str += '&nbsp;';
+					if ($.canEditAudit && row.handleStatus == 'HS01'){
 						str += '<a onclick="editAuditFun(\'' + row.id + '\',\'' + row.auditType + '\')">审核</a>';
 					}
 					return str;

@@ -254,7 +254,7 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 					String content = "尊敬的用户您好，您的提现申请已审核通过!" +
 							"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
 							"\n提现单号：" + withdrawLog.getWithdrawNo() +
-							"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount() + withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
+							"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) + "元" +
 							"\n手续费：" + BigDecimal.valueOf(withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
 							"\n实际到账：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) + "元" +
 							"\n银行：" + withdrawLog.getBankCodeZh() +
@@ -285,14 +285,14 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 		// 拒绝
 		else if ("HS03".equals(fdWithdrawLog.getHandleStatus())) {
 
-			if("HS02".equals(withdrawLog.getHandleStatus())) {
-				Map<String, String> map = queryStatus(withdrawLog.getWithdrawNo());
-				if("PROCESSING".equals(map.get("status"))) {
-					throw new ServiceException("提现正在处理中，无法拒绝！");
-				} else if("SUCCESS".equals(map.get("status"))) {
-					throw new ServiceException("提现已处理成功，无法拒绝！");
-				}
-			}
+//			if("HS02".equals(withdrawLog.getHandleStatus())) {
+//				Map<String, String> map = queryStatus(withdrawLog.getWithdrawNo());
+//				if("PROCESSING".equals(map.get("status"))) {
+//					throw new ServiceException("提现正在处理中，无法拒绝！");
+//				} else if("SUCCESS".equals(map.get("status"))) {
+//					throw new ServiceException("提现已处理成功，无法拒绝！");
+//				}
+//			}
 
 			fdWithdrawLog.setHandleLoginId(loginId);
 			fdWithdrawLog.setHandleTime(new Date());
@@ -317,7 +317,9 @@ public class FdWithdrawLogServiceImpl extends BaseServiceImpl<FdWithdrawLog> imp
 			String content = "尊敬的用户您好，您的提现申请审核不通过!" +
 					"\n申请时间：" + DateUtil.format(c.getTime(), Constants.DATE_FORMAT) +
 					"\n提现单号：" + withdrawLog.getWithdrawNo() +
-					"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount() + withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
+					"\n提现金额：" + BigDecimal.valueOf(withdrawLog.getAmount()).divide(new BigDecimal(100)) + "元" +
+					"\n手续费：" + BigDecimal.valueOf(withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
+					"\n实际退额：" + BigDecimal.valueOf(withdrawLog.getAmount() + withdrawLog.getServiceAmt()).divide(new BigDecimal(100)) + "元" +
 					"\n银行：" + withdrawLog.getBankCodeZh() +
 					"\n开户行支行：" + withdrawLog.getBankName() +
 					"\n银行卡号：" + withdrawLog.getBankCard() +

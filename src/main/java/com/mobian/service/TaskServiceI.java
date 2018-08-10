@@ -9,4 +9,9 @@ public interface TaskServiceI {
      */
     void deleteHxAccount();
 
+    /**
+     * 同步微信提现状态
+     */
+    void syncWxWithdrawStatus();
+
 }
