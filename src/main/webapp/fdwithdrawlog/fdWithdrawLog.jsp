@@ -142,10 +142,10 @@
 				width : 50,
 				formatter : function(value, row, index) {
 					var str = '';
-//					if ($.canViewStatus && row.handleStatus == 'HS02') {
-//						str += '<a onclick="viewStatus(\'' + row.withdrawNo + '\')">查看状态</a>';
-//					}
-//					str += '&nbsp;';
+					if ($.canViewStatus && row.handleStatus == 'HS02') {
+						str += '<a onclick="viewStatus(\'' + row.withdrawNo + '\')">查看状态</a>';
+					}
+					str += '&nbsp;';
 					if ($.canEditAudit && row.handleStatus == 'HS01'){
 						str += '<a onclick="editAuditFun(\'' + row.id + '\',\'' + row.auditType + '\')">审核</a>';
 					}
