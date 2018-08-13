@@ -71,7 +71,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 		String sql = " select substring(appoint_time, 1, 10) appointTime, count(*) count from fd_member_appointment ";
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		String where = " where 1 = 1 ";
+		String where = " where status = 1 and appoint_status in (1,2) ";
 		if (!F.empty(appointment.getDoctorId())) {
 			where += " and doctor_id = :doctorId";
 			params.put("doctorId", appointment.getDoctorId());
