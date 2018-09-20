@@ -89,7 +89,8 @@ public class ApiUserController extends BaseController {
                         hxPass = UUID.uuid();
                         o.setHxPassword(hxPass);
                     }
-                    if(!F.empty(HuanxinUtil.createUser(member.getIsAdmin() + "-" + username, hxPass))) {
+                    Integer isAdmin = member.getIsAdmin() == null ? 0 : member.getIsAdmin();
+                    if(!F.empty(HuanxinUtil.createUser(isAdmin + "-" + username, hxPass))) {
                         o.setHxStatus(true);
                     } else {
                         o.setHxStatus(false);
