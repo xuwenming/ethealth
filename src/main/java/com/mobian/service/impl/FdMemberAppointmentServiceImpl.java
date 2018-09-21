@@ -361,6 +361,7 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			balanceLog.setRefId(appointment.getId() + "");
 			balanceLog.setAmount(amount.floatValue());
 			balanceLog.setStatus(false);
+			balanceLog.setNote("订单实收金额【"+BigDecimal.valueOf(o.getAmount()).divide(new BigDecimal(100))+"元】");
 			fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 
 			FdMember user = fdMemberService.getDetail(o.getUserId());

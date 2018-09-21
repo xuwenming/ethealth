@@ -207,6 +207,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setRefId(refId.toString());
 				balanceLog.setAmount(amount.floatValue());
 				balanceLog.setStatus(false);
+				balanceLog.setNote("订单实收金额【"+BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100))+"元】");
 				fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 			}
 
