@@ -239,7 +239,7 @@ public class ApiMemberAppointmentController extends BaseController {
 			FdMemberDoctor doctor = fdMemberDoctorService.get(appointment.getDoctorId());
 			if(!F.empty(doctor.getLevel())) {
 				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
-				totalFee = level.getAppointmentCost().longValue();
+				totalFee = level.getAppointmentCost().multiply(new BigDecimal(100)).longValue();
 			}
 
 			if(totalFee <= 0) {
