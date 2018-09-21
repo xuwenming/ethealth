@@ -7,6 +7,7 @@ package com.mobian.model;
 
 import javax.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.annotations.DynamicInsert;
@@ -17,7 +18,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "fd_member_doctor_level")
 @DynamicInsert(true)
 @DynamicUpdate(true)
-public class TfdMemberDoctorLevel implements java.io.Serializable{
+public class TfdMemberDoctorLevel implements java.io.Serializable,IEntity{
 	private static final long serialVersionUID = 5454155825314635342L;
 	
 	//alias
@@ -52,6 +53,9 @@ public class TfdMemberDoctorLevel implements java.io.Serializable{
 	private java.lang.Long updateTime;
 	//@Length(max=2)
 	private java.lang.String status;
+	private BigDecimal appointmentCost;
+	private BigDecimal consultationCost;
+	private Integer seq;
 	//columns END
 
 
@@ -135,8 +139,34 @@ public class TfdMemberDoctorLevel implements java.io.Serializable{
 	public void setStatus(java.lang.String status) {
 		this.status = status;
 	}
-	
-	
+
+	@Column(name = "appointment_cost", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
+	public BigDecimal getAppointmentCost() {
+		return appointmentCost;
+	}
+
+	public void setAppointmentCost(BigDecimal appointmentCost) {
+		this.appointmentCost = appointmentCost;
+	}
+
+	@Column(name = "consultation_cost", unique = false, nullable = true, insertable = true, updatable = true, length = 19)
+	public BigDecimal getConsultationCost() {
+		return consultationCost;
+	}
+
+	public void setConsultationCost(BigDecimal consultationCost) {
+		this.consultationCost = consultationCost;
+	}
+
+	@Column(name = "seq", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+
 	/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

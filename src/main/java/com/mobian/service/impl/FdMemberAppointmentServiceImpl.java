@@ -2,6 +2,7 @@ package com.mobian.service.impl;
 
 import com.mobian.absx.F;
 import com.mobian.dao.FdMemberAppointmentDaoI;
+import com.mobian.listener.Application;
 import com.mobian.model.TfdMemberAppointment;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
@@ -351,11 +352,14 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 
 		} else if("1".equals(appointment.getAppointStatus())) {
 			// 医生确认余额到账
+			BigDecimal pre = new BigDecimal(Application.getString("UC003", "100"));
+			BigDecimal amount = new BigDecimal(BigDecimal.valueOf(o.getAmount()).divide(new BigDecimal(100)).toString()).multiply(pre).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
+
 			FdBalanceLog balanceLog = new FdBalanceLog();
 			balanceLog.setUserId(o.getDoctorId().longValue());
 			balanceLog.setRefType("BBT003");
 			balanceLog.setRefId(appointment.getId() + "");
-			balanceLog.setAmount(BigDecimal.valueOf(o.getAmount()).divide(new BigDecimal(100)).floatValue());
+			balanceLog.setAmount(amount.floatValue());
 			balanceLog.setStatus(false);
 			fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 

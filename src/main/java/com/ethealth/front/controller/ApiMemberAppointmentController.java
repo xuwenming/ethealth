@@ -58,6 +58,9 @@ public class ApiMemberAppointmentController extends BaseController {
 	@Autowired
 	private FdPatientServiceI fdPatientService;
 
+	@Autowired
+	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
+
 	/**
 	 * 获取专家预约信息接口
 	 */
@@ -232,9 +235,17 @@ public class ApiMemberAppointmentController extends BaseController {
 
 			}
 
+			long totalFee = 0;
+			FdMemberDoctor doctor = fdMemberDoctorService.get(appointment.getDoctorId());
+			if(!F.empty(doctor.getLevel())) {
+				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
+				totalFee = level.getAppointmentCost().longValue();
+			}
 
-			Double fee = Double.valueOf(Application.getString("UC001", "99"));
-			long totalFee = new BigDecimal(fee.toString()).multiply(new BigDecimal(100)).longValue();
+			if(totalFee <= 0) {
+				Double fee = Double.valueOf(Application.getString("UC001", "198"));
+				totalFee = new BigDecimal(fee.toString()).multiply(new BigDecimal(100)).longValue();
+			}
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
 			if(F.empty(customer.getRealName())) customer.setRealName(s.getName());

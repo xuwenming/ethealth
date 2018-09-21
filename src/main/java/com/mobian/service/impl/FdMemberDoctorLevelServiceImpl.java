@@ -50,8 +50,8 @@ public class FdMemberDoctorLevelServiceImpl extends BaseServiceImpl<FdMemberDoct
 		if (fdMemberDoctorLevel != null) {
 			whereHql += " where t.status = 0 ";
 			if (!F.empty(fdMemberDoctorLevel.getName())) {
-				whereHql += " and t.name = :name";
-				params.put("name", fdMemberDoctorLevel.getName());
+				whereHql += " and t.name like :name";
+				params.put("name", "%" + fdMemberDoctorLevel.getName() + "%");
 			}		
 			if (!F.empty(fdMemberDoctorLevel.getRemark())) {
 				whereHql += " and t.remark = :remark";
@@ -112,7 +112,7 @@ public class FdMemberDoctorLevelServiceImpl extends BaseServiceImpl<FdMemberDoct
 	public void delete(Integer id) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("id", id);
-		fdMemberDoctorLevelDao.executeHql("update TfdMemberDoctorLevel t set t.isdeleted = 1 where t.id = :id",params);
+		fdMemberDoctorLevelDao.executeHql("update TfdMemberDoctorLevel t set t.status = 1 where t.id = :id",params);
 		//fdMemberDoctorLevelDao.delete(fdMemberDoctorLevelDao.get(TfdMemberDoctorLevel.class, id));
 	}
 

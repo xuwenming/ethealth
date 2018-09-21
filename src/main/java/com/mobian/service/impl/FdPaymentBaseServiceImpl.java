@@ -6,6 +6,7 @@ import com.alipay.api.request.AlipayTradeRefundRequest;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.mobian.absx.F;
 import com.mobian.dao.FdPaymentBaseDaoI;
+import com.mobian.listener.Application;
 import com.mobian.model.TfdPaymentBase;
 import com.mobian.pageModel.*;
 import com.mobian.service.*;
@@ -171,6 +172,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 		Integer userId = null, doctorId = null, refId = null;
 		String refType = null;
 		if(transformFlag) {
+			BigDecimal amount = BigDecimal.ZERO;
 			if(payment.getOrderNo().startsWith("Y")) {
 				FdMemberAppointment appointment = fdMemberAppointmentService.getByAppointmentNo(payment.getOrderNo());
 				if(appointment != null) {
@@ -181,6 +183,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 //					doctorId = appointment.getDoctorId(); 医生同意充值医生余额
 					refType = "BBT003";
 					refId = appointment.getId();
+					amount = BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100));
 				}
 
 			} else if(payment.getOrderNo().startsWith("Z")) {
@@ -191,6 +194,8 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 					doctorId = consultationOrder.getDoctorId();
 					refType = "BBT004";
 					refId = consultationOrder.getId();
+					BigDecimal pre = new BigDecimal(Application.getString("UC004", "100"));
+					amount = new BigDecimal(BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).toString()).multiply(pre).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP);
 				}
 			}
 
@@ -200,7 +205,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 				balanceLog.setUserId(doctorId.longValue());
 				balanceLog.setRefType(refType);
 				balanceLog.setRefId(refId.toString());
-				balanceLog.setAmount(BigDecimal.valueOf(paymentQ.getPrice()).divide(new BigDecimal(100)).floatValue());
+				balanceLog.setAmount(amount.floatValue());
 				balanceLog.setStatus(false);
 				fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 			}

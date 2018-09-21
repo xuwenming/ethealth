@@ -1,5 +1,6 @@
 package com.mobian.pageModel;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @SuppressWarnings("serial")
@@ -14,9 +15,11 @@ public class FdMemberDoctorLevel implements java.io.Serializable {
 	private java.lang.Long createTime;	
 	private java.lang.Integer updateBy;	
 	private java.lang.Long updateTime;	
-	private java.lang.String status;	
+	private java.lang.String status;
 
-	
+	private BigDecimal appointmentCost;
+	private BigDecimal consultationCost;
+	private Integer seq;
 
 	public void setId(java.lang.Integer value) {
 		this.id = value;
@@ -77,4 +80,27 @@ public class FdMemberDoctorLevel implements java.io.Serializable {
 		return this.status;
 	}
 
+	public BigDecimal getAppointmentCost() {
+		return appointmentCost;
+	}
+
+	public void setAppointmentCost(BigDecimal appointmentCost) {
+		this.appointmentCost = appointmentCost;
+	}
+
+	public BigDecimal getConsultationCost() {
+		return consultationCost;
+	}
+
+	public void setConsultationCost(BigDecimal consultationCost) {
+		this.consultationCost = consultationCost;
+	}
+
+	public Integer getSeq() {
+		return seq;
+	}
+
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
 }

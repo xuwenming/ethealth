@@ -37,42 +37,27 @@
 		<form id="form" method="post">
 				<input type="hidden" name="id" value = "${fdMemberDoctorLevel.id}"/>
 			<table class="table table-hover table-condensed">
-				<tr>	
-					<th><%=TfdMemberDoctorLevel.ALIAS_NAME%></th>	
-					<td>
-											<input class="span2" name="name" type="text" value="${fdMemberDoctorLevel.name}"/>
-					</td>							
-					<th><%=TfdMemberDoctorLevel.ALIAS_REMARK%></th>	
-					<td>
-											<input class="span2" name="remark" type="text" value="${fdMemberDoctorLevel.remark}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorLevel.ALIAS_CREATE_BY%></th>	
-					<td>
-											<input class="span2" name="createBy" type="text" value="${fdMemberDoctorLevel.createBy}"/>
-					</td>							
-					<th><%=TfdMemberDoctorLevel.ALIAS_CREATE_TIME%></th>	
-					<td>
-											<input class="span2" name="createTime" type="text" value="${fdMemberDoctorLevel.createTime}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorLevel.ALIAS_UPDATE_BY%></th>	
-					<td>
-											<input class="span2" name="updateBy" type="text" value="${fdMemberDoctorLevel.updateBy}"/>
-					</td>							
-					<th><%=TfdMemberDoctorLevel.ALIAS_UPDATE_TIME%></th>	
-					<td>
-											<input class="span2" name="updateTime" type="text" value="${fdMemberDoctorLevel.updateTime}"/>
-					</td>							
-			</tr>	
-				<tr>	
-					<th><%=TfdMemberDoctorLevel.ALIAS_STATUS%></th>	
-					<td>
-											<input class="span2" name="status" type="text" value="${fdMemberDoctorLevel.status}"/>
-					</td>							
-			</tr>	
+				<tr>
+					<th><%=TfdMemberDoctorLevel.ALIAS_NAME%></th>
+					<td colspan="3">
+						<input value="${fdMemberDoctorLevel.name}" class="easyui-validatebox span2" data-options="required:true" maxlength="100" name="name" type="text" style="width: 380px;"/>
+					</td>
+				</tr>
+				<tr>
+					<th width="12%">预约费用</th>
+					<td width="33%">
+						<input name="appointmentCost" value="${fdMemberDoctorLevel.appointmentCost}"
+							   class="easyui-numberspinner" style="width: 140px; height: 29px;"
+							   required="required" data-options="editable:true" />
+					</td>
+					<th width="10%">排序</th>
+					<td width="45%">
+						<input name="seq" value="${fdMemberDoctorLevel.seq}"
+							   class="easyui-numberspinner" style="width: 140px; height: 29px;"
+							   required="required" data-options="editable:true" />
+						<font color="red">*数值越小越靠前</font>
+					</td>
+				</tr>
 			</table>				
 		</form>
 	</div>

@@ -35,8 +35,8 @@
 			idField : 'id',
 			pageSize : 10,
 			pageList : [ 10, 20, 30, 40, 50 ],
-			sortName : 'id',
-			sortOrder : 'desc',
+			sortName : 'seq',
+			sortOrder : 'asc',
 			checkOnSelect : false,
 			selectOnCheck : false,
 			nowrap : false,
@@ -53,47 +53,41 @@
 				title : '<%=TfdMemberDoctorLevel.ALIAS_NAME%>',
 				width : 50		
 				}, {
-				field : 'remark',
-				title : '<%=TfdMemberDoctorLevel.ALIAS_REMARK%>',
+				field : 'appointmentCost',
+				title : '预约费用',
 				width : 50		
 				}, {
-				field : 'createBy',
-				title : '<%=TfdMemberDoctorLevel.ALIAS_CREATE_BY%>',
-				width : 50		
+				field : 'seq',
+				title : '排序',
+				width : 30,
+                sortable:true
 				}, {
 				field : 'createTime',
 				title : '<%=TfdMemberDoctorLevel.ALIAS_CREATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'updateBy',
-				title : '<%=TfdMemberDoctorLevel.ALIAS_UPDATE_BY%>',
-				width : 50		
-				}, {
-				field : 'updateTime',
-				title : '<%=TfdMemberDoctorLevel.ALIAS_UPDATE_TIME%>',
-				width : 50		
-				}, {
-				field : 'status',
-				title : '<%=TfdMemberDoctorLevel.ALIAS_STATUS%>',
-				width : 50		
+				width : 50,
+                formatter : function (value, row, index) {
+                    return new Date(value).format('yyyy-MM-dd HH:mm:ss');
+                }
 			}, {
 				field : 'action',
 				title : '操作',
-				width : 100,
+				width : 50,
 				formatter : function(value, row, index) {
-					var str = '';
-					if ($.canEdit) {
-						str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');
-					}
-					str += '&nbsp;';
-					if ($.canDelete) {
-						str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');
-					}
-					str += '&nbsp;';
-					if ($.canView) {
-						str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
-					}
-					return str;
+                    var str = '';
+                    if ($.canEdit) {
+                        <!--str += $.formatString('<img onclick="editFun(\'{0}\');" src="{1}" title="编辑"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_edit.png');-->
+                        str += '<a onclick="editFun(\'' + row.id + '\')">编辑</a>';
+                    }
+                    str += '&nbsp;';
+                    if ($.canDelete) {
+                        str += '<a onclick="deleteFun(\'' + row.id + '\')">删除</a>';
+                        <%--str += $.formatString('<img onclick="deleteFun(\'{0}\');" src="{1}" title="删除"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_delete.png');--%>
+                    }
+                    str += '&nbsp;';
+                    if ($.canView) {
+                        //str += $.formatString('<img onclick="viewFun(\'{0}\');" src="{1}" title="查看"/>', row.id, '${pageContext.request.contextPath}/style/images/extjs_icons/bug/bug_link.png');
+                    }
+                    return str;
 				}
 			} ] ],
 			toolbar : '#toolbar',
@@ -137,8 +131,8 @@
 		}
 		parent.$.modalDialog({
 			title : '编辑数据',
-			width : 780,
-			height : 500,
+			width : 600,
+			height : 240,
 			href : '${pageContext.request.contextPath}/fdMemberDoctorLevelController/editPage?id=' + id,
 			buttons : [ {
 				text : '编辑',
@@ -167,8 +161,8 @@
 	function addFun() {
 		parent.$.modalDialog({
 			title : '添加数据',
-			width : 780,
-			height : 500,
+			width : 600,
+			height : 240,
 			href : '${pageContext.request.contextPath}/fdMemberDoctorLevelController/addPage',
 			buttons : [ {
 				text : '添加',
@@ -208,41 +202,15 @@
 </head>
 <body>
 	<div class="easyui-layout" data-options="fit : true,border : false">
-		<div data-options="region:'north',title:'查询条件',border:false" style="height: 160px; overflow: hidden;">
+		<div data-options="region:'north',title:'查询条件',border:false" style="height: 70px; overflow: hidden;">
 			<form id="searchForm">
 				<table class="table table-hover table-condensed" style="display: none;">
-						<tr>	
-							<th><%=TfdMemberDoctorLevel.ALIAS_NAME%></th>	
-							<td>
-											<input type="text" name="name" maxlength="100" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorLevel.ALIAS_REMARK%></th>	
-							<td>
-											<input type="text" name="remark" maxlength="500" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorLevel.ALIAS_CREATE_BY%></th>	
-							<td>
-											<input type="text" name="createBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorLevel.ALIAS_CREATE_TIME%></th>	
-							<td>
-											<input type="text" name="createTime" maxlength="19" class="span2"/>
-							</td>
-						</tr>	
-						<tr>	
-							<th><%=TfdMemberDoctorLevel.ALIAS_UPDATE_BY%></th>	
-							<td>
-											<input type="text" name="updateBy" maxlength="10" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorLevel.ALIAS_UPDATE_TIME%></th>	
-							<td>
-											<input type="text" name="updateTime" maxlength="19" class="span2"/>
-							</td>
-							<th><%=TfdMemberDoctorLevel.ALIAS_STATUS%></th>	
-							<td>
-											<input type="text" name="status" maxlength="2" class="span2"/>
-							</td>
-						</tr>	
+					<tr>
+						<th width="70px;"><%=TfdMemberDoctorLevel.ALIAS_NAME%></th>
+						<td>
+							<input type="text" name="name" maxlength="100" class="span2"/>
+						</td>
+					</tr>
 				</table>
 			</form>
 		</div>
@@ -254,7 +222,7 @@
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberDoctorLevelController/addPage')}">
 			<a onclick="addFun();" href="javascript:void(0);" class="easyui-linkbutton" data-options="plain:true,iconCls:'bug_add'">添加</a>
 		</c:if>
-		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">过滤条件</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
+		<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_add',plain:true" onclick="searchFun();">查询</a><a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'brick_delete',plain:true" onclick="cleanFun();">清空条件</a>
 		<c:if test="${fn:contains(sessionInfo.resourceList, '/fdMemberDoctorLevelController/download')}">
 			<a href="javascript:void(0);" class="easyui-linkbutton" data-options="iconCls:'server_go',plain:true" onclick="downloadTable();">导出</a>		
 			<form id="downloadTable" target="downloadIframe" method="post" style="display: none;">
