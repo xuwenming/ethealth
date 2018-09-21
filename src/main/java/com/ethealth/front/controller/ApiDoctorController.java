@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,9 @@ public class ApiDoctorController extends BaseController {
 
 	@Autowired
 	private FdMemberDoctorShServiceI fdMemberDoctorShService;
+
+	@Autowired
+	private FdMemberDoctorLevelServiceI fdMemberDoctorLevelService;
 
 	/**
 	 * 医生信息修改接口
@@ -125,8 +129,17 @@ public class ApiDoctorController extends BaseController {
 			FdMemberDoctor doctor = fdMemberDoctorService.get(Integer.valueOf(s.getId()));
 			obj.put("acceptAppointment", doctor.getAcceptAppointment());
 			obj.put("acceptConsultation", doctor.getAcceptConsultation());
-			obj.put("appointmentFee", Application.getString("UC001", "99"));
-			obj.put("consultationFee", Application.getString("UC002", "99"));
+
+			BigDecimal appointmentFee = BigDecimal.ZERO;
+			if(!F.empty(doctor.getLevel())) {
+				FdMemberDoctorLevel level = fdMemberDoctorLevelService.get(doctor.getLevel());
+				appointmentFee = level.getAppointmentCost();
+			}
+			if(appointmentFee.doubleValue() <= 0) {
+				appointmentFee = new BigDecimal(Application.getString("UC001", "198"));
+			}
+			obj.put("appointmentFee", appointmentFee);
+			obj.put("consultationFee", Application.getString("UC002", "98"));
 
 			j.setObj(obj);
 			j.setSuccess(true);
