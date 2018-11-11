@@ -216,15 +216,15 @@ public class ApiPayController extends BaseController {
                 j.setMsg("验证码不能为空！");
                 return j;
             }
-            String oldCode = redisUserService.getValidateCode(s.getName());
-            if(F.empty(oldCode)) {
-                j.setMsg("验证码已过期！");
-                return j;
-            }
-            if(!oldCode.equals(vcode)) {
-                j.setMsg("验证码错误！");
-                return j;
-            }
+//            String oldCode = redisUserService.getValidateCode(s.getName());
+//            if(F.empty(oldCode)) {
+//                j.setMsg("验证码已过期！");
+//                return j;
+//            }
+//            if(!oldCode.equals(vcode)) {
+//                j.setMsg("验证码错误！");
+//                return j;
+//            }
 
 			FdCustomer customer = fdCustomerService.get(Long.valueOf(s.getId()));
 			if(customer == null || new BigDecimal(customer.getBalance().toString()).multiply(new BigDecimal(100)).intValue() < payment.getPrice()) {
