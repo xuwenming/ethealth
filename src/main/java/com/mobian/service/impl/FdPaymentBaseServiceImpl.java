@@ -147,20 +147,21 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 		if(paymentQ == null) {
 			payment.setStatus("2");
 			add(payment);
-			paymentQ = payment;
 		} else {
 			if("2".equals(paymentQ.getStatus())) transformFlag = false; // 防止重复支付
 			payment.setId(paymentQ.getId());
+			payment.setStatus("2");
 			payment.setUpdateDate(new Date());
 			edit(payment);
 		}
+		paymentQ = payment;
 
 		FdPaymentLog paymentLog = fdPaymentLogService.getByPaymentId(paymentQ.getId());
 		if(paymentLog == null) {
 			paymentLog = new FdPaymentLog();
 			paymentLog.setPaymentId(paymentQ.getId());
 			paymentLog.setType(paymentQ.getType());
-			paymentLog.setStatus(payment.getStatus());
+			paymentLog.setStatus(paymentQ.getStatus());
 			paymentLog.setTotalFee(paymentQ.getPrice().longValue());
 			paymentLog.setRefId(payment.getRefId());
 			fdPaymentLogService.add(paymentLog);
