@@ -2,6 +2,7 @@ package com.mobian.thirdpart.easemob;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.mobian.absx.F;
 import com.mobian.listener.Application;
 import com.mobian.thirdpart.redis.Key;
 import com.mobian.thirdpart.redis.Namespace;
@@ -192,9 +193,11 @@ public class HuanxinUtil {
 	 * @return
 	 */
 	public static String createUser(String username, String password) {
+		String response = getUser(username);
+		if(!F.empty(response)) return response;
 		
 		String params = "{\"username\": \""+username+"\",\"password\": \""+password+"\"}";
-		String response = httpsRequest(getUrl("users"), "POST", params, true);
+		response = httpsRequest(getUrl("users"), "POST", params, true);
 		log.info(response);
 		return response;
 	}
@@ -206,6 +209,16 @@ public class HuanxinUtil {
 	 */
 	public static String createUsers(String usesJsonString) {
 		String response = httpsRequest(getUrl("users"), "POST", usesJsonString, true);
+		log.info(response);
+		return response;
+	}
+
+	/**
+	 * 获取环信用户
+	 * @return
+	 */
+	public static String getUser(String username) {
+		String response = httpsRequest(getUrl("users/" + username), "GET", null, true);
 		log.info(response);
 		return response;
 	}

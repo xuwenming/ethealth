@@ -113,7 +113,6 @@ public class ApiUserController extends BaseController {
                 o.setUsername(username);
                 j.setSuccess(true);
                 j.setMsg("登陆成功！");
-                System.out.println("登录返回结果：" + JSONObject.toJSONString(o));
                 j.setObj(o);
                 return j;
             }
