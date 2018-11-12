@@ -298,7 +298,9 @@ public class ApiPayController extends BaseController {
 		}
 
 		String resXml = "";
+		System.out.println("支付回调开始校验");
 		if(PayCommonUtil.isTenpaySign("UTF-8", packageParams)) {
+			System.out.println("支付回调校验成功");
 			if("SUCCESS".equals((String)packageParams.get("result_code"))){
 				// 这里是支付成功
 				//////////执行自己的业务逻辑////////////////
