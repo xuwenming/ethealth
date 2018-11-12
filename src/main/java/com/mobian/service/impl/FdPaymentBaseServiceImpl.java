@@ -142,6 +142,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 
 	@Override
 	public void addOrUpdate(FdPaymentBase payment) {
+		System.out.println(111);
 		FdPaymentBase paymentQ = getByOrderNo(payment.getOrderNo());
 		boolean transformFlag = true;
 		if(paymentQ == null) {
@@ -172,13 +173,16 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 			paymentLog.setType(paymentQ.getType());
 			fdPaymentLogService.edit(paymentLog);
 		}
+		System.out.println(222);
 		Integer userId = null, doctorId = null, refId = null;
 		String refType = null;
 		if(transformFlag) {
+			System.out.println(333);
 			BigDecimal amount = BigDecimal.ZERO;
 			if(payment.getOrderNo().startsWith("Y")) {
 				FdMemberAppointment appointment = fdMemberAppointmentService.getByAppointmentNo(payment.getOrderNo());
 				if(appointment != null) {
+					System.out.println(444);
 					appointment.setStatus("1");
 					fdMemberAppointmentService.updatePaySuccess(appointment);
 
@@ -216,6 +220,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 
 			// 余额支付,扣除患者余额
 			if("balance".equals(paymentQ.getType()) && userId != null) {
+				System.out.println(555);
 				FdBalanceLog balanceLog = new FdBalanceLog();
 				balanceLog.setUserId(userId.longValue());
 				balanceLog.setRefType(refType);
