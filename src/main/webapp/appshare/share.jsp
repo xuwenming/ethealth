@@ -98,18 +98,20 @@ dd,dl,dt{ margin:0 ; padding:0;}
 	 	</div>
 	</div>
 
-	<div class="down-app-div">
-		<div class="down-app down-bottom">
-			<div class="down-app-content container">
-				<div class="down-app-btn">
-					<a href="javascript:void(0)" onclick="tryOpenApp()" class="btn btn-danger">立即打开</a>
-				</div>
-				<div class="down-app-img">
-					<img src="${pageContext.request.contextPath}/appshare/60.png">
+	<c:if test="${showDownload}">
+		<div class="down-app-div">
+			<div class="down-app down-bottom">
+				<div class="down-app-content container">
+					<div class="down-app-btn">
+						<a href="javascript:void(0)" onclick="tryOpenApp()" class="btn btn-danger">立即打开</a>
+					</div>
+					<div class="down-app-img">
+						<img src="${pageContext.request.contextPath}/appshare/60.png">
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+	</c:if>
 
 	<script>
 		function tryOpenApp() {

@@ -220,7 +220,7 @@ public class ApiCommonController extends BaseController {
 	 * eg: http://localhost:8083/api/apiCommon/share?id=379&type=BT01
 	 */
 	@RequestMapping("/share")
-	public String share(Integer id,String type,HttpServletRequest request) {
+	public String share(Integer id,String type,String from,HttpServletRequest request) {
 		String title = "";
 		String author = "医家盟";
 		String content = "";
@@ -260,6 +260,7 @@ public class ApiCommonController extends BaseController {
 		request.setAttribute("content", content);
 		request.setAttribute("date", date);
 		request.setAttribute("author", author);
+		request.setAttribute("showDownload", "APP".equals(from) ? false : true);
 		return "/appshare/share";
 	}
 	
