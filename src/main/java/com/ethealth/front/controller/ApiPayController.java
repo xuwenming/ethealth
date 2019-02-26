@@ -332,6 +332,7 @@ public class ApiPayController extends BaseController {
 							payment.setOrderNo(out_trade_no);
 							payment.setRefId(transaction_id);
 							payment.setStatus("2");
+							payment.setType("wechat");
 
 							fdPaymentBaseService.addOrUpdate(payment);
 						} else if(out_trade_no.startsWith("Q")) {
@@ -404,6 +405,7 @@ public class ApiPayController extends BaseController {
 					payment.setOrderNo(orderNo);
 					payment.setRefId(trade_no);
 					payment.setStatus("2");
+					payment.setType("alipay");
 					fdPaymentBaseService.addOrUpdate(payment);
 				}
 			}
