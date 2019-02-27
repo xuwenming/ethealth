@@ -38,6 +38,7 @@ public class FdMemberAppointment implements java.io.Serializable {
 	private java.lang.String appointmentNo;
 	private java.lang.Long amount;
 	private String appointAddress;
+	private java.lang.Boolean isRefund;
 
 
 	private FdMemberDoctor doctor;
@@ -289,6 +290,14 @@ public class FdMemberAppointment implements java.io.Serializable {
 
 	public void setAppointAddress(String appointAddress) {
 		this.appointAddress = appointAddress;
+	}
+
+	public java.lang.Boolean getIsRefund() {
+		return isRefund;
+	}
+
+	public void setIsRefund(java.lang.Boolean isRefund) {
+		this.isRefund = isRefund;
 	}
 
 	public FdMember getUser() {

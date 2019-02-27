@@ -292,9 +292,11 @@
 								<select name="appointStatus" class="easyui-combobox"
 										data-options="width:140,height:29,editable:false,panelHeight:'auto'">
 									<option value="">全部</option>
+									<option value="-1">已取消</option>
 									<option value="0">医生待确认</option>
 									<option value="1">医生已确认</option>
 									<option value="2">患者已确认</option>
+									<option value="3">医生已拒绝</option>
 								</select>
 							</td>
 

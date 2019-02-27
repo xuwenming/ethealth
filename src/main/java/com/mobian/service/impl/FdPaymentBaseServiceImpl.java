@@ -286,6 +286,12 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 						paymentLog.setRefundDate(new Date());
 						fdPaymentLogService.edit(paymentLog);
 					}
+
+					// 更新预约退款状态
+					FdMemberAppointment appointment = new FdMemberAppointment();
+					appointment.setId(Integer.valueOf(refId));
+					appointment.setIsRefund(true);
+					fdMemberAppointmentService.edit(appointment);
 				}
 
 			}

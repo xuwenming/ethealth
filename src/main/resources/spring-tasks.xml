@@ -8,6 +8,7 @@
 	<task:scheduled-tasks>
 		<task:scheduled ref="taskServiceImpl" method="deleteHxAccount"  cron="0/5 * * * * ? " />
 		<task:scheduled ref="taskServiceImpl" method="syncWxWithdrawStatus"  cron="0 */5 * * * ? " />
+		<task:scheduled ref="taskServiceImpl" method="refundCompensate"  cron="0 */30 * * * ? " />
 	</task:scheduled-tasks>
 
 </beans>

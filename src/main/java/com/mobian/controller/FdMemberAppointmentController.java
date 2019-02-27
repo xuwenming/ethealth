@@ -50,13 +50,19 @@ public class FdMemberAppointmentController extends BaseController {
 	/**
 	 * 获取FdMemberAppointment数据表格
 	 * 
-	 * @param user
+	 * @param
 	 * @return
 	 */
 	@RequestMapping("/dataGrid")
 	@ResponseBody
 	public DataGrid dataGrid(FdMemberAppointment fdMemberAppointment, PageHelper ph) {
 		fdMemberAppointment.setIsShowWx(true);
+		if("-1".equals(fdMemberAppointment.getAppointStatus())) { // 取消
+			fdMemberAppointment.setStatus("0");
+			fdMemberAppointment.setAppointStatus("3");
+		} else if("3".equals(fdMemberAppointment.getAppointStatus())) { // 拒绝
+			fdMemberAppointment.setStatus("1");
+		}
 		if(fdMemberAppointment.getCreateTimeStartDate() != null) fdMemberAppointment.setCreateTimeStart(fdMemberAppointment.getCreateTimeStartDate().getTime());
 		if(fdMemberAppointment.getCreateTimeEndDate() != null) fdMemberAppointment.setCreateTimeEnd(fdMemberAppointment.getCreateTimeEndDate().getTime());
 		DataGrid dg = fdMemberAppointmentService.dataGrid(fdMemberAppointment, ph);
@@ -99,7 +105,7 @@ public class FdMemberAppointmentController extends BaseController {
 	/**
 	 * 获取FdMemberAppointment数据表格excel
 	 * 
-	 * @param user
+	 * @param
 	 * @return
 	 * @throws NoSuchMethodException 
 	 * @throws SecurityException 

@@ -14,4 +14,9 @@ public interface TaskServiceI {
      */
     void syncWxWithdrawStatus();
 
+    /**
+     * 预约退款补偿任务
+     */
+    void refundCompensate();
+
 }

@@ -39,6 +39,12 @@ public class TaskServiceImpl implements TaskServiceI {
     @Autowired
     private FdBalanceLogServiceI fdBalanceLogService;
 
+    @Autowired
+    private FdMemberAppointmentServiceI fdMemberAppointmentService;
+
+    @Autowired
+    private FdPaymentBaseServiceI fdPaymentBaseService;
+
     @Override
     public void deleteHxAccount() {
         try {
@@ -155,6 +161,44 @@ public class TaskServiceImpl implements TaskServiceI {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void refundCompensate() {
+        FdMemberAppointment appointment = new FdMemberAppointment();
+        appointment.setStatus("1");
+        appointment.setAppointStatus("3");
+        appointment.setIsRefund(false);
+        PageHelper ph = new PageHelper();
+        ph.setHiddenTotal(true);
+        List<FdMemberAppointment> appointments = fdMemberAppointmentService.dataGrid(appointment, ph).getRows();
+        if(CollectionUtils.isNotEmpty(appointments)) {
+            for(FdMemberAppointment a : appointments) {
+                // 退款
+                FdPaymentBase paymentBase = new FdPaymentBase();
+                paymentBase.setRefId(a.getId() + "");
+                paymentBase.setUserId(a.getUserId());
+                paymentBase.setOrderNo(a.getAppointmentNo());
+                fdPaymentBaseService.refund(paymentBase, "预约拒绝");
+
+                FdMember user = fdMemberService.getDetail(a.getUserId());
+                FdMember doctor = fdMemberService.getDetail(a.getDoctorId());
+                FdMessage message = new FdMessage();
+                message.setTitle("预约拒绝提醒");
+                String content = "尊敬的用户您好，" + doctor.getCustomer().getRealName() + "医生拒绝了您的预约！" +
+                        "\n患者姓名：" + a.getAppointName() +
+                        "\n预约时间：" + a.getAppointTime() +
+                        "\n预约地点：" + a.getAppointAddress() +
+                        "\n如有问题请及时联系客服，谢谢！";
+                message.setContent(content);
+                message.setUserId(a.getUserId());
+                message.setMtype("MT02");
+                message.setIsRead(false);
+                message.setAlias("0_" + user.getMobile());
+                message.setPushMessage(new PushMessage("M103", doctor.getCustomer().getRealName() + "医生拒绝了您的预约，预约时间：" + a.getAppointTime()));
+                fdMessageService.addAndPushMessage(message);
+            }
         }
     }
 }

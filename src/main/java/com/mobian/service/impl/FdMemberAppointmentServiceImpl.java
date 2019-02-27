@@ -188,11 +188,15 @@ public class FdMemberAppointmentServiceImpl extends BaseServiceImpl<FdMemberAppo
 			if (!F.empty(fdMemberAppointment.getAppointStatus())) {
 				whereHql += " and t.appointStatus in (:appointStatus)";
 				params.put("appointStatus", fdMemberAppointment.getAppointStatus().split(","));
-			}		
+			}
+			if (!F.empty(fdMemberAppointment.getIsRefund())) {
+				whereHql += " and t.isRefund = :isRefund";
+				params.put("isRefund", fdMemberAppointment.getIsRefund());
+			}
 			if (!F.empty(fdMemberAppointment.getAdjustment())) {
 				whereHql += " and t.adjustment = :adjustment";
 				params.put("adjustment", fdMemberAppointment.getAdjustment());
-			}		
+			}
 			if (!F.empty(fdMemberAppointment.getRefuseReason())) {
 				whereHql += " and t.refuseReason = :refuseReason";
 				params.put("refuseReason", fdMemberAppointment.getRefuseReason());

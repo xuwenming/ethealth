@@ -102,6 +102,7 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 	private java.lang.String appointmentNo;
 	private java.lang.Long amount;
 	private String appointAddress;
+	private java.lang.Boolean isRefund;
 	//columns END
 
 
@@ -357,7 +358,15 @@ public class TfdMemberAppointment implements java.io.Serializable, IEntity{
 		this.appointAddress = appointAddress;
 	}
 
-	/*
+	@Column(name = "is_refund", unique = false, nullable = true, insertable = true, updatable = true, length = 0)
+	public Boolean getIsRefund() {
+		return isRefund;
+	}
+
+	public void setIsRefund(Boolean isRefund) {
+		this.isRefund = isRefund;
+	}
+/*
 	public String toString() {
 		return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
 			.append("Time",getTime())
