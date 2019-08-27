@@ -313,7 +313,7 @@ public class ApiMemberAppointmentController extends BaseController {
 	 */
 	@RequestMapping("/doctor/appointments")
 	@ResponseBody
-	public Json appointments(FdMemberAppointment appointment, Boolean isReply, PageHelper ph, HttpServletRequest request) {
+	public Json appointments(FdMemberAppointment appointment, String date, String startDateStr, String endDateStr, Integer type, Boolean isReply, PageHelper ph, HttpServletRequest request) {
 		Json j = new Json();
 		try{
 			SessionInfo s = getSessionInfo(request);
@@ -325,6 +325,21 @@ public class ApiMemberAppointmentController extends BaseController {
 				} else {
 					appointment.setAppointStatus("0"); // 未回复
 				}
+			}
+			if(type != null) {
+				if(type == 1) appointment.setAppointStatus("0"); // 未确认
+				else if(type == 2) appointment.setAppointStatus("1,2"); // 已确认
+				else appointment.setAppointStatus("3"); // 已拒绝
+			}
+
+			if(!F.empty(date)) {
+				startDateStr = date;
+				endDateStr = date;
+			}
+
+			if(!F.empty(startDateStr) && !F.empty(endDateStr)) {
+				appointment.setStartDate(DateUtil.parse(startDateStr, Constants.DATE_FORMAT_YMD));
+				appointment.setEndDate(DateUtil.parse(endDateStr, Constants.DATE_FORMAT_YMD));
 			}
 
 			j.setObj(appointmentDataGrid(appointment, ph, 2));
