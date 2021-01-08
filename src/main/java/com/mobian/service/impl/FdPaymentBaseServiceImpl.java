@@ -277,7 +277,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 					fdBalanceLogService.addLogAndUpdateBalance(balanceLog);
 				}
 
-				if(flag) {
+				//if(flag) {
 					FdPaymentLog paymentLog = fdPaymentLogService.getByPaymentId(paymentBase.getId());
 					if(paymentLog != null) {
 						paymentLog.setRefundNo(refund_no);
@@ -292,7 +292,7 @@ public class FdPaymentBaseServiceImpl extends BaseServiceImpl<FdPaymentBase> imp
 					appointment.setId(Integer.valueOf(refId));
 					appointment.setIsRefund(true);
 					fdMemberAppointmentService.edit(appointment);
-				}
+				//}
 
 			}
 		} catch (Exception e) {
